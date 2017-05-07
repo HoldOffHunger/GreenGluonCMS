@@ -13,7 +13,7 @@ PHP/MySQL Content Management System.
 
    Provides language lessons and quizzing for English speakers wishing to learn one of 12 available languages.  This uses Chrome-only's voiceSynthesizer to accurately reproduce accent and pronunciation, whether you are studying French or Korean.  Also, Gooogle CSE (Custom Search Engine) is used here, using the image search to generate the images used to identify words in the lessons and quizzes.
 
-- [WordWeight.com: Weighing Your Worlds](http://www.wordweight.com/)
+- [WordWeight.com: Weighing Your Words](http://www.wordweight.com/)
 
    This site is handling 100,000 different URL queries (i.e., site.com/word/), which then serves up results from a dictionary that was parsed into a MySQL DB.
 
