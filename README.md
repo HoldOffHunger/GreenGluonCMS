@@ -35,6 +35,7 @@ Note: All of the big and small sample sites are running on the exact same codeba
 - Audioplayer for text using Google Chrome's Voice Synthesizer.
 - User tagging, liking, commenting system, where users may authenticate through the site's own login.php, or through their gmail account.
 - Document Generation Caching with Auto-Invalidation as soon as the content changes.
+- MySQL FullText indexing and searching.
 - SiteMap XML Spec and SiteMap-to-Crawler Curl-Pinging for 500 Search Engines.
 - Native, Light-Weight Stats-Tracker.
 - Lexical Parsers Capable of Generating Keywords, Definitions, or Facts from Text.
