@@ -1895,18 +1895,19 @@
 		
 		public function SetSiblings($args)
 		{
-			$siblings = $this->GetSiblings($args);
-			
-			$younger_siblings = $siblings['younger'];
-			$older_siblings = $siblings['older'];
-			
-#			print_r($younger_siblings);
-			
-			$younger_siblings = $this->GetChildrenForRecords([records=>$younger_siblings]);
-			$older_siblings = $this->GetChildrenForRecords([records=>$older_siblings]);
-			
-			$this->younger_siblings = $younger_siblings;
-			$this->older_siblings = $older_siblings;
+			if(count($this->record_list))
+			{
+				$siblings = $this->GetSiblings($args);
+				
+				$younger_siblings = $siblings['younger'];
+				$older_siblings = $siblings['older'];
+				
+				$younger_siblings = $this->GetChildrenForRecords([records=>$younger_siblings]);
+				$older_siblings = $this->GetChildrenForRecords([records=>$older_siblings]);
+				
+				$this->younger_siblings = $younger_siblings;
+				$this->older_siblings = $older_siblings;
+			}
 			
 			return TRUE;
 		}
