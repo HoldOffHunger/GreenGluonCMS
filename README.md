@@ -45,6 +45,11 @@ Note: All of the big and small sample sites are running on the exact same codeba
 - Number Theory, RSA decrypter/encrypter, and Associated, Cryptology Functions (these functions are not used in security of the code, they are for cryptological research purposes)
 - Robots.Txt Autogeneration in TXT, XML, and HTML formats.
 
+## How Does it Work? :
+- The .htaccess file in each domain redirects every URL to site.com/index.php.
+- index.php includes standard files and initiates the Handler with HandleRequest()
+- The Handler puts together the basic information, like what filetype is being request, and redirects user as necessary to one of the script/\*/ files, inheriting one filetype parent at script/types/\*/, probably using several trait/script/\*/ files, and ultimately it displays the actual template at tempaltes/site.com/scriptname/scriptaction.php.  script/\*/ is flat, but the objects are scalable and hierarchical.
+
 ## License :
 Green Gluon CMS is hereby released under the BSD-3-Clause License.
 
