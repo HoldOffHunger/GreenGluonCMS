@@ -191,6 +191,8 @@
 				return FALSE;	# Causes 404
 			}
 			
+			$this->delete_in_progress = 1;
+			
 			$this->OrderAndFillChildRecords();
 			
 			$this->save_status = 'Delete attempted.';
@@ -803,7 +805,7 @@
 				$records_to_delete = [];
 				$record_ids_to_keep = [];
 				
-				if(is_array($unformatted_saved_records) && count($unformatted_saved_records))
+				if(is_array($unformatted_saved_records) && count($unformatted_saved_records) && !$this->delete_in_progress)
 				{
 					foreach($unformatted_saved_records as $unformatted_saved_record)
 					{
@@ -966,8 +968,8 @@
 				$possible_code = str_replace('.', '', $possible_code);
 				$possible_code = str_replace('?', '', $possible_code);
 				$possible_code = str_replace('"', '', $possible_code);
-				$possible_code = str_replace('“', '', $possible_code);
-				$possible_code = str_replace('”', '', $possible_code);
+				$possible_code = str_replace('Â“', '', $possible_code);
+				$possible_code = str_replace('Â”', '', $possible_code);
 				$possible_code = str_replace('&', '', $possible_code);
 				
 				$max_loops = 10;
