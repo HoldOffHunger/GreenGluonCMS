@@ -1806,11 +1806,9 @@
 		{
 			return TRUE;
 		}
-		
 		public function PrepareRecordForSaving_TextBody()
 		{
 			$this->textbody_unprepared = $this->textbody;
-			
 			$new_textbodies = [];
 			
 			foreach($this->textbody as $textbody)
@@ -1826,7 +1824,8 @@
 					
 					$xpath = new DOMXPath($dom);
 					$nodes = $xpath->query('//@*');
-					foreach ($nodes as $node) {
+					
+					foreach ($nodes as $node_key => $node) {
 						if(
 							!($node->parentNode->tagName == 'a' && $node->nodeName == 'href') &&
 							!($node->parentNode->tagName == 'a' && $node->nodeName == 'name') &&
@@ -1836,18 +1835,36 @@
 							$node->parentNode->removeAttribute($node->nodeName);
 						}
 					}
+					
+					/*
+					$nodes = $xpath->query('//tt');
+				#	foreach ($dom->getElementsByTagName('tt') as $dom_piece)
+					foreach ($nodes as $node_key => $node)
+					{
+						$node_children = $xpath->query('//@*', $node);
+						
+						foreach($node_children as $node_child)
+						{
+							$node->parentNode->parentNode->appendChild($node_child);
+						}
+						$node->parentNode->removeChild($node);
+						#$node->parentNode->replaceChild(, $node);
+				#		$dom_piece->parentNode->removeChild($dom_piece);
+					}
+					
+				#	print_r($dom);
+					*/
 					$textbody['Text'] = html_entity_decode(preg_replace('/^<!DOCTYPE.+?>/', '', str_replace( array('<html>', '</html>', '<body>', '</body>'), array('', '', '', ''),$dom->saveHTML())));
+				#	print_r($textbody['Text']);
 					$textbody['WordCount'] = str_word_count(strip_tags($textbody['Text']));
 					$textbody['CharacterCount'] = strlen($textbody['Text']);
+					
+					$textbody['Text'] = preg_replace("/<tt>/i", "", $textbody['Text']);
+					$textbody['Text'] = preg_replace("/<\/tt>/i", "", $textbody['Text']);
 				}
 				
 				$new_textbodies[] = $textbody;
 			}
-			
-			// wordcount
-			// charcount
-			
-			//thanks (BT: here)
 			
 			return $this->textbody = $new_textbodies;
 		}
