@@ -1154,6 +1154,38 @@
 			$record_type = $args[recordtype];
 			$record_ids_to_keep = $args[recordidstokeep];
 			
+			if($record_type == 'Association')
+			{
+				$sql = 'DELETE FROM ' . $record_type;
+				
+				$sql .= ' WHERE ChosenEntryid = ' . $entry['id'];
+				
+				if(count($record_ids_to_keep))
+				{
+					$sql .= ' AND id NOT IN (' ;
+					
+					$sql .= implode(', ', array_fill(0, count($record_ids_to_keep), '?'));
+				
+					$sql .= ')';
+					
+					$sql_bind_string = str_repeat('i', count($record_ids_to_keep));
+				}
+				else
+				{
+					$sql_bind_string = '';
+				}
+				$fill_arrays_from_db_args = [
+					query=>$sql,
+					sqlbindstring=>$sql_bind_string,
+					recordvalues=>$record_ids_to_keep,
+				];
+				
+				if($this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args)['line'])
+				{
+					return FALSE;
+				}
+			}
+			
 			$sql = 'DELETE FROM ' . $record_type;
 			
 			$sql .= ' WHERE Entryid = ' . $entry['id'];
@@ -1179,7 +1211,12 @@
 				recordvalues=>$record_ids_to_keep,
 			];
 			
-			return $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);
+			if($this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args)['line'])
+			{
+				return FALSE;
+			}
+			
+			return TRUE;
 		}
 		
 		public function GetLastChildAdded($args)
