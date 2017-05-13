@@ -1854,7 +1854,7 @@
 					
 				#	print_r($dom);
 					*/
-					$textbody['Text'] = html_entity_decode(preg_replace('/^<!DOCTYPE.+?>/', '', str_replace( array('<html>', '</html>', '<body>', '</body>'), array('', '', '', ''),$dom->saveHTML())));
+					$textbody['Text'] = preg_replace('/^<!DOCTYPE.+?>/', '', str_replace( array('<html>', '</html>', '<body>', '</body>'), array('', '', '', ''),$dom->saveHTML()));
 				#	print_r($textbody['Text']);
 					$textbody['WordCount'] = str_word_count(strip_tags($textbody['Text']));
 					$textbody['CharacterCount'] = strlen($textbody['Text']);
