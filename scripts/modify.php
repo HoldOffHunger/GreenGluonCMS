@@ -1861,6 +1861,12 @@
 					
 					$textbody['Text'] = preg_replace("/<tt>/i", "", $textbody['Text']);
 					$textbody['Text'] = preg_replace("/<\/tt>/i", "", $textbody['Text']);
+					
+					$textbody['Text'] = preg_replace("/<span>/i", "", $textbody['Text']);
+					$textbody['Text'] = preg_replace("/<\/span>/i", "", $textbody['Text']);
+					
+					$textbody['Text'] = preg_replace("/<div>/i", "", $textbody['Text']);
+					$textbody['Text'] = preg_replace("/<\/div>/i", "", $textbody['Text']);
 				}
 				
 				$new_textbodies[] = $textbody;
