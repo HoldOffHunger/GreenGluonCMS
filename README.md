@@ -48,7 +48,40 @@ Note: All of the big and small sample sites are running on the exact same codeba
 ## How Does it Work? :
 - The .htaccess file in each domain redirects every URL to site.com/index.php.
 - index.php includes standard files and initiates the Handler with HandleRequest()
-- The Handler puts together the basic information, like what filetype is being request, and redirects user as necessary to one of the script/\*/ files, inheriting one filetype parent at script/types/\*/, probably using several trait/script/\*/ files, and ultimately it displays the actual template at tempaltes/site.com/scriptname/scriptaction.php.  script/\*/ is flat, but the objects are scalable and hierarchical.
+- The Handler puts together the basic information, like what filetype is being request, and redirects user as necessary to one of the script/\*/ files, inheriting one filetype parent at script/types/\*/, probably using several trait/script/\*/ files, and ultimately it displays the actual template at tempaltes/site.com/scriptname/scriptaction.php.
+
+## Why Should I Use This? :
+- The Handler
+
+![Image of Entry Pieces](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/entry-pieces.jpg)
+
+The handler looks at each of the pieces in the query and selects the Entry records (representing the actual page) and the Assignment record (representing the connections between the various parent and child pages).
+
+![Image of Entry Query](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/entry-query.jpg)
+
+This query selects the Entries and the Assignments based on "chinese" (a page about learning chinese), "nouns-animals-part-14" (lesson 14 about animals), and "cat" (a single word which is covered in this lesson).
+
+![Image of Entry List](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/entry-list.jpg)
+
+Above is the list of entries and their common connections.  Each page is the same exact record types: an Entry to represent the page, and an Assignment to represent its connection to a parent page.
+
+![Image of Entry Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/entry-site.jpg)
+
+With all of the techno babble covered, what we get above is a magnificient looking site.  So what's the advantage of setting up the DB like this?
+
+![Image of Entry Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/entry-child-types.jpg)
+
+Because there are no DB changes required for any new types of pages!  We have a page about teaching chinese, a subpage that's a lesson, and a subpage that's a word in that lesson.  They are all Entry records, so no DB changes are required to make work with the above child-record types.
+
+![Image of Entry Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/scripts.jpg)
+
+And no code changes are required either for completely new parent or child types!  Every page, whether it is the highest level (website.com) or the lowest level in this demo (website.com/a/b/c/), all of them use the same exact view.php, login.php, browse.php, etc., scripts!
+
+![Image of Entry Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/templates.jpg)
+
+Need to customize the display for specific record types?  Easy!  The above file is located at: templates/earthfluent/view/display_greatgrandchildof_EarthFluent.php.  This is the file that displays for the "third" level children of the main website.com, so it'll show up for every website.com/a/b/c/view.php?action=display page, no matter what a, b, or c are.
+
+For all these reasons, virtually an infinite number of sites, with an infinite number of features, can be built, designed, scaled, and improved all within the same software environment.  That is the advantage to using this software.
 
 ## License :
 Green Gluon CMS is hereby released under the BSD-3-Clause License.
