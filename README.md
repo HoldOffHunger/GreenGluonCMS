@@ -81,6 +81,16 @@ And no code changes are required either for completely new parent or child types
 
 Need to customize the display for specific record types?  Easy!  The above file is located at: templates/earthfluent/view/display_greatgrandchildof_EarthFluent.php.  This is the file that displays for the "third" level children of the main website.com, so it'll show up for every website.com/a/b/c/view.php?action=display page, no matter what a, b, or c are.  Notice that functionality here for child records updates dynamically based on whether the given a, b, or c actually uses those child records.
 
+![Image to Modify Level-1 of Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/level1-modify.jpg)
+
+![Image to Modify Level-2 of Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/level2-modify.jpg)
+
+![Image to Modify Level-3 of Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/level3-modify.jpg)
+
+![Image to Modify Level-4 of Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/level4-modify.jpg)
+
+All of the Entry records associated with a URL are the same exact type of record, so they can each be modified or updated using the same exact script.  Why would the script need to be different?  If each letter in a/b/c/d/view.php is an Entry, why would they need different scripts to modify the data?  This simplifies improvements and additions, making it so that a new feature for one type of page can be come a new feature for every type of page.
+
 For all these reasons, virtually an infinite number of sites, with an infinite number of features, can be built, designed, scaled, and improved all within the same software environment.  That is the advantage to using this software.
 
 ## License :
