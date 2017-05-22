@@ -79,7 +79,7 @@ And no code changes are required either for completely new parent or child types
 
 ![Image of Entry Site](https://github.com/HoldOffHunger/GreenGluonCMS/blob/master/documentation/templates.jpg)
 
-Need to customize the display for specific record types?  Easy!  The above file is located at: templates/earthfluent/view/display_greatgrandchildof_EarthFluent.php.  This is the file that displays for the "third" level children of the main website.com, so it'll show up for every website.com/a/b/c/view.php?action=display page, no matter what a, b, or c are.
+Need to customize the display for specific record types?  Easy!  The above file is located at: templates/earthfluent/view/display_greatgrandchildof_EarthFluent.php.  This is the file that displays for the "third" level children of the main website.com, so it'll show up for every website.com/a/b/c/view.php?action=display page, no matter what a, b, or c are.  Notice that functionality here for child records updates dynamically based on whether the given a, b, or c actually uses those child records.
 
 For all these reasons, virtually an infinite number of sites, with an infinite number of features, can be built, designed, scaled, and improved all within the same software environment.  That is the advantage to using this software.
 
