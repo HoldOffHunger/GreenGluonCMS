@@ -26,12 +26,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
-		'backgroundcolor'=>'gray13',
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -586,6 +584,7 @@
 				{
 					$text_display = $text_bodies[0]['FirstThousandCharacters'];
 					
+					$text_display = preg_replace('/Image::(\d+)/', '', $text_display);
 					$text_display = strip_tags($text_display);
 					
 					if(strlen($text_display) > 750)

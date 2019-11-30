@@ -34,53 +34,12 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
 	];
 	$navigation = new module_navigation($navigation_args);
-	
-			// Share Languages
-		
-		// -------------------------------------------------------------
-	
-	if($this->language_object->getLanguageCode() == 'en')
-	{
-		$this->share_text = 'Share';
-	}
-	else
-	{
-		$share_languages = $this->getListAndItems(['ListTitle'=>'LanguagesShare']);
-		
-		if($share_languages[$this->language_object->getLanguageCode()])
-		{
-			$this->share_text = $share_languages[$this->language_object->getLanguageCode()];
-		}
-		else
-		{
-			$this->share_text = 'Share';
-		}
-	}
-	
-	if($this->language_object->getLanguageCode() == 'en')
-	{
-		$this->share_with_text = 'Share With';
-	}
-	else
-	{
-		$share_with_languages = $this->getListAndItems(['ListTitle'=>'LanguagesShareWith']);
-		
-		if($share_with_languages[$this->language_object->getLanguageCode()])
-		{
-			$this->share_with_text = $share_with_languages[$this->language_object->getLanguageCode()];
-		}
-		else
-		{
-			$this->share_with_text = 'Share With';
-		}
-	}
 	
 			// Description / Quote Languages
 		
@@ -128,12 +87,11 @@
 	
 	require('../modules/html/socialmediasharelinks.php');
 	$social_media_share_links_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
 		'domainobject'=>$this->domain_object,
 		'socialmedia'=>$this->social_media,
-		'sharetext'=>$this->share_text,
-		'sharewithtext'=>$this->share_with_text,
 		'socialmediasharelinkargs'=>[
 			url=>$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]),
 			title=>$this->header_title_text,
@@ -853,6 +811,20 @@
 				// -------------------------------------------------------
 	
 	$divider->displayend($divider_end_args);
+	
+			// Display Similar Sites
+		
+		// -------------------------------------------------------------
+	
+	require('../modules/html/similarsites-satellites.php');
+	
+	$similar_site_args = [
+		site=>$this->domain_object->primary_domain_lowercased,
+		language=>$this->language_object,
+	];
+	$similar_sites = new module_similarsites_satellites($similar_site_args);
+	
+	$similar_sites->display();
 	
 			// Display Social Media Options
 		

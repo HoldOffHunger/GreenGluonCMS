@@ -26,12 +26,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
-		'backgroundcolor'=>'gray13',
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -187,7 +185,7 @@
 		// -------------------------------------------------------------
 	
 	$header_secondary_args = [
-		'title'=>'Browsing : ' . $this->child_record_start_index . ' to ' . $this->child_record_end_index . ' of ' . $this->children_count ,
+		'title'=>'Browsing : ' . $this->child_record_start_index . ' to ' . $this->child_record_end_index . ' of ' . $this->entry_count ,
 		'imagemouseover'=>$this->total_pages . ' Total Pages Available',
 		'divmouseover'=>$this->total_children_viewed . ' Items Viewed, ' . $this->total_children_left . ' Remaining to Be Viewed',
 		'level'=>3,
@@ -343,6 +341,17 @@
 	{
 		print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
 		
+		$child_url_pieces = [];
+		
+		foreach($child['parents'] as $parent) {
+		//	print("BT: " . $parent['Code']);
+			$child_url_pieces[] = $parent['Code'];
+		}
+		
+		$child_url = '/' . implode('/', $child_url_pieces) . '/view.php';
+		unset($child_image_location);
+		unset($child_image);
+		
 		if($child['image'])
 		{
 			$child_images = $child['image'];
@@ -352,38 +361,101 @@
 			{
 				shuffle($child_images);
 				$child_image = $child_images[0];
-				print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-				print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-				print('<div class="height-100px width-100px background-color-gray0">');
-				print('<div class="vertical-specialcenter">');
-				print('<a href="' . $child['Code'] . '/view.php">');
-				print('<img width="');
-				print(ceil($child_image['IconPixelWidth'] / 2));
-				print('" height="');
-				print(ceil($child_image['IconPixelHeight'] / 2));
-				print('" src="');
-				print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
-				print('/image/');
-				print($child_image['IconFileName']);
-				print('">');
-				print('</a>');
-				print('</div>');
-				print('</div>');
-				print('</div>');
-				print('</div>');
+				
+				$child_image_location = '/image/' . implode('/', str_split($child_image['FileDirectory'])) . '/' . $child_image['IconFileName'];
 			}
 		}
 		
-		$child_title = '<a href="' . $child['Code'] . '/view.php">';
+		if(!$child_image)
+		{
+			$child_image = [
+				IconFileName=>$this->primary_host_record['PrimaryImageLeft'],
+				IconPixelWidth=>200,
+				IconPixelHeight=>200,
+			];
+			
+			$child_image_location = '/image/' . $this->primary_host_record['PrimaryImageLeft'];
+		}
+		
+		print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+		print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+		print('<div class="height-100px width-100px background-color-gray0">');
+		print('<div class="vertical-specialcenter">');
+		print('<a href="' . $child['Code'] . '/view.php">');
+		print('<img width="');
+		print(ceil($child_image['IconPixelWidth'] / 2));
+		print('" height="');
+		print(ceil($child_image['IconPixelHeight'] / 2));
+		print('" src="');
+		print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
+		print($child_image_location);
+		print('">');
+		print('</a>');
+		print('</div>');
+		print('</div>');
+		print('</div>');
+		print('</div>');
+		
+		$title_max = 50;
+		
+		if($child['association'] && count($child['association']))
+		{
+			$title_max = 30;
+		}
+		
 		if($child['ListTitle'])
 		{
-			$child_title .= $child['ListTitle'];
+			$full_child_title = $child['ListTitle'];
 		}
 		else
 		{
-			$child_title .= $child['Title'];
+			$full_child_title = $child['Title'];
 		}
+		$child_title_source = $full_child_title;
+		
+		$popup_title = 0;
+		if(strlen($full_child_title) > $title_max)
+		{
+			$full_child_title = substr($full_child_title, 0, $title_max) . '...';
+			$popup_title = 1;
+		}
+		
+		$child_title = '<a href="' . $child['Code'] . '/view.php"';
+		
+		if($popup_title)
+		{
+			$child_title .= ' title="' . str_replace('"', '&quot;', $child_title_source) . '"';
+		}
+		
+		$child_title .= '>';
+		
+		$child_title .= $full_child_title;
+		
 		$child_title .= '</a>';
+		
+		if($child['association'] && count($child['association']))
+		{
+			$author = $child['association'][0]['entry'];
+			$child_title .= ', by ';
+			
+			$author_full_title = $author['Title'];
+			
+			$popup_title = 0;
+			if(strlen($author_full_title) > 20)
+			{
+				$author_full_title = substr($author_full_title, 0, 20) . '...';
+				$popup_title = 1;
+			}
+			
+			$child_title .= '<a href="/people/' . $author['Code'] . '/view.php"';
+			if($popup_title)
+			{
+				$child_title .= ' title="' . str_replace('"', '&quot;', $author['Title']) . '"';
+			}
+			$child_title .= '>';
+			$child_title .= $author_full_title;
+			$child_title .= '</a>';
+		}
 		
 		if($child['textbody'])
 		{
@@ -569,9 +641,9 @@
 				$text_body_count = count($text_bodies);
 				if($text_body_count)
 				{
-					$text_display = $text_bodies[0]['FirstThousandCharacters'];
-					
-					$text_display = strip_tags($text_display);
+					$text_display = $this->cleanser_object->FormatListOutput([
+						text=>$text_bodies[0]['FirstThousandCharacters'],
+					]);
 					
 					if(strlen($text_display) > 750)
 					{
@@ -594,6 +666,50 @@
 							
 							print(' (From : ' . $source . '.)');
 						}
+					}
+				}
+			}
+			else
+			{
+				$grand_children = $child['children'];
+				
+				if($grand_children && is_array($grand_children))
+				{
+					$grand_children_count = count($grand_children);
+					
+					if($grand_children_count)
+					{
+						$grand_child_display = [];
+						
+						for($i = 0; $i < count($grand_children); $i++)
+						{
+							$child = $grand_children[$i];
+							
+							$sort_key = $child['ListTitle'];
+							
+							if(!$sort_key)
+							{
+								$sort_key = $child['Title'];
+							}
+							
+							$grand_child_display[$sort_key] = $child;
+						}
+						
+						uksort($grand_child_display, "strnatcasecmp");
+						
+						unset($grand_child);
+						foreach($grand_child_display as $single_grand_child)
+						{
+							if(!$grand_child)
+							{
+								$grand_child = $single_grand_child['textbody'][0];
+							}
+						}
+						
+						$text_display = $this->cleanser_object->FormatListOutput([
+							text=>$grand_child['FirstThousandCharacters'],
+						]);
+						print($text_display);
 					}
 				}
 			}
@@ -643,6 +759,11 @@
 					print('<span class="horizontal-left margin-5px font-family-arial">');
 					print('<a href="view.php?action=browseByTag&tag=' . urlencode($tag['Tag']) . '">');
 					print($tag['Tag']);
+					
+					print(' (');
+					print(number_format($this->tag_counts[$tag['Tag']]));
+					print(')');
+					
 					print('</a>');
 					print('</span>');
 					print('</div>');

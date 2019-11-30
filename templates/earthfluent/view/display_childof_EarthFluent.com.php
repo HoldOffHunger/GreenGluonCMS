@@ -737,12 +737,10 @@
 		
 		require('../modules/html/navigation.php');
 		$navigation_args = [
+			'globals'=>$this->globals,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
-			'text'=>$text,
 			'domainobject'=>$this->domain_object,
-			'callingtemplate'=>$this,
-			'backgroundcolor'=>'gray13',
 		];
 		$navigation = new module_navigation($navigation_args);
 		
@@ -752,6 +750,7 @@
 		
 		require('../modules/html/socialmediasharelinks.php');
 		$social_media_share_links_args = [
+			'globals'=>$this->globals,
 			'textonly'=>$this->mobile_friendly,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
@@ -3097,6 +3096,8 @@
 		
 				print('<div class="width-90percent">');
 				print('<div class="border-2px background-color-gray13 margin-5px font-family-tahoma float-left">');
+				
+				print('<div class="g-signin2" data-onsuccess="onSignIn"></div>');
 				
 				if(!$this->authentication_object->user_session['User.Username'])
 				{

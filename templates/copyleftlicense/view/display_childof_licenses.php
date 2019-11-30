@@ -17,7 +17,10 @@
 	$eventdate_count = count($this->entry['eventdate']);
 	$link_count = count($this->entry['link']);
 	$children_count = count($this->children);
-		
+	
+	$younger_sibling_count = count($this->younger_siblings);
+	$older_sibling_count = count($this->older_siblings);
+	
 				// Timeframe
 			
 			// -------------------------------------------------------------
@@ -67,7 +70,7 @@
 		($this->script_format_lower == 'html' && $this->Param('printerfriendly')) ||
 		($this->script_format_lower == 'html' && $this->Param('invertedcolors'))
 	)
-	{	
+	{
 		$html_document = '';
 		$html_document .= '<h1>';
 		$html_document .= $this->entry['Title'];
@@ -108,6 +111,7 @@
 				$html_document .= ' : ';
 				$html_document .= $child['Title'];
 				$html_document .= '</p>';
+				$html_document .= "\n";
 			}
 		}
 		
@@ -737,12 +741,10 @@
 		
 		require('../modules/html/navigation.php');
 		$navigation_args = [
+			'globals'=>$this->globals,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
-			'text'=>$text,
 			'domainobject'=>$this->domain_object,
-			'callingtemplate'=>$this,
-			'backgroundcolor'=>'gray13',
 		];
 		$navigation = new module_navigation($navigation_args);
 		
@@ -752,6 +754,7 @@
 		
 		require('../modules/html/socialmediasharelinks.php');
 		$social_media_share_links_args = [
+			'globals'=>$this->globals,
 			'textonly'=>$this->mobile_friendly,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
@@ -1074,6 +1077,11 @@
 		}
 		
 		print('<li><a href="#comments">Comments</a></li>');
+		
+		if($younger_sibling_count || $older_sibling_count)
+		{
+			print('<li><a href="#siblings">Navigation</a></li>');
+		}
 		
 		print('</ul>');
 		
@@ -3431,6 +3439,7 @@
 		
 				print('<div class="width-90percent">');
 				print('<div class="border-2px background-color-gray13 margin-5px font-family-tahoma float-left">');
+				print('<div class="g-signin2" data-onsuccess="onSignIn"></div>');
 				
 				if(!$this->authentication_object->user_session['User.Username'])
 				{
@@ -3817,6 +3826,401 @@
 		}
 		
 		print('</center>');
+		
+						// Display Navigation
+			
+			// -------------------------------------------------------------
+		
+		if($younger_sibling_count || $older_sibling_count)
+		{
+					// Quote Header
+				
+				// -------------------------------------------------------------
+				
+			print('<a name="siblings"></a>');
+			
+			print('<center>');
+			print('<div class="horizontal-center width-95percent">');
+			print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+			print('<h2 class="horizontal-left margin-5px font-family-arial">');
+			print('Navigation');
+			print('</h2>');
+			print('</div>');
+			print('</div>');
+			print('</center>');
+			
+					// Finish Textbody Header
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+					// Start Next/Last Styling
+				
+				// -------------------------------------------------------------
+				
+			print('<center>');
+			print('<div class="border-2px background-color-gray13 margin-5px horizontal-center width-90percent">');
+			
+					// Display Table Start
+				
+				// -------------------------------------------------------------
+			
+			print('<table width="100%">');
+			print('<tr>');
+			
+					// Display Last Entry
+				
+				// -------------------------------------------------------------
+			
+			print('<td width="33%" class="width-33percent">');
+			
+			print('<center>');
+			print('<span class="font-family-arial font-size-150percent margin-10px border-2px background-color-gray15">');
+			print('<div style="display:inline;" class="margin-10px">');
+			print('&lt;&lt; Last Work in ' . $this->parent['Title']);
+			print('</div>');
+			print('</span>');
+			print('</center>');
+			
+					// Clear Float
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+					// Last Entry?
+				
+				// -------------------------------------------------------------
+			
+			if($younger_sibling_count)
+			{
+				$oldest_young_sibling = $this->younger_siblings[0];
+				$sibling_descriptions = $oldest_young_sibling['description'];
+				
+				if(count($sibling_descriptions))
+				{
+					$first_sibling_description = $sibling_descriptions[0];
+					$last_sibling_mouseover_text = str_replace('"', '&quot;', $first_sibling_description['Description']);
+				}
+				
+				$younger_sibling_text = '<a href="../' . $oldest_young_sibling['Code'] . '/view.php">';
+				$younger_sibling_text .= $oldest_young_sibling['Title'];
+				$younger_sibling_text .= '</a>';
+			}
+			else
+			{
+				$younger_sibling_text = 'This is the first work.';
+			}
+			
+			print('<div id="header_backgroundimageurl" class="border-2px background-color-gray15 margin-5px"');
+			if($last_sibling_mouseover_text)
+			{
+				print(' title="' . $last_sibling_mouseover_text . '"');
+			}
+			print('>');
+			print('<div class="margin-10px">');
+			print('<span class="font-family-tahoma font-size-125percent">');
+			
+			print($younger_sibling_text);
+			
+			print('</span>');
+			print('</div>');
+			print('</div>');
+			
+					// End Displaying Last Entry
+				
+				// -------------------------------------------------------------
+			
+			print('</td>');
+			
+					// Display Current Entry
+				
+				// -------------------------------------------------------------
+			
+			print('<td width="33%" class="width-33percent">');
+			
+			print('<center>');
+			print('<span class="font-family-arial font-size-150percent margin-10px border-2px background-color-gray15">');
+			print('<div style="display:inline;" class="margin-10px">');
+			print('Current Work in ' . $this->parent['Title']);
+			print('</div>');
+			print('</span>');
+			print('</center>');
+			
+					// Clear Float
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+					// This Entry?
+				
+				// -------------------------------------------------------------
+			
+			if($description_count)
+			{
+				$first_description = $this->entry['description'][0];
+				
+				$current_navigation_item_mouseover = str_replace('"', '&quot;', $first_description['Description']);
+			}
+			
+			print('<div id="header_backgroundimageurl" class="border-2px background-color-gray15 margin-5px"');
+			
+			if($current_navigation_item_mouseover)
+			{
+				print(' title="' . $current_navigation_item_mouseover . '"');
+			}
+			
+			print('>');
+			print('<div class="margin-10px">');
+			print('<span class="font-family-tahoma font-size-125percent">');
+			
+			print($this->entry['Title']);
+			
+			print('</span>');
+			print('</div>');
+			print('</div>');
+			
+					// End Displaying Last Entry
+				
+				// -------------------------------------------------------------
+				
+			print('</td>');
+			
+					// Display Next Entry
+				
+				// -------------------------------------------------------------
+			
+			print('<td width="33%" class="width-33percent">');
+			
+			print('<center>');
+			print('<span class="font-family-arial font-size-150percent margin-10px border-2px background-color-gray15">');
+			print('<div style="display:inline;" class="margin-10px">');
+			print('Next Work in ' . $this->parent['Title'] . ' &gt;&gt;');
+			print('</div>');
+			print('</span>');
+			print('</center>');
+			
+					// Clear Float
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+					// Last Entry?
+				
+				// -------------------------------------------------------------
+			
+			if($older_sibling_count)
+			{
+				$youngest_old_sibling = $this->older_siblings[0];
+				$sibling_descriptions = $youngest_old_sibling['description'];
+				if(count($sibling_descriptions))
+				{
+					$first_sibling_description = $sibling_descriptions[0];
+					$next_sibling_mouseover_text = str_replace('"', '&quot;', $first_sibling_description['Description']);
+				}
+				
+				$next_sibling_text = '<a href="../' . $youngest_old_sibling['Code'] . '/view.php">';
+				$next_sibling_text .= $youngest_old_sibling['Title'];
+				$next_sibling_text .= '</a>';
+			}
+			else
+			{
+				$next_sibling_text = 'This is the last lesson.';
+			}
+			
+			print('<div id="header_backgroundimageurl" class="border-2px background-color-gray15 margin-5px"');
+			if($next_sibling_mouseover_text)
+			{
+				print(' title="' . $next_sibling_mouseover_text . '"');
+			}
+			print('>');
+			print('<div class="margin-10px">');
+			print('<span class="font-family-tahoma font-size-125percent">');
+			
+			print($next_sibling_text);
+			
+			print('</span>');
+			print('</div>');
+			print('</div>');
+			
+					// End Displaying Last Entry
+				
+				// -------------------------------------------------------------
+				
+			print('</td>');
+			
+					// Display Last/Next Ten Header
+				
+				// -------------------------------------------------------------
+			
+			print('</tr>');
+			
+			print('<tr>');
+			print('<td colspan="3">');
+			
+			print('<center>');
+			print('<span class="font-family-arial font-size-150percent margin-10px border-2px background-color-gray15">');
+			print('<div style="display:inline;" class="margin-10px">');
+			print('All Nearby Works in ' . $this->parent['Title']);
+			print('</div>');
+			print('</span>');
+			
+			print('<div class="margin-10px border-2px background-color-gray15 width-70percent horizontal-left">');
+			print('<ul class="font-family-arial font-size-125percent" type="disc">');
+			
+			if($younger_sibling_count)
+			{
+				for($i = 0; $i < $younger_sibling_count; $i++)
+				{
+					$younger_sibling = $this->younger_siblings[$i];
+					
+					print('<li>');
+					print('<a href="../' . $younger_sibling['Code'] . '/view.php">');
+					print($younger_sibling['ListTitle']);
+					
+					$younger_sibling_descriptions = $younger_sibling['description'];
+					$younger_sibling_description_count = count($younger_sibling_descriptions);
+					
+					if($younger_sibling_description_count && $younger_sibling_descriptions[0]['Description'])
+					{
+						print(' - ');
+						
+						print('<em>');
+						print($younger_sibling_descriptions[0]['Description']);
+						print('</em>');
+					}
+					
+					print('</a>');
+					
+					if($younger_sibling['association'][0] && $younger_sibling['association'][0]['entry']['id'])
+					{
+						print(', by ');
+						print('<a href="../../people/' . $younger_sibling['association'][0]['entry']['Code'] . '/view.php">');
+						print($younger_sibling['association'][0]['entry']['Title']);
+						print('</a>');
+					}
+					
+					print('</li>');
+				}
+			}
+			
+			print('<li>');
+			print($this->entry['ListTitle']);
+			
+			if($description_count && $this->entry['description'][0]['Description'])
+			{
+				print(' - ');
+				
+				print('<em>');
+				print($this->entry['description'][0]['Description']);
+				print('</em>');
+			}
+			
+			print('</li>');
+			if($older_sibling_count)
+			{
+				for($i = 0; $i < $older_sibling_count; $i++)
+				{
+					$older_sibling = $this->older_siblings[$i];
+					
+					print('<li>');
+					print('<a href="../' . $older_sibling['Code'] . '/view.php">');
+					print($older_sibling['ListTitle']);
+					
+					$older_sibling_descriptions = $older_sibling['description'];
+					$older_sibling_description_count = count($older_sibling_descriptions);
+					
+					if($older_sibling_description_count && $older_sibling_descriptions[0]['Description'])
+					{
+						print(' - ');
+						
+						print('<em>');
+						print($older_sibling_descriptions[0]['Description']);
+						print('</em>');
+					}
+					
+					print('</a>');
+					
+					if($older_sibling['association'][0] && $older_sibling['association'][0]['entry']['id'])
+					{
+						print(', by ');
+						print('<a href="../../people/' . $older_sibling['association'][0]['entry']['Code'] . '/view.php">');
+						print($older_sibling['association'][0]['entry']['Title']);
+						print('</a>');
+					}
+					print('</li>');
+				}
+			}
+			
+			print('</ul>');
+			print('</div>');
+			
+			print('</center>');
+			
+			print('</td>');
+			print('</tr>');
+			
+					// Display Table End
+				
+				// -------------------------------------------------------------
+			
+			print('</tr>');
+			print('</table>');
+			
+					// End Next/Last Styling
+				
+				// -------------------------------------------------------------
+			
+			print('</div>');
+			print('</center>');
+		}
 		
 				// DEBUG
 			

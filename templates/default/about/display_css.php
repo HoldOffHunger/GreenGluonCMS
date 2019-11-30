@@ -2,6 +2,7 @@ width/width-1percent.css
 width/width-33percent.css
 width/width-100percent.css
 width/width-70percent.css
+width/width-97percent.css
 width/width-95percent.css
 width/width-90percent.css
 width/width-50percent.css
@@ -24,8 +25,11 @@ image/flip-image.css
 border/border-1px.css
 border/border-2px.css
 border/border-bottom-1px.css
+spacing/margin-0px.css
 spacing/margin-5px.css
 spacing/margin-10px.css
+spacing/margin-20px.css
+spacing/margin-50px.css
 spacing/padding-0px.css
 spacing/padding-5px.css
 spacing/padding-10px.css
@@ -37,6 +41,10 @@ spacing/margin-0px.css
 spacing/margin-top-5px.css
 spacing/margin-top-14px.css
 spacing/margin-top-22px.css
+spacing/margin-top-50px.css
+spacing/margin-bottom-50px.css
+spacing/margin-left-100px.css
+spacing/margin-right-100px.css
 spacing/padding-top-14px.css
 spacing/padding-top-22px.css
 spacing/margin-bottom-5px.css
@@ -54,3 +62,4 @@ font/header-2.css
 font/noselect.css
 font/font-family-tahoma.css
 font/font-family-arial.css
+text/text-indent-50px.css

@@ -75,5 +75,6 @@ font/noselect.css
 font/font-family-tahoma.css
 font/font-family-arial.css
 font/font-size-250percent.css
+font/font-size-200percent.css
 font/font-size-150percent.css
 font/font-size-75percent.css

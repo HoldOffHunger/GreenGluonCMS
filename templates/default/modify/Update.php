@@ -269,7 +269,11 @@
 			'Title',
 			'Subtitle',
 			'List Title',
+			'List Title Sort Key',
 			'Code',
+			'Child Adjective',
+			'Child Noun',
+			'Child Noun Plural',
 			'Entry Translation',
 			'Availability Dates',
 			'Description',
@@ -281,6 +285,7 @@
 			'Link',
 			'Event Date',
 			'Association',
+			'Definition',
 		];
 		
 		foreach ($elements as $element)
@@ -340,10 +345,46 @@
 					$text->Display($element_text_args);
 					
 					break;
+				
+				case 'List Title Sort Key':
+					$element_text_args = [
+						text=>$this->entry['ListTitleSortKey'],
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					break;
 					
 				case 'Code':
 					$element_text_args = [
 						text=>$this->entry['Code'],
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					break;
+				
+				case 'Child Adjective':
+					$element_text_args = [
+						text=>$this->entry['ChildAdjective'],
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					break;
+				
+				case 'Child Noun':
+					$element_text_args = [
+						text=>$this->entry['ChildNoun'],
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					break;
+				
+				case 'Child Noun Plural':
+					$element_text_args = [
+						text=>$this->entry['ChildNounPlural'],
 						indentlevel=>5,
 					];
 					$text->Display($element_text_args);
@@ -734,6 +775,37 @@
 					$text->Display($element_text_args);
 					
 					break;
+				
+				case 'Definition':
+					$printable_definitions = [];
+					
+					foreach ($this->definition as $definition)
+					{
+						$term_text = $definition['Term'];
+						if($tag_text)
+						{
+							$term_text = '&bull; ' . $term_text . ' : ' . $definition['Definition'];
+							
+							$printable_definitions[] = $term_text;
+						}
+					}
+					
+					if(count($printable_definitions))
+					{
+						$element_text = implode('<br>', $printable_definitions);
+					}
+					else
+					{
+						$element_text = 'N/A';
+					}
+					
+					$element_text_args = [
+						text=>$element_text,
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					break;
 			}
 			
 				// End Table Display
@@ -770,7 +842,11 @@ F			];
 			'Title',
 			'Subtitle',
 			'List Title',
+			'List Title Sort Key',
 			'Code',
+			'Child Adjective',
+			'Child Noun',
+			'Child Noun Plural',
 			'Entry Translation',
 			'Availability Dates',
 			'Description',
@@ -826,17 +902,31 @@ F			];
 			
 			switch($element) {
 				case 'Title':
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'Title',
 						size=>60,
 						indentlevel=>5,
 						value=>$this->entry['Title'],
 						maxlength=>255,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 				
+					break;
+				
+				case 'Subtitle':
+					$type_args = array(
+						type=>'text',
+						name=>'Subtitle',
+						size=>60,
+						indentlevel=>5,
+						value=>$this->entry['Subtitle'],
+						maxlength=>255,
+					);
+					
+					$form->DisplayFormField($type_args);
+					
 					break;
 				
 				case 'List Title':
@@ -853,15 +943,15 @@ F			];
 					
 					break;
 				
-				case 'Subtitle':
-					$type_args = array(
+				case 'List Title Sort Key':
+					$type_args = [
 						type=>'text',
-						name=>'Subtitle',
+						name=>'ListTitleSortKey',
 						size=>60,
 						indentlevel=>5,
-						value=>$this->entry['Subtitle'],
+						value=>$this->entry['ListTitleSortKey'],
 						maxlength=>255,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -876,6 +966,48 @@ F			];
 						value=>$this->entry['Code'],
 						maxlength=>255,
 					);
+					
+					$form->DisplayFormField($type_args);
+					
+					break;
+					
+				case 'Child Adjective':
+					$type_args = [
+						type=>'text',
+						name=>'ChildAdjective',
+						size=>60,
+						indentlevel=>5,
+						value=>$this->entry['ChildAdjective'],
+						maxlength=>255,
+					];
+					
+					$form->DisplayFormField($type_args);
+					
+					break;
+					
+				case 'Child Noun':
+					$type_args = [
+						type=>'text',
+						name=>'ChildNoun',
+						size=>60,
+						indentlevel=>5,
+						value=>$this->entry['ChildNoun'],
+						maxlength=>255,
+					];
+					
+					$form->DisplayFormField($type_args);
+					
+					break;
+					
+				case 'Child Noun Plural':
+					$type_args = [
+						type=>'text',
+						name=>'ChildNounPlural',
+						size=>60,
+						indentlevel=>5,
+						value=>$this->entry['ChildNounPlural'],
+						maxlength=>255,
+					];
 					
 					$form->DisplayFormField($type_args);
 					

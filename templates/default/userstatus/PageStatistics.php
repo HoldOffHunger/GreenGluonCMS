@@ -349,6 +349,12 @@
 				{
 					if($stats && count($stats))
 					{
+						$stats_count = count($stats);
+						
+						for($i = 1; $i < $stats_count; $i++) {
+							$stats[$i][0] = '<NOBR>' . $stats[$i][0] . '</NOBR>';
+						}
+						
 						$header_primary_args = array(
 							'indentlevel'=>1,
 							'title'=>$client,

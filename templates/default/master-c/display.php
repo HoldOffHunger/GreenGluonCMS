@@ -85,16 +85,18 @@
 		'options'=>[
 			'indentlevel'=>1,
 			'tableheaders'=>0,
-			'tableclass'=>'width-100percent horizontal-center border-2px background-color-gray13 margin-top-5px',
+			'tableclass'=>'width-100percent horizontal-center border-2px background-color-gray13 margin-top-5px font-family-tahoma',
 			'rowclass'=>'border-1px horizontal-left',
 			'cellclass'=>[
-				'border-1px width-33percent vertical-top link-clickable cursor-pointer',
-				'border-1px width-33percent vertical-top link-clickable cursor-pointer',
-				'border-1px width-33percent vertical-top link-clickable cursor-pointer',
+				'border-1px width-25percent vertical-top link-clickable cursor-pointer',
+				'border-1px width-25percent vertical-top link-clickable cursor-pointer',
+				'border-1px width-25percent vertical-top link-clickable cursor-pointer',
+				'border-1px width-25percent vertical-top link-clickable cursor-pointer',
 			],
 		],
 		'list'=>[
 			[
+				'&bull; <a href="/">Home</a>',
 				'&bull; <a href="logout.php">Logout</a>',
 				'&bull; <a href="login.php">Login</a>',
 				'&bull; <a href="user-panel.php">User Panel</a>',
@@ -126,6 +128,36 @@
 					'mouseover'=>'View All Domains',
 				],
 			],
+			[
+				'text'=>'War Room',
+				'link'=>' ',
+				'mouseover'=>'No Fighting!',
+				[
+					'text'=>'All Hosts',
+					'link'=>'warroom.php',
+					'mouseover'=>'View War Room for All Hosts',
+				],
+				[
+					'text'=>'This Host',
+					'link'=>'warroom.php?host=' . $this->domain_object->host,
+					'mouseover'=>'View War Room for This Host',
+				],
+				[
+					'text'=>'This Host - 100 Most Recent',
+					'link'=>'warroom.php?limit=100&host=' . $this->domain_object->host,
+					'mouseover'=>'View War Room for This Host',
+				],
+				[
+					'text'=>'This Host - 1,000 Most Recent',
+					'link'=>'warroom.php?limit=1000&host=' . $this->domain_object->host,
+					'mouseover'=>'View War Room for This Host',
+				],
+				[
+					'text'=>'List Available Hosts',
+					'link'=>'warroom.php?action=list',
+					'mouseover'=>'Select Host for War Room',
+				],
+			],
 		],
 	];
 		
@@ -135,7 +167,7 @@
 	
 	$header_secondary_panel01_args = [
 		'title'=>'Admin',
-		'image'=>'tools-icon.jpg',
+		'image'=>'master-c/admin-icon.jpg',
 		'divmouseover'=>'Toolage',
 		'imagemouseover'=>'Toolage Imageryage!',
 		'level'=>2,
@@ -258,6 +290,11 @@
 					'link'=>'view.php?action=Select&by=AvailabilityEnd',
 					'mouseover'=>'Select Entry by Availability End',
 				],
+				[
+					'text'=>'Select Entry by Level',
+					'link'=>'view.php?action=Select&by=Level',
+					'mouseover'=>'Select Entry by Level',
+				],
 			],
 			[
 				'text'=>'Cleanup Entries',
@@ -267,6 +304,181 @@
 					'text'=>'Get Cleanup DB MySQL',
 					'link'=>'dbstatus.php?action=GetCleanupDBMySQL',
 					'mouseover'=>'Add an Entry',
+				],
+			],
+			[
+				'text'=>'Detect Entry Errors',
+				'link'=>' ',
+				'mouseover'=>'Detect Entry Errors',
+				[
+					'text'=>'Entries',
+					'link'=>' ',
+					'mouseover'=>'Detect Entry Errors',
+					[
+						'text'=>'Entry Symmetry Check',
+						'link'=>'dbstatus.php?action=EntrySymmetryCheck',
+						'mouseover'=>'Check Entry Symmetry',
+					],
+					[
+						'text'=>'Entry Code Length Check',
+						'link'=>'dbstatus.php?action=DetectEntryCodeLength',
+						'mouseover'=>'Check Entry Code Length',
+					],
+				],
+				[
+					'text'=>'TextBodies',
+					'link'=>' ',
+					'mouseover'=>'Detect TextBody Errors',
+					[
+						'text'=>'Detect Missing TextBodies',
+						'link'=>'dbstatus.php?action=DetectMissingTextBodies',
+						'mouseover'=>'Detect Missing TextBodies',
+					],
+				],
+				[
+					'text'=>'Descriptions',
+					'link'=>' ',
+					'mouseover'=>'Detect Description Errors',
+					[
+						'text'=>'Detect Missing Descriptions',
+						'link'=>'dbstatus.php?action=DetectMissingDescriptions',
+						'mouseover'=>'Detect Missing Descriptions',
+					],
+				],
+				[
+					'text'=>'Quotes',
+					'link'=>' ',
+					'mouseover'=>'Detect Quote Errors',
+					[
+						'text'=>'Detect Missing Quotes',
+						'link'=>'dbstatus.php?action=DetectMissingQuotes',
+						'mouseover'=>'Detect Missing Quotes',
+					],
+				],
+				[
+					'text'=>'Images',
+					'link'=>' ',
+					'mouseover'=>'Detect Image Errors',
+					[
+						'text'=>'Detect Blank Image Fields',
+						'link'=>'dbstatus.php?action=DetectBlankImageFields',
+						'mouseover'=>'Detect Blank Image Fields',
+					],
+					[
+						'text'=>'Detect Missing Image Files',
+						'link'=>'dbstatus.php?action=DetectMissingImageFiles',
+						'mouseover'=>'Detect Missing Image Files',
+					],
+					[
+						'text'=>'Detect Missing Images',
+						'link'=>'dbstatus.php?action=DetectMissingImages',
+						'mouseover'=>'Detect Missing Images',
+					],
+				],
+				[
+					'text'=>'Dates',
+					'link'=>' ',
+					'mouseover'=>'Detect Date Errors',
+					[
+						'text'=>'Detect Missing Dates',
+						'link'=>'dbstatus.php?action=DetectMissingDates',
+						'mouseover'=>'Detect Missing Dates',
+					],
+				],
+				[
+					'text'=>'Tags',
+					'link'=>' ',
+					'mouseover'=>'Detect Tag Errors',
+					[
+						'text'=>'Detect Missing Tags',
+						'link'=>'dbstatus.php?action=DetectMissingTags',
+						'mouseover'=>'Detect Missing Tags',
+					],
+				],
+				[
+					'text'=>'Associations',
+					'link'=>' ',
+					'mouseover'=>'Detect Association Errors',
+					[
+						'text'=>'Detect Missing Associations',
+						'link'=>'dbstatus.php?action=DetectMissingAssociations',
+						'mouseover'=>'Detect Missing Associations',
+					],
+				],
+				[
+					'text'=>'Links',
+					'link'=>' ',
+					'mouseover'=>'Detect Link Errors',
+					[
+						'text'=>'Detect White Space Chars in URL\'s',
+						'link'=>'dbstatus.php?action=DetectWhiteSpaceURLs',
+						'mouseover'=>'Check White Space Link Errors',
+					],
+					[
+						'text'=>'Detect "*" Chars in Archive URL\'s',
+						'link'=>'dbstatus.php?action=ArchiveURLDetect',
+						'mouseover'=>'Check Archive Link Errors',
+					],
+					[
+						'text'=>'Detect !"*" Chars in Archives URL\'s',
+						'link'=>'dbstatus.php?action=ArchivesURLDetect',
+						'mouseover'=>'Check Archives Link Errors',
+					],
+					[
+						'text'=>'Detect " ~ " Sequences in URL\'s',
+						'link'=>'dbstatus.php?action=CustomDelimitedDBSDetect',
+						'mouseover'=>'Check Sequence Link Errors',
+					],
+					[
+						'text'=>'Detect Deactivated Site Links in URL\'s',
+						'link'=>'dbstatus.php?action=DeactivatedSiteDetect',
+						'mouseover'=>'Detect Deactivated Site Links (myspace, yahoo, etc.)',
+					],
+					[
+						'text'=>'Detect Copy/Paste Issues in URL\'s',
+						'link'=>'dbstatus.php?action=CopyPasteIssuesURLsDetect',
+						'mouseover'=>'Detect Copy/Paste Issues',
+					],
+					[
+						'text'=>'Detect Missing Links',
+						'link'=>'dbstatus.php?action=DetectMissingLinks',
+						'mouseover'=>'Detect Missing Links',
+					],
+				],
+			],
+			[
+				'text'=>'Fix Entry Errors',
+				'link'=>' ',
+				'mouseover'=>'Fix Entry Errors',
+				[
+					'text'=>'Entries',
+					'link'=>' ',
+					'mouseover'=>'Fix Entry Errors',
+					[
+						'text'=>'Detect and Fix Blank List Titles',
+						'link'=>'dbstatus.php?action=DetectAndFixBlankListTitles',
+						'mouseover'=>'Fix Entry Errors',
+					],
+					[
+						'text'=>'Detect and Fix British Spellings',
+						'link'=>'dbstatus.php?action=DetectAndFixBritishSpellings',
+						'mouseover'=>'Fix British Spellings',
+					],
+				],
+				[
+					'text'=>'Images',
+					'link'=>' ',
+					'mouseover'=>'Fix Image Errors',
+					[
+						'text'=>'Fix Blank Image Fields',
+						'link'=>'dbstatus.php?action=FixBlankImageFields',
+						'mouseover'=>'Fix Blank Image Fields',
+					],
+					[
+						'text'=>'Fix Missing Images',
+						'link'=>'dbstatus.php?action=FixMissingImages',
+						'mouseover'=>'Fix Missing Images',
+					],
 				],
 			],
 			[
@@ -303,7 +515,7 @@
 	
 	$header_secondary_panel01_args = [
 		'title'=>'Entries',
-		'image'=>'tools-icon.jpg',
+		'image'=>'master-c/entries-icon.jpg',
 		'divmouseover'=>'Toolage',
 		'imagemouseover'=>'Toolage Imageryage!',
 		'level'=>2,
@@ -388,6 +600,26 @@
 				],
 			],
 			[
+				'text'=>'Suggestions',
+				'link'=>' ',
+				'mouseover'=>'Suggestion System',
+				[
+					'text'=>'Review Pending Suggestions',
+					'link'=>'userstatus.php?action=ReviewSuggestions',
+					'mouseover'=>'Review Pending Suggestions',
+				],
+				[
+					'text'=>'Review Rejected Suggestions',
+					'link'=>'userstatus.php?action=ReviewRejectedSuggestions',
+					'mouseover'=>'Review Rejected Suggestions',
+				],
+				[
+					'text'=>'Review Accepted Suggestions',
+					'link'=>'userstatus.php?action=ReviewAcceptedSuggestions',
+					'mouseover'=>'Review Accepted Suggestions',
+				],
+			],
+			[
 				'text'=>'Site Statistics',
 				'link'=>' ',
 				'mouseover'=>'Site Statistics',
@@ -406,7 +638,7 @@
 	
 	$header_secondary_panel01_args = [
 		'title'=>'Users',
-		'image'=>'tools-icon.jpg',
+		'image'=>'master-c/users-icon.jpg',
 		'divmouseover'=>'Toolage',
 		'imagemouseover'=>'Toolage Imageryage!',
 		'level'=>2,

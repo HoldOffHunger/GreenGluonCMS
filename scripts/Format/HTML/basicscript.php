@@ -65,6 +65,7 @@
 			$this->query_object = $args[queryobject];
 			$this->db_access_object = $args['dbaccessobject'];
 			$this->domain_object = $args['domainobject'];
+			$this->globals = $args['globals'];
 			$this->language_object = $args['languageobject'];
 			$this->dictionary = $args['dictionary'];
 			$this->time = $args['time'];
@@ -119,6 +120,98 @@
 			return $this->HandleRequires();
 		}
 		
+		public function HTMLTitle()
+		{
+			if($this->entry && $this->entry['id']) {
+				$template_location = '../templates/' . $this->domain_object->host . '/' . $this->script_file . '/' . $this->desired_action . '_' . $this->entry['Code'] . '_title.php';
+				
+				if(is_file($template_location) == TRUE)
+				{
+					return require($template_location);
+				}
+			}
+			
+			if($this->object_parent)
+			{
+				$template_location = '../templates/' . $this->domain_object->host . '/' . $this->script_file . '/' . $this->desired_action . '_childof_' . $this->object_parent . '_title.php';
+				
+				if(is_file($template_location) == TRUE)
+				{
+					return require($template_location);
+				}
+			} elseif ($this->parent)
+			{
+				$template_location = '../templates/' . $this->domain_object->host . '/' . $this->script_file . '/' . $this->desired_action . '_childof_' . $this->parent['Code'] . '_title.php';
+				
+				if(is_file($template_location) == TRUE)
+				{
+					return require($template_location);
+				}
+			} elseif(count($this->object_list) == 1)
+			{
+				$template_location = '../templates/' . $this->domain_object->host . '/' . $this->script_file . '/' . $this->desired_action . '_childof_' . $this->master_record['Code'] . '_title.php';
+				
+#				print($template_location);
+				if(is_file($template_location) == TRUE)
+				{
+					return require($template_location);
+				}
+			}
+			
+			if(count($this->object_list) >= 2)
+			{
+				if(count($this->object_list) == 2)
+				{
+					$grandparent_code = $this->master_record['Code'];
+				}
+				else
+				{
+					$grandparent_code = $this->object_list[count($this->object_list) - 3];
+				}
+				
+				$template_location = '../templates/' . $this->domain_object->host . '/' . $this->script_file . '/' . $this->desired_action . '_grandchildof_' . $grandparent_code . '_title.php';
+				
+				if(is_file($template_location) == TRUE)
+				{
+					return require($template_location);
+				}
+			}
+			
+			if(count($this->object_list) >= 3)
+			{
+				if(count($this->object_list) == 3)
+				{
+					$grandparent_code = $this->master_record['Code'];
+				}
+				else
+				{
+					$grandparent_code = $this->object_list[count($this->object_list) - 3];
+				}
+				
+				$template_location = '../templates/' . $this->domain_object->host . '/' . $this->script_file . '/' . $this->desired_action . '_greatgrandchildof_' . $grandparent_code . '_title.php';
+				
+				if(is_file($template_location) == TRUE)
+				{
+					return require($template_location);
+				}
+			}
+			$template_location = '../templates/' . $this->domain_object->host . '/' . $this->script_file . '/' . $this->desired_action . '_title.php';
+			
+			if(is_file($template_location) == TRUE)
+			{
+				return require($template_location);
+			}
+			
+			$template_location = '../templates/default/' . $this->script_file . '/' . $this->desired_action . '_title.php';
+			
+			if(is_file($template_location) == TRUE)
+			{
+				return require($template_location);
+			}
+			
+			return print($this->html_format_data['title']);
+		}
+		
 		public function HandleRequires()
 		{
 			if(count($this->object_list) < 1) {
@@ -131,7 +224,7 @@
 			}
 			else
 			{
-				if($this->entry && $this->entry['id']) {
+				if($this->entry && $this->entry['id'] && $this->entry['Code'] != 'index') {
 					$template_location = '../templates/' . $this->domain_object->host . '/' . $this->script_file . '/' . $this->desired_action . '_' . $this->entry['Code'] . '.php';
 					
 					if(is_file($template_location) == TRUE)
@@ -1184,7 +1277,7 @@
 				return $this->entry['id'];
 			}
 			
-			return 'Identifier';
+			return 'Anarchist Identifier';
 		}
 		
 		public function GetHTMLFormatData_DCSource()

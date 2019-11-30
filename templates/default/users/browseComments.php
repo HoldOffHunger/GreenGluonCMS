@@ -26,12 +26,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
-		'backgroundcolor'=>'gray13',
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -528,15 +526,16 @@
 					$tag = $tags[$i];
 					print('<div class="border-2px background-color-gray15 margin-left-5px margin-bottom-5px float-left">');
 					print('<span class="horizontal-left margin-5px font-family-arial">');
-					print('<a href="' . $parents_parent_code_url . '/view.php?action=browseByTag&tag=' . urlencode($tag['Tag']) . '">');
+					print('<a href="/view.php?action=browseByTag&tag=' . urlencode($tag['Tag']) . '">');
 					print($tag['Tag']);
 					print(' (');
-					print($this->tag_counts['children'][$last_parent['Code']][$tag['Tag']]);
+					print($this->tag_counts[$tag['Tag']]);
 					print(')');
 					print('</a>');
 					print('</span>');
 					print('</div>');
 				}
+				
 						// Finish Float
 					
 					// -------------------------------------------------------------

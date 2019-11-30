@@ -26,12 +26,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
-		'backgroundcolor'=>'gray13',
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -934,6 +932,7 @@
 	
 	require('../modules/html/socialmediasharelinks.php');
 	$social_media_share_links_args = [
+		'globals'=>$this->globals,
 		'textonly'=>$this->mobile_friendly,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
@@ -1015,12 +1014,5 @@
 		'thispage'=>'Home',
 	];
 	$navigation->DisplayBottomNavigation($bottom_navigation_args);
-	
+
 ?>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({
-    google_ad_client: "ca-pub-5613154091905636",
-    enable_page_level_ads: true
-  });
-</script>

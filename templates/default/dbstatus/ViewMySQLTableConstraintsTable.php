@@ -25,19 +25,19 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = array(
+	$divider_padding_start_args = [
 		'class'=>'margin-5px padding-5px',
-	);
+	];
 	
-	$divider_end_args = array(
+	$divider_end_args = [
 		'indentlevel'=>1,
-	);
+	];
 	
 			// Display Header
 		
 		// -------------------------------------------------------------
 	
-	$header_primary_args = array(
+	$header_primary_args = [
 		'indentlevel'=>1,
 		'title'=>$this->domain_object->primary_domain . ' System Status : View MySQL Table Constraints',
 		'image'=>'system-status-icon.jpg',
@@ -51,7 +51,7 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	);
+	];
 	
 	$header->display($header_primary_args);
 			
@@ -59,7 +59,7 @@
 		
 		// -------------------------------------------------------------
 	
-	$return_to_master_c_args = array(
+	$return_to_master_c_args = [
 		'indentlevel'=>1,
 		'title'=>'Return to the Master Control Program',
 		'image'=>'master-c-icon.jpg',
@@ -74,7 +74,7 @@
 		'leftimageenable'=>1,
 		'rightimageenable'=>0,
 		'link'=>'master-c.php',
-	);
+	];
 	
 	$header->display($return_to_master_c_args);
 	
@@ -84,23 +84,23 @@
 	
 	$divider->displaystart($divider_padding_start_args);
 	
-	$version_list_display_args = array(
-		'options'=>array(
+	$version_list_display_args = [
+		'options'=>[
 			'indentlevel'=>1,
 			'tableheaders'=>0,
 			'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13',
 			'rowclass'=>'border-1px horizontal-left',
-			'cellclass'=>array(
+			'cellclass'=>[
 				'border-1px vertical-top',
 				'border-1px width-100percent vertical-top',
 				'border-1px width-100percent vertical-top',
 				'border-1px width-100percent vertical-top',
 				'border-1px width-100percent vertical-top',
 				'border-1px width-100percent vertical-top',
-			),
-		),
+			],
+		],
 		'list'=>$this->StatusDataArray,
-	);
+	];
 	$generic_list->Display($version_list_display_args);
 	
 	$divider->displayend($divider_end_args);

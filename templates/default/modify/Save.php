@@ -250,6 +250,7 @@
 			'Link',
 			'Event Date',
 			'Association',
+			'Definition',
 		];
 		
 		foreach ($elements as $element)
@@ -669,6 +670,37 @@
 					if(count($printable_associations))
 					{
 						$element_text = implode('<br>', $printable_associations);
+					}
+					else
+					{
+						$element_text = 'N/A';
+					}
+					
+					$element_text_args = [
+						text=>$element_text,
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					break;
+				
+				case 'Definition':
+					$printable_definitions = [];
+					
+					foreach ($this->definition as $definition)
+					{
+						$term_text = $definition['Term'];
+						if($tag_text)
+						{
+							$term_text = '&bull; ' . $term_text . ' : ' . $definition['Definition'];
+							
+							$printable_definitions[] = $term_text;
+						}
+					}
+					
+					if(count($printable_definitions))
+					{
+						$element_text = implode('<br>', $printable_definitions);
 					}
 					else
 					{

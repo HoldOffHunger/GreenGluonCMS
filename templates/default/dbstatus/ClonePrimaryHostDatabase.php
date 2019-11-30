@@ -350,6 +350,78 @@
 		];
 		$text->Display($element_text_args);
 		
+		print('</td>');
+		print('</tr>');
+		
+					// Display Form Elements : Clone Stats
+				
+				// -------------------------------------------------------------
+		
+		print('<tr>');
+		print('<td>');
+		
+		$element_text_args = [
+			text=>'<nobr>Clone Stat-Folder into /stats/HOSTNAME.com/ ?</nobr>',
+			indentlevel=>5,
+		];
+		$text->Display($element_text_args);
+		
+		print('</td>');
+		print('<td>');
+		
+		$element_text_args = [
+			text=>$this->clone_stats_from_clonefrom,
+			indentlevel=>5,
+		];
+		$text->Display($element_text_args);
+		print('</td>');
+		print('</tr>');
+		
+					// Display Form Elements : Clone Stats
+				
+				// -------------------------------------------------------------
+		
+		print('<tr>');
+		print('<td>');
+		
+		$element_text_args = [
+			text=>'<nobr>Clone Stat-Folder into /stats/HOSTNAME.com/ ?</nobr>',
+			indentlevel=>5,
+		];
+		$text->Display($element_text_args);
+		
+		print('</td>');
+		print('<td>');
+		
+		$element_text_args = [
+			text=>$this->clone_stats_from_clonefrom,
+			indentlevel=>5,
+		];
+		$text->Display($element_text_args);
+		print('</td>');
+		print('</tr>');
+		
+					// Display Form Elements : Clone Data
+				
+				// -------------------------------------------------------------
+		
+		print('<tr>');
+		print('<td>');
+		
+		$element_text_args = [
+			text=>'<nobr>Clone Data-Folder into /data/*/HOSTNAME.com/ ?</nobr>',
+			indentlevel=>5,
+		];
+		$text->Display($element_text_args);
+		
+		print('</td>');
+		print('<td>');
+		
+		print(var_export($this->clone_data_folders, TRUE));
+		
+		print('</td>');
+		print('</tr>');
+		
 				// Display Results : End
 			
 			// -------------------------------------------------------------
@@ -489,6 +561,7 @@
 			value=>1,
 			size=>80,
 			indentlevel=>5,
+			checked=>TRUE,
 		];
 		
 		$form->DisplayFormField($type_args);
@@ -514,7 +587,8 @@
 			indentlevel=>2,
 			cellvalign=>'top',
 		];
-		$table->DisplayComponent_SeparateCells($separate_cells_args);
+		
+		print('</td><td>');
 		
 		$type_args = [
 			type=>'checkbox',
@@ -522,6 +596,7 @@
 			value=>1,
 			size=>80,
 			indentlevel=>5,
+			checked=>TRUE,
 		];
 		
 		$form->DisplayFormField($type_args);
@@ -531,11 +606,79 @@
 			cellvalign=>'top',
 			cellcolspan=>2,
 		];
-		$table->DisplayComponent_SeparateCellsAndRows($separate_cells_args);
+		
+		print('</td></tr>');
+		
+					// Display Form Elements : Create Stats Folder
+				
+				// -------------------------------------------------------------
+		
+		print('<tr><td>');
+		$element_text_args = [
+			text=>'<nobr>Clone Stat-Folder into /stats/HOSTNAME.com/ ?</nobr>',
+			indentlevel=>5,
+		];
+		$text->Display($element_text_args);
+		
+		print('</td><td>');
+		
+		$type_args = [
+			type=>'checkbox',
+			name=>'clone_stats_from_clonefrom',
+			value=>1,
+			size=>80,
+			indentlevel=>5,
+			checked=>TRUE,
+		];
+		
+		$form->DisplayFormField($type_args);
+		
+		$separate_cells_args = [
+			indentlevel=>2,
+			cellvalign=>'top',
+			cellcolspan=>2,
+		];
+		
+		print('</td></tr>');
+		
+					// Display Form Elements : Create Data Folder
+				
+				// -------------------------------------------------------------
+		
+		print('<tr><td>');
+		$element_text_args = [
+			text=>'<nobr>Clone Data-Folder into /data/*/HOSTNAME.com/ folders ?</nobr>',
+			indentlevel=>5,
+		];
+		$text->Display($element_text_args);
+		
+		print('</td><td>');
+		
+		$type_args = [
+			type=>'checkbox',
+			name=>'clone_data_folders',
+			value=>1,
+			size=>80,
+			indentlevel=>5,
+			checked=>TRUE,
+		];
+		
+		$form->DisplayFormField($type_args);
+		
+		$separate_cells_args = [
+			indentlevel=>2,
+			cellvalign=>'top',
+			cellcolspan=>2,
+		];
+		
+		print('</td></tr>');
 			
 					// Display Form Elements : Select Button
 				
 				// -------------------------------------------------------------
+		
+		
+		print('<tr><td colspan="2">');
 		
 		$table_start_args = [
 			id=>$element,

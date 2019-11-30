@@ -26,12 +26,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
-		'backgroundcolor'=>'gray13',
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -173,6 +171,12 @@
 			print('</p>');
 			print('</div>');
 			
+			print('<div class="float-left margin-5px border-2px background-color-gray13">');
+			print('<p class="font-family-arial margin-5px">');
+			print('<a href="transfer.php">TRANSFER</a>');
+			print('</p>');
+			print('</div>');
+			
 			print('</div>');
 			
 					// Finish Admin Controls
@@ -251,7 +255,7 @@
 		// -------------------------------------------------------------
 	
 	$header_secondary_args = [
-		'title'=>'Total Works : ' . $this->children_count ,
+		'title'=>'Total Anarchist Works : ' . $this->children_count ,
 	//	'image'=>$this->primary_host_record['PrimaryImageLeft'],
 	//	'rightimage'=>$this->primary_host_record['PrimaryImageRight'],
 		'divmouseover'=>$div_mouseover,
@@ -775,7 +779,7 @@
 	print('<h3 class="margin-5px">');
 	print('<a href="view.php?action=browse">');
 	print('<span class="font-family-tahoma">');
-	print('Browse the Complete Selection of ' . $this->children_count . ' Works');
+	print('Browse the Complete Selection of ' . $this->children_count . ' Anarchist Works');
 	print('</span>');
 	print('</a>');
 	print('</h3>');
@@ -1779,6 +1783,7 @@
 	
 	require('../modules/html/socialmediasharelinks.php');
 	$social_media_share_links_args = [
+		'globals'=>$this->globals,
 		'textonly'=>$this->mobile_friendly,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,

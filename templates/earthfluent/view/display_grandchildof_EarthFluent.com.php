@@ -10,11 +10,16 @@
 			
 	$quiz_mode = $this->Param('quizmode');
 	$previous_quizzes = (int)$this->Param('previousquizzes');
-	$future_quizzes = $this->Param('futurequizzes');
+	$future_quizzes = (int)$this->Param('futurequizzes');
 	
 	if($previous_quizzes < 1 || $previous_quizzes > 10)
 	{
 		$previous_quizzes = 0;
+	}
+	
+	if($future_quizzes < 1 || $future_quizzes > 10)
+	{
+		$future_quizzes = 0;
 	}
 		
 				// Child Record Counts
@@ -753,12 +758,10 @@
 		
 		require('../modules/html/navigation.php');
 		$navigation_args = [
+			'globals'=>$this->globals,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
-			'text'=>$text,
 			'domainobject'=>$this->domain_object,
-			'callingtemplate'=>$this,
-			'backgroundcolor'=>'gray13',
 		];
 		$navigation = new module_navigation($navigation_args);
 		
@@ -768,6 +771,7 @@
 		
 		require('../modules/html/socialmediasharelinks.php');
 		$social_media_share_links_args = [
+			'globals'=>$this->globals,
 			'textonly'=>$this->mobile_friendly,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
@@ -1132,6 +1136,7 @@
 			{
 				print('<li><a href="#children">Words</a></li>');
 				print('<li><a href="#lesson">Lesson</a></li>');
+				print('<li><a href="#pronunciation">Test Your Pronunciation</a></li>');
 			}
 			print('<li><a href="#quiz">Quiz</a></li>');
 			if($quiz_mode)
@@ -1140,6 +1145,7 @@
 			}
 			else
 			{
+				print('<li><a href="#games">Games</a></li>');
 				if($younger_sibling_count || $older_sibling_count)
 				{
 					print('<li><a href="#siblings">Learning Navigation</a></li>');
@@ -2023,8 +2029,9 @@
 			
 			$child_display = [];
 			
-			foreach($this->children as $child)
+			foreach($this->children as $child_key => $child)
 			{
+				$child['Title'] = mb_convert_case($child['Title'], MB_CASE_TITLE, "UTF-8");
 				$sort_key = $child['ListTitle'];
 				
 				if(!$sort_key)
@@ -2038,10 +2045,13 @@
 			
 			uksort($child_display, "strnatcasecmp");
 			
-			print('<div class="horizontal-center width-90percent">');
-			foreach($child_display as $child)
+			
+			print('<center>');
+			print('<div class="background-color-gray13 margin-5px horizontal-center width-90percent">');
+			
+			foreach($child_display as $child_key => $child)
 			{
-				print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
+				print('<div class="horizontal-center background-color-gray14 border-2px margin-top-5px float-left">');
 				
 				unset($display_image);
 				
@@ -2161,7 +2171,7 @@
 				print('<tr><td>');
 				print('<button id="listen-to-phrase-english-' . $child['id'] . '" class="font-family-arial font-size-150percent listen-to-phrase">► Listen</button>');
 				print('</td><td>');
-				print('<div class="span-header-3"><h3 style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma"><span>' . $child['Title'] . '</span></h3></div>');
+				print('<div class="span-header-3"><h3 style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma"><span>' . mb_convert_case($child['Title'], MB_CASE_TITLE, "UTF-8") . '</span></h3></div>');
 				print('</td></tr>');
 				print('</table>');
 				print('</div>');
@@ -2185,7 +2195,7 @@
 				print('<tr><td>');
 				print('<button id="listen-to-phrase-nonenglish-' . $child['id'] . '" class="font-family-arial font-size-150percent listen-to-phrase">► Listen</button>');
 				print('</td><td>');
-				print('<div class="span-header-3"><h3 style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma"><span>' . $child['entrytranslation'][0]['Title'] . '</span></h3></div>');
+				print('<div class="span-header-3"><h3 style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma"><span>' . mb_convert_case($child['entrytranslation'][0]['Title'], MB_CASE_TITLE, "UTF-8") . '</span></h3></div>');
 				print('</td></tr>');
 				print('</table>');
 				print('</div>');
@@ -2391,6 +2401,8 @@
 				print('</div>');
 			}
 			print('</div>');
+			print('<div style="clear:both;">');
+			print('</div>');
 		}
 		
 						// Display Lesson
@@ -2564,7 +2576,7 @@
 						// -----------------------------------------------
 				
 				print('<div id="header_backgroundimageurl" class="border-2px background-color-gray15 margin-5px" style="display: inline-block;">');
-				print('<button id="listen-to-phrase-nonenglish-' . $child['id'] . '" class="font-family-arial font-size-150percent listen-to-phrase learn-phrase">► ' . $child['entrytranslation'][0]['Title'] . '</button>');
+				print('<button id="listen-to-phrase-nonenglish-' . $child['id'] . '" class="font-family-arial font-size-150percent listen-to-phrase learn-phrase">► ' . mb_convert_case($child['entrytranslation'][0]['Title'], MB_CASE_TITLE, "UTF-8") . '</button>');
 				print('</div>');
 			}
 			
@@ -2580,6 +2592,297 @@
 			
 			print('<gcse:searchbox></gcse:searchbox>');
 			print('<gcse:searchresults defaultToImageSearch="true"></gcse:searchresults>');
+			
+			print('</div>');
+			print('</center>');
+		}
+		
+				// Display Pronunciation
+			
+			// -------------------------------------------------------------
+		
+		if($this->children && $children_count && !$quiz_mode)
+		{
+					// Textbody Header
+				
+				// -------------------------------------------------------------
+				
+			print('<a name="pronunciation"></a>');
+			
+			print('<center>');
+			print('<div class="horizontal-center width-95percent">');
+			print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+			print('<h2 class="horizontal-left margin-5px font-family-arial">');
+			print('Test Your Pronunciation');
+			print('</h2>');
+			print('</div>');
+			print('</div>');
+			print('</center>');
+			
+					// Finish Textbody Header
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+					// No-JS/Chrome Warning
+				
+				// -------------------------------------------------------------
+				
+						// No-Chrome Warning
+					
+					// -------------------------------------------------------------
+			
+			print('<div class="horizontal-center width-70percent google-chrome-warning" style="display:none;">');
+			print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
+			
+			print('<div class="float-left border-2px margin-5px background-color-gray15">');
+			print('<span class="horizontal-left margin-5px font-family-tahoma font-size-125percent">');
+			print('<nobr>');
+			print('<b>Browser Error :</b>');
+			print('</nobr>');
+			print('</span>');
+			print('</div>');
+			
+			print('<p class="horizontal-left margin-5px font-family-tahoma">');
+			print('You are not using Google Chrome.  Please use Google Chrome to get full audio and voice functionality of Earthfluent.com.');
+			print('</p>');
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+			print('</div>');
+			print('</div>');
+			
+			print("\n\n");
+			
+					// Hidden Language Information
+				
+				// -------------------------------------------------------------
+			
+			print('<input type="hidden" id="language-name" value="' . $this->parent['Code'] . '">');
+			
+					// Input Area
+				
+				// -------------------------------------------------------------
+			
+			print('<div id="wrapper" style="text-align: center">');
+			print('<div style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px font-family-tahoma horizontal-center">');
+			print('<input type="text" id="pronunciation-area" size="60">');
+			print('&nbsp;&nbsp;');
+			
+			print('<div id="recording-indicator" style="border: 1px solid black;display: inline-block; display:none;">');
+			print('<div style="margin:5px;">');
+			print('<span style="color:#FF0000">');
+			print('<img src="');
+			print($this->domain_object->GetPrimaryDomain);
+			print('/image/bouncing-red-ball.gif');
+			print('">');
+			print('&nbsp;');
+			print('<strong>');
+			print('RECORDING');
+			print('</strong>');
+			print('</span>');
+			print('</div>');
+			print('</div>');
+			
+			print('&nbsp;&nbsp;');
+			print('<input type="button" id="speak-button" value="Speak">');
+			print('</div>');
+			print('</div>');
+			
+					// Display Accent
+				
+				// -------------------------------------------------------------
+				
+			print('<div id="accent-wrapper" style="text-align: center;display:none;">');
+			print('<div style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px font-family-tahoma horizontal-center">');
+			
+			print('<span>');
+			print('What accent are you practicing?');
+			print('</span>');
+			
+			print('&nbsp;');
+			
+			print('<select id="language-accent-to-speak">');
+			print('</select>');
+			
+			print('</div>');
+			print('</div>');
+			
+					// Display Children
+				
+				// -------------------------------------------------------------
+			
+			$child_display = [];
+			
+			foreach($this->children as $child)
+			{
+				$sort_key = $child['ListTitle'];
+				
+				if(!$sort_key)
+				{
+					$sort_key = $child['Title'];
+				}
+				
+				$child_display[$sort_key] = $child;
+			}
+			
+			
+			uksort($child_display, "strnatcasecmp");
+			
+			print('<div class="horizontal-center width-50percent">');
+			print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
+			foreach($child_display as $child)
+			{
+				
+				unset($display_image);
+				
+				if($child['image'])
+				{
+					$child_images = $child['image'];
+					$child_image_count = count($child_images);
+					if($child_image_count)
+					{
+						shuffle($child_images);
+						$child_image = $child_images[0];
+						$display_image = $child_image;
+					}
+				}
+				
+				if(!$display_image)
+				{
+					$display_image = [
+						IconFileName=>$this->primary_host_record['PrimaryImageLeft'],
+						IconPixelWidth=>200,
+						IconPixelHeight=>200,
+					];
+				}
+				
+				$title_max = 50;
+				$title_popup = 0;
+				
+				if($child['Subtitle'])
+				{
+					$title_max = 30;
+				}
+				
+				$full_child_title = $child['Title'];
+				
+				if(strlen($full_child_title) > $title_max)
+				{
+					$full_child_title = substr($full_child_title, 0, $title_max) . '...';
+					$title_popup = 1;
+				}
+				
+				if($child['Subtitle'])
+				{
+					$full_child_title .= ' : ';
+					
+					$full_child_subtitle = $child['Subtitle'];
+					
+					if(strlen($full_child_subtitle) > $title_max)
+					{
+						$full_child_subtitle = substr($full_child_subtitle, 0, $title_max) . '...';
+					}
+					
+					$full_child_title .= $full_child_subtitle;
+					$title_popup = 1;
+				}
+				
+			#	$child_title = '<a href="' . $child['Code'] . '/view.php"';
+				$child_title = '<span';
+				if($title_popup)
+				{
+					$popup_title = $child['Title'];
+					
+					if($child['Subtitle'])
+					{
+						$popup_title .= ' : ';
+						$popup_title .= $child['Subtitle'];
+					}
+					$child_title .= ' title="' . str_replace('"', '&quot;', $popup_title) . '"';
+				}
+				
+				$child_title .= '>';
+				
+				$child_title .= $full_child_title;
+				
+				$child_title .= '</span>';
+			#	$child_title .= '</a>';
+				
+				$div_mouseover = '';
+				
+				if($child['textbody'])
+				{
+					$text_bodies = $child['textbody'];
+					
+					$text_body_count = count($text_bodies);
+					if($text_body_count)
+					{
+						$first_textbody = $text_bodies[0];
+						
+						$div_mouseover .= number_format($first_textbody['WordCount']) . ' Words / ' . number_format($first_textbody['CharacterCount']) . ' Characters';
+					}
+				}
+				
+						// Listen to the Foreign Word
+						// -----------------------------------------------
+				
+				print('<div id="pronounce-nonenglish-word-' . $child['id'] . '" class="border-2px background-color-gray15 margin-5px float-left">');
+				print('<input type="hidden" id="pronounce-nonenglish-' . $child['id'] . '-word" class="pronounce-nonenglish-words-hidden" value="' . $child['entrytranslation'][0]['Title'] . '">');
+				print('<table style="margin:5px;">');
+				print('<tr><td>');
+				print('</td><td>');
+				print('<div class="span-header-3"><h3 style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma"><span><a href="' . $child['Code'] . '/view.php" title="Learn More!">' . $child['entrytranslation'][0]['Title'] . '</a></span></h3></div>');
+				print('</td></tr>');
+				print('</table>');
+				print('</div>');
+			}
+			
+					// Finish Float
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+				
+			print('</div>');
+			print('</div>');
+			
+			print('<center>');
+			print('<div style="margin:5px;">');
 			
 			print('</div>');
 			print('</center>');
@@ -2788,7 +3091,7 @@
 				
 				foreach($this->children as $child)
 				{
-					$this_quiz_words[] = $child['Title'];
+					$this_quiz_words[] = mb_convert_case($child['Title'], MB_CASE_TITLE, "UTF-8");
 				}
 				
 				print(' <span class="font-family-tahoma">');
@@ -2836,12 +3139,12 @@
 					print('</div>');
 					
 					$last_previous_quiz_words = $this_quiz_words;
-					$last_younger_sibling = $this->younger_siblings[0];
+					$last_younger_sibling = $this->younger_siblings[count($this->younger_siblings) - 1];
 					
 					$younger_sibling_children = $last_younger_sibling['children'];
 					foreach($younger_sibling_children as $younger_sibling_child)
 					{
-						$last_previous_quiz_words[] = $younger_sibling_child['Title'];
+						$last_previous_quiz_words[] = mb_convert_case($younger_sibling_child['Title'], MB_CASE_TITLE, "UTF-8");
 					}
 					
 					print(' <span class="font-family-tahoma">');
@@ -2890,14 +3193,14 @@
 					print('</div>');
 					
 					$last_two_previous_quiz_words = $this_quiz_words;
-					for($i = 0; $i < 2; $i++)
+					for($i = count($this->younger_siblings) - 1; $i > count($this->younger_siblings) - 3; $i--)
 					{
 						$last_younger_sibling = $this->younger_siblings[$i];
 						
 						$younger_sibling_children = $last_younger_sibling['children'];
 						foreach($younger_sibling_children as $younger_sibling_child)
 						{
-							$last_two_previous_quiz_words[] = $younger_sibling_child['Title'];
+							$last_two_previous_quiz_words[] = mb_convert_case($younger_sibling_child['Title'], MB_CASE_TITLE, "UTF-8");
 						}
 					}
 					
@@ -2947,14 +3250,14 @@
 					print('</div>');
 					
 					$last_two_previous_quiz_words = $this_quiz_words;
-					for($i = 0; $i < 3; $i++)
+					for($i = count($this->younger_siblings) - 1; $i > count($this->younger_siblings) - 4; $i--)
 					{
 						$last_younger_sibling = $this->younger_siblings[$i];
 						
 						$younger_sibling_children = $last_younger_sibling['children'];
 						foreach($younger_sibling_children as $younger_sibling_child)
 						{
-							$last_two_previous_quiz_words[] = $younger_sibling_child['Title'];
+							$last_two_previous_quiz_words[] = mb_convert_case($younger_sibling_child['Title'], MB_CASE_TITLE, "UTF-8");
 						}
 					}
 					
@@ -3004,14 +3307,14 @@
 					print('</div>');
 					
 					$last_two_previous_quiz_words = $this_quiz_words;
-					for($i = 0; $i < 4; $i++)
+					for($i = count($this->younger_siblings) - 1; $i > count($this->younger_siblings) - 5; $i--)
 					{
 						$last_younger_sibling = $this->younger_siblings[$i];
 						
 						$younger_sibling_children = $last_younger_sibling['children'];
 						foreach($younger_sibling_children as $younger_sibling_child)
 						{
-							$last_two_previous_quiz_words[] = $younger_sibling_child['Title'];
+							$last_two_previous_quiz_words[] = mb_convert_case($younger_sibling_child['Title'], MB_CASE_TITLE, "UTF-8");
 						}
 					}
 					
@@ -3061,14 +3364,14 @@
 					print('</div>');
 					
 					$last_two_previous_quiz_words = $this_quiz_words;
-					for($i = 0; $i < 5; $i++)
+					for($i = count($this->younger_siblings) - 1; $i > count($this->younger_siblings) - 6; $i--)
 					{
 						$last_younger_sibling = $this->younger_siblings[$i];
 						
 						$younger_sibling_children = $last_younger_sibling['children'];
 						foreach($younger_sibling_children as $younger_sibling_child)
 						{
-							$last_two_previous_quiz_words[] = $younger_sibling_child['Title'];
+							$last_two_previous_quiz_words[] = mb_convert_case($younger_sibling_child['Title'], MB_CASE_TITLE, "UTF-8");
 						}
 					}
 					
@@ -3118,13 +3421,12 @@
 					print('</div>');
 					
 					$previous_quiz_words = $this_quiz_words;
-					
-					foreach($this->younger_siblings as $younger_sibling)
-					{
+					for($i = count($this->younger_siblings) - 1; $i >= 0; $i--) {
+						$younger_sibling = $this->younger_siblings[$i];
 						$younger_sibling_children = $younger_sibling['children'];
 						foreach($younger_sibling_children as $younger_sibling_child)
 						{
-							$previous_quiz_words[] = $younger_sibling_child['Title'];
+							$previous_quiz_words[] = mb_convert_case($younger_sibling_child['Title'], MB_CASE_TITLE, "UTF-8");
 						}
 					}
 					
@@ -3162,7 +3464,7 @@
 					print('<div class="border-2px background-color-gray15 margin-5px">');
 					print('<div class="horizontal-left margin-5px">');
 					print('<span class="font-family-arial font-size-125percent">');
-					print('<a href="view.php?quizmode=1&previousquizzes=1&futurequizzes=1">');
+					print('<a href="view.php?quizmode=1&previousquizzes=10&futurequizzes=10">');
 					print('Take a Quiz for this Lesson');
 					
 					if($younger_sibling_count)
@@ -3196,7 +3498,7 @@
 						$older_sibling_children = $older_sibling['children'];
 						foreach($older_sibling_children as $older_sibling_child)
 						{
-							$future_quiz_words[] = $older_sibling_child['Title'];
+							$future_quiz_words[] = mb_convert_case($older_sibling_child['Title'], MB_CASE_TITLE, "UTF-8");
 						}
 					}
 					
@@ -3238,7 +3540,7 @@
 						$max_younger_sibling_iteration = $previous_quizzes;
 					}
 					
-					for($i = 0; $i < $max_younger_sibling_iteration; $i++)
+					for($i = $younger_sibling_count - 1; $i >= $younger_sibling_count - $max_younger_sibling_iteration && $i >= 0; $i--)
 					{
 						$younger_sibling = $this->younger_siblings[$i];
 						$younger_sibling_children = $younger_sibling['children'];
@@ -3561,7 +3863,301 @@
 			}
 		}
 		
-						// Display Quiz
+				// Display Games
+			
+			// -------------------------------------------------------------
+		
+		if($this->children && $children_count && !$quiz_mode)
+		{
+					// Textbody Header
+				
+				// -------------------------------------------------------------
+				
+			print('<a name="games"></a>');
+			
+			print('<center>');
+			print('<div class="horizontal-center width-95percent">');
+			print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+			print('<h2 class="horizontal-left margin-5px font-family-arial">');
+			print('Games');
+			print('</h2>');
+			print('</div>');
+			print('</div>');
+			print('</center>');
+			
+					// Finish Textbody Header
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+					// Games View
+				
+				// -------------------------------------------------------------
+			
+			print('<center>');
+			print('<iframe id="game-view" style="border:2px solid black;display:none;height:800px;width:80%;"></iframe>');
+			print('</center>');
+			
+					// Games Selection
+				
+				// -------------------------------------------------------------
+			
+							// Word-Search
+							// -------------------------------------------------------------
+							// -------------------------------------------------------------
+				
+						// Word-Search Game : Header
+					
+					// -------------------------------------------------------------
+			
+			print('<div id="wrapper" style="text-align: center;width:100%;" class="horizontal-center">');
+			print('<center>');
+			print('<div style="margin:5px;padding:5px;width:90%;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px font-family-tahoma horizontal-center">');
+			print('<div style="margin:10px;border:black 3px solid;display:inline-block;float:left;background-color:#CCCCCC;">');
+			print('<div style="margin:5px;">');
+			print('<h4 style="margin:0px;">');
+			print('Word Search');
+			print('</h4>');
+			print('</div>');
+			print('</div>');
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+				
+						// Word-Search Game : Game Options
+					
+					// -------------------------------------------------------------
+			
+			print('<input type="hidden" id="play-base-url" value="' . 
+				$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '/' . implode('/', $this->object_list) . '/' .
+				'play.php' .
+			'">');
+			
+			print('<input type="button" class="play-game-button" id="action=WordSearch" value="This Lesson"> ');
+			print('<input type="button" class="play-game-button" id="action=WordSearch&previousquizzes=1" value="This Lesson + Last Lesson"> ');
+			print('<input type="button" class="play-game-button" id="action=WordSearch&previousquizzes=2" value="This Lesson + Last 2 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordSearch&previousquizzes=3" value="This Lesson + Last 3 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordSearch&previousquizzes=4" value="This Lesson + Last 4 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordSearch&previousquizzes=5" value="This Lesson + Last 5 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordSearch&previousquizzes=10" value="This Lesson + Last 10 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordSearch&previousquizzes=10&futurequizzes=10" value="This Lesson + Last 10 Lessons + Next 10 Lessons"> ');
+				
+			print('</div>');
+			
+						// Word-Search Game : Footer
+					
+					// -------------------------------------------------------------
+					
+			print('</center>');
+			print('</div>');
+			
+							// Crossword-Puzzle
+							// -------------------------------------------------------------
+							// -------------------------------------------------------------
+				
+						// Crossword-Puzzle Game : Header
+					
+					// -------------------------------------------------------------
+			
+			print('<div id="wrapper" style="text-align: center;width:100%;" class="horizontal-center">');
+			print('<center>');
+			print('<div style="margin:5px;padding:5px;width:90%;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px font-family-tahoma horizontal-center">');
+			print('<div style="margin:10px;border:black 3px solid;display:inline-block;float:left;background-color:#CCCCCC;">');
+			print('<div style="margin:5px;">');
+			print('<h4 style="margin:0px;">');
+			print('Crossword Puzzle');
+			print('</h4>');
+			print('</div>');
+			print('</div>');
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+				
+						// Crossword-Puzzle Game : Game Options
+					
+					// -------------------------------------------------------------
+			
+			print('<input type="hidden" id="play-base-url" value="' . 
+				$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '/' . implode('/', $this->object_list) . '/' .
+				'play.php' .
+			'">');
+			
+			print('<input type="button" class="play-game-button" id="action=CrosswordPuzzle" value="This Lesson"> ');
+			print('<input type="button" class="play-game-button" id="action=CrosswordPuzzle&previousquizzes=1" value="This Lesson + Last Lesson"> ');
+			print('<input type="button" class="play-game-button" id="action=CrosswordPuzzle&previousquizzes=2" value="This Lesson + Last 2 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=CrosswordPuzzle&previousquizzes=3" value="This Lesson + Last 3 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=CrosswordPuzzle&previousquizzes=4" value="This Lesson + Last 4 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=CrosswordPuzzle&previousquizzes=5" value="This Lesson + Last 5 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=CrosswordPuzzle&previousquizzes=10" value="This Lesson + Last 10 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=CrosswordPuzzle&previousquizzes=10&futurequizzes=10" value="This Lesson + Last 10 Lessons + Next 10 Lessons"> ');
+				
+			print('</div>');
+			
+						// Crossword-Puzzle Game : Footer
+					
+					// -------------------------------------------------------------
+					
+			print('</center>');
+			print('</div>');
+			
+							// Word-Guess
+							// -------------------------------------------------------------
+							// -------------------------------------------------------------
+				
+						// Word-Guess Game : Header
+					
+					// -------------------------------------------------------------
+			
+			print('<div id="wrapper" style="text-align: center;width:100%;" class="horizontal-center">');
+			print('<center>');
+			print('<div style="margin:5px;padding:5px;width:90%;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px font-family-tahoma horizontal-center">');
+			print('<div style="margin:10px;border:black 3px solid;display:inline-block;float:left;background-color:#CCCCCC;">');
+			print('<div style="margin:5px;">');
+			print('<h4 style="margin:0px;">');
+			print('Word Guess');
+			print('</h4>');
+			print('</div>');
+			print('</div>');
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+				
+						// Word-Guess Game : Game Options
+					
+					// -------------------------------------------------------------
+			
+			print('<input type="hidden" id="play-base-url" value="' . 
+				$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '/' . implode('/', $this->object_list) . '/' .
+				'play.php' .
+			'">');
+			
+			print('<input type="button" class="play-game-button" id="action=WordGuessGame" value="This Lesson"> ');
+			print('<input type="button" class="play-game-button" id="action=WordGuessGame&previousquizzes=1" value="This Lesson + Last Lesson"> ');
+			print('<input type="button" class="play-game-button" id="action=WordGuessGame&previousquizzes=2" value="This Lesson + Last 2 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordGuessGame&previousquizzes=3" value="This Lesson + Last 3 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordGuessGame&previousquizzes=4" value="This Lesson + Last 4 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordGuessGame&previousquizzes=5" value="This Lesson + Last 5 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordGuessGame&previousquizzes=10" value="This Lesson + Last 10 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=WordGuessGame&previousquizzes=10&futurequizzes=10" value="This Lesson + Last 10 Lessons + Next 10 Lessons"> ');
+				
+			print('</div>');
+			
+						// Word-Guess Game : Footer
+					
+					// -------------------------------------------------------------
+					
+			print('</center>');
+			print('</div>');
+			
+							// Typing-Game
+							// -------------------------------------------------------------
+							// -------------------------------------------------------------
+				
+						// Typing-Game Game : Header
+					
+					// -------------------------------------------------------------
+			
+			print('<div id="wrapper" style="text-align: center;width:100%;" class="horizontal-center">');
+			print('<center>');
+			print('<div style="margin:5px;padding:5px;width:90%;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px font-family-tahoma horizontal-center">');
+			print('<div style="margin:10px;border:black 3px solid;display:inline-block;float:left;background-color:#CCCCCC;">');
+			print('<div style="margin:5px;">');
+			print('<h4 style="margin:0px;">');
+			print('Font Wars (Typing Game that Requires ' . ucfirst($this->parent['Code']) . ' Keyboard)');
+			print('</h4>');
+			print('</div>');
+			print('</div>');
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+				
+						// Typing-Game Game : Game Options
+					
+					// -------------------------------------------------------------
+			
+			print('<input type="hidden" id="play-base-url" value="' . 
+				$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '/' . implode('/', $this->object_list) . '/' .
+				'play.php' .
+			'">');
+			
+			print('<input type="button" class="play-game-button" id="action=TypingGame" value="This Lesson"> ');
+			print('<input type="button" class="play-game-button" id="action=TypingGame&previousquizzes=1" value="This Lesson + Last Lesson"> ');
+			print('<input type="button" class="play-game-button" id="action=TypingGame&previousquizzes=2" value="This Lesson + Last 2 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=TypingGame&previousquizzes=3" value="This Lesson + Last 3 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=TypingGame&previousquizzes=4" value="This Lesson + Last 4 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=TypingGame&previousquizzes=5" value="This Lesson + Last 5 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=TypingGame&previousquizzes=10" value="This Lesson + Last 10 Lessons"> ');
+			print('<input type="button" class="play-game-button" id="action=TypingGame&previousquizzes=10&futurequizzes=10" value="This Lesson + Last 10 Lessons + Next 10 Lessons"> ');
+				
+			print('</div>');
+			
+						// Typing-Game Game : Footer
+					
+					// -------------------------------------------------------------
+					
+			print('</center>');
+			print('</div>');
+			
+			print('<center>');
+			print('<div style="margin:5px;">');
+			
+			print('</div>');
+			print('</center>');
+		}
+		
+						// Display Siblings
 			
 			// -------------------------------------------------------------
 		
@@ -3651,7 +4247,7 @@
 			
 			if($younger_sibling_count)
 			{
-				$oldest_young_sibling = $this->younger_siblings[0];
+				$oldest_young_sibling = $this->younger_siblings[count($this->younger_siblings) - 1];
 				$sibling_descriptions = $oldest_young_sibling['description'];
 				
 				if(count($sibling_descriptions))
@@ -3851,7 +4447,7 @@
 			
 			if($younger_sibling_count)
 			{
-				for($i = $younger_sibling_count - 1; $i >= 0; $i--)
+				for($i = 0; $i < $younger_sibling_count; $i++)
 				{
 					$younger_sibling = $this->younger_siblings[$i];
 					
@@ -4476,6 +5072,7 @@
 			
 					print('<div class="width-90percent">');
 					print('<div class="border-2px background-color-gray13 margin-5px font-family-tahoma float-left">');
+					print('<div class="g-signin2" data-onsuccess="onSignIn"></div>');
 					
 					if(!$this->authentication_object->user_session['User.Username'])
 					{

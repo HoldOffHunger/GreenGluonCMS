@@ -737,12 +737,10 @@
 		
 		require('../modules/html/navigation.php');
 		$navigation_args = [
+			'globals'=>$this->globals,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
-			'text'=>$text,
 			'domainobject'=>$this->domain_object,
-			'callingtemplate'=>$this,
-			'backgroundcolor'=>'gray13',
 		];
 		$navigation = new module_navigation($navigation_args);
 		
@@ -752,6 +750,7 @@
 		
 		require('../modules/html/socialmediasharelinks.php');
 		$social_media_share_links_args = [
+			'globals'=>$this->globals,
 			'textonly'=>$this->mobile_friendly,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
@@ -1467,6 +1466,12 @@
 			
 			$divider->displayend($clear_float_divider_end_args);
 			
+			print('<center>');
+			print('<div>');
+
+			print('</div>');
+			print('</center>');
+			
 					// Display Children
 				
 				// -------------------------------------------------------------
@@ -1898,6 +1903,16 @@
 				print('</div>');
 			}
 			print('</div>');
+			
+			print('<center>');
+			print('<div style="margin:5px;">');
+			
+			
+			
+//			<iframe src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=48&l=ur1&category=software&banner=14P8CG6HTX4EMBQ76EG2&f=ifr&linkID=ccc1728990ef8ce2420acd0116e0389e&t=earthfluent-20&tracking_id=earthfluent-20" width="728" height="90" scrolling="no" border="0" marginwidth="0" style="border:none;" frameborder="0"></iframe>
+			
+			print('</div>');
+			print('</center>');
 	
 			print('<div class="horizontal-center width-50percent">');
 			print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
@@ -2356,6 +2371,13 @@
 				print('</div>');
 			}
 			print('</div>');
+			print('<center>');
+			print('<div style="margin:5px;">');
+			
+			// <iframe src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=48&l=ur1&category=textbooks&banner=1RV67QZSEY22T4WH1KR2&f=ifr&linkID=d6436c936d2b5e97b4d3d8d0eeb64abb&t=earthfluent-20&tracking_id=earthfluent-20" width="728" height="90" scrolling="no" border="0" marginwidth="0" style="border:none;" frameborder="0"></iframe>
+			
+			print('</div>');
+			print('</center>');
 	
 			print('<div class="horizontal-center width-50percent">');
 			print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
@@ -2726,7 +2748,7 @@
 		if($_SERVER['HTTPS'] == 'on')
 		{
 			$start_form_args = [
-				'action'=>'view.php#comments',
+				'action'=>'view.php?action=index#comments',
 				'method'=>'post',
 				'formid'=>'comment-form',
 				'formclass'=>'margin-0px',
@@ -2751,7 +2773,7 @@
 					$username = $this->authentication_object->user_session['User.EmailAddress'];
 				}
 				
-				print('<p>Logged in as : <b>' . $username . '</b> (<a href="view.php?logout=true#comments">Logout</a>)</p>');
+				print('<p>Logged in as : <b>' . $username . '</b> (<a href="view.php?logout=true&action=index#comments">Logout</a>)</p>');
 				
 				print('</div>');
 				
@@ -3105,7 +3127,7 @@
 			print('<center>');
 			print('<div class="border-2px background-color-gray13 margin-5px horizontal-center width-50percent font-family-tahoma">');
 			
-			$new_url = str_replace('/view.php', '/view.php#comments', $_SERVER['SCRIPT_URL']);
+			$new_url = str_replace('/view.php', '/view.php?action=index#comments', $_SERVER['SCRIPT_URL']);
 			print('<p><b><a href="' . $this->domain_object->GetPrimaryDomain([secure=>1, lowercase=>0, www=>1]) . $new_url . '">Login to Comment</a></b></p>');
 			
 			print('</div>');

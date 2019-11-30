@@ -3,11 +3,13 @@
 	require('../traits/scripts/BaseConversion.php');
 	require('../traits/scripts/DBAdminFunctions.php');
 	require('../traits/scripts/DBFunctions.php');
+	require('../traits/scripts/SimpleImages.php');
 	require('../traits/scripts/SimpleAPI.php');
 	require('../traits/scripts/SimpleErrors.php');
 	require('../traits/scripts/SimpleLookupLists.php');
 	require('../traits/scripts/SimpleForms.php');
 	require('../traits/scripts/SimpleORM.php');
+	require('../traits/scripts/SimpleORMSiteMap.php');
 
 	class dbstatus extends basicscript
 	{
@@ -22,8 +24,10 @@
 		use SimpleAPI;
 		use SimpleErrors;
 		use SimpleForms;
+		use SimpleImages;
 		use SimpleLookupLists;
 		use SimpleOrm;
+		use SimpleORMSiteMap;
 		
 				// Security
 		
@@ -133,6 +137,143 @@
 		{
 			$this->SetDBAdmin();
 			return $this->StatusDataArray = $this->db_admin->GetTableSchemas();
+		}
+		
+		public function EntrySymmetryCheck()
+		{
+			$master_table = $this->Param('master-table');
+			
+			$entry_code_count = 0;
+			$entry_data = [];
+			
+			if($master_table)
+			{
+				$this->master_table = $master_table;
+				
+				ini_set('memory_limit','400M');
+				
+				$this->SetORMSiteMapObject();
+				
+				$entry_codes = $this->ormsitemap->GetEntrySiteMapCodes();
+				
+				$entry_code_count = count($entry_codes);
+				$full_code_tree = [];
+				
+				if($entry_code_count)
+				{
+					for($i = 0; $i < $entry_code_count; $i++)
+					{
+						$entry_code = $entry_codes[$i];
+						
+						$field = 'Code';
+						
+						$e2_code = $entry_code['E2_' . $field];
+						$e3_code = $entry_code['E3_' . $field];
+						$e4_code = $entry_code['E4_' . $field];
+						$e5_code = $entry_code['E5_' . $field];
+						$e6_code = $entry_code['E6_' . $field];
+						$e7_code = $entry_code['E7_' . $field];
+						
+						if($e2_code && !$full_code_tree[$e2_code])
+						{
+							$full_code_tree[$e2_code] = [];
+						}
+						
+						if($e3_code && !$full_code_tree[$e2_code][$e3_code])
+						{
+							$full_code_tree[$e2_code][$e3_code] = [];
+						}
+						
+						if($e4_code && !$full_code_tree[$e2_code][$e3_code][$e4_code])
+						{
+							$full_code_tree[$e2_code][$e3_code][$e4_code] = [];
+						}
+						
+						if($e5_code && !$full_code_tree[$e2_code][$e3_code][$e4_code][$e5_code])
+						{
+							$full_code_tree[$e2_code][$e3_code][$e4_code][$e5_code] = [];
+						}
+						
+						if($e6_code && !$full_code_tree[$e2_code][$e3_code][$e4_code][$e5_code][$e6_code])
+						{
+							$full_code_tree[$e2_code][$e3_code][$e4_code][$e5_code][$e6_code] = [];
+						}
+						
+						if($e7_code && !$full_code_tree[$e2_code][$e3_code][$e4_code][$e5_code][$e6_code][$e7_code])
+						{
+							$full_code_tree[$e2_code][$e3_code][$e4_code][$e5_code][$e6_code][$e7_code] = [];
+						}
+					}
+					
+					unset($entry_codes);
+					
+					$master_tree = $full_code_tree[$master_table];
+					
+					if($master_tree)
+					{
+						foreach($full_code_tree as $e2_key => $e2_children)
+						{
+							if($e2_key != $master_table)
+							{
+								foreach($master_tree as $e3_key => $e3_children)
+								{
+									if(!isset($full_code_tree[$e2_key][$e3_key]))
+									{
+										$entry_data[] = $e2_key . '/' . $e3_key;
+									}
+									else
+									{
+										foreach($e3_children as $e4_key => $e4_children)
+										{
+											if(!isset($full_code_tree[$e2_key][$e3_key][$e4_key]))
+											{
+												$entry_data[] = $e2_key . '/' . $e3_key . '/' . $e4_key;
+											}
+											else
+											{
+												foreach($e4_children as $e5_key => $e5_children)
+												{
+													if(!isset($full_code_tree[$e2_key][$e3_key][$e4_key][$e5_key]))
+													{
+														$entry_data[] = $e2_key . '/' . $e3_key . '/' . $e4_key . '/' . $e5_key;
+													}
+													else
+													{
+														foreach($e5_children as $e6_key => $e6_children)
+														{
+															if(!isset($full_code_tree[$e2_key][$e3_key][$e4_key][$e5_key][$e6_key]))
+															{
+																$entry_data[] = $e2_key . '/' . $e3_key . '/' . $e4_key . '/' . $e5_key . '/' . $e6_key;
+															}
+															else
+															{
+																foreach($e6_children as $e7_key => $e7_children)
+																{
+																	if(!isset($full_code_tree[$e2_key][$e3_key][$e4_key][$e5_key][$e6_key][$e7_key]))
+																	{
+																		$entry_data[] = $e2_key . '/' . $e3_key . '/' . $e4_key . '/' . $e5_key . '/' . $e6_key . '/' . $e7_key;
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				#$entry_data = ['green', 'bean'];
+			}
+			
+			$this->StatusDataArray = $entry_data;
+			$this->entry_code_count = $entry_code_count;
+			
+			return TRUE;
 		}
 		
 		public function GetCleanupDBMySQL()
@@ -611,15 +752,14 @@
 				$this->clone_success = $db_admin_cloning_results['cloneresults'];
 				$this->create_tables = $db_admin_cloning_results['tablesql'];
 				
-				if($this->clone_success)
-				{
+				if($this->clone_success) {
 					$this->clone_results = 'Cloning of "' . $new_host_to_clone . '" was successful.';
 					
 					$insert_master_admin_account = $this->Param('insert_master_admin_account');
 					
 					if(strlen($insert_master_admin_account))
 					{
-						$this->insert_master_admin_account = $insert_master_admin_account;
+						$this->insert_master_admin_account = TRUE;
 						
 						$insert_master_admin_account_results = $this->DBAdminCloneAdminAccountsToNewDatabase($clone_primary_host_database_args);
 						
@@ -631,17 +771,15 @@
 						{
 							$this->clone_results .= ' Cloning of admin accounts failed.';
 						}
-					}
-					else
-					{
-						$this->insert_master_admin_account = 0;
+					} else {
+						$this->insert_master_admin_account = FALSE;
 					}
 					
 					$clone_files_from_clonefrom = $this->Param('clone_files_from_clonefrom');
 					
 					if(strlen($clone_files_from_clonefrom))
 					{
-						$this->clone_files_from_clonefrom = $clone_files_from_clonefrom;
+						$this->clone_files_from_clonefrom = TRUE;
 						
 						$clone_files_from_clonefrom_results = $this->DBAdminCloneFilesToNewDatabase($clone_primary_host_database_args);
 						
@@ -653,10 +791,48 @@
 						{
 							$this->clone_results .= ' Cloning of files failed.';
 						}
+					} else {
+						$this->clone_files_from_clonefrom = FALSE;
 					}
-					else
+					
+					$clone_stats_from_clonefrom = $this->Param('clone_stats_from_clonefrom');
+					
+					if(strlen($clone_stats_from_clonefrom))
 					{
-						$this->clone_files_from_clonefrom = 0;
+						$this->clone_stats_from_clonefrom = TRUE;
+						
+						$clone_stats_from_clonefrom_results = $this->CloneStatsToNewDatabase($clone_primary_host_database_args);
+						
+						if($clone_stats_from_clonefrom_results['cloneresults'])
+						{
+							$this->clone_results .= ' Cloning of stats was successful.';
+						}
+						else
+						{
+							$this->clone_results .= ' Cloning of stats failed.';
+						}
+					} else {
+						$this->clone_stats_from_clonefrom = FALSE;
+					}
+					
+					$clone_data_folders = $this->Param('clone_data_folders');
+					
+					if(strlen($clone_data_folders))
+					{
+						$this->clone_data_folders = TRUE;
+						
+						$clone_data_folders_results = $this->CloneDataToNewDatabase($clone_primary_host_database_args);
+						
+						if($clone_data_folders_results['cloneresults'])
+						{
+							$this->clone_results .= ' Cloning of data directories was successful.';
+						}
+						else
+						{
+							$this->clone_results .= ' Cloning of data directories failed.';
+						}
+					} else {
+						$this->clone_data_folders = FALSE;
 					}
 				}
 				else
@@ -1178,7 +1354,875 @@
 			
 			return TRUE;
 		}
+		
+		public function DetectAndFixBlankListTitles()
+		{
+			$this->SetDBAdmin();
+			$this->broken_entries = $this->DBAdminDetectBlankListTitles();
+			$this->broken_entries_count = count($this->broken_entries);
+			
+			$run_fixing = $this->Param('fix');
+			
+			if($run_fixing)
+			{
+				#print("BT: FIX!");
+				$broken_entries = $this->broken_entries;
+				for($i = 0; $i < $this->broken_entries_count; $i++)
+				{
+					$broken_entry = $broken_entries[$i];
 					
+					$entry_update_args = [
+						type=>'Entry',
+						update=>[
+							'ListTitle'=>$this->GenerateEntryListTitle([entry=>$broken_entry]),
+						],
+						where=>[
+							id=>$broken_entry['id'],
+						],
+					];
+					
+					$this->db_access_object->UpdateRecord($entry_update_args);
+				}
+			}
+			
+			return TRUE;
+		}
+		
+		public function DetectAndFixBritishSpellings() {
+			$this->SetDBAdmin();
+			
+			$run_fixing = $this->Param('fix');
+			
+			if($run_fixing)
+			{
+				$record_type = $this->Param('record-type');
+				$specific_record = $this->Param('specific-record');
+				
+				$this->recordtype = $record_type;
+				$this->specificrecord = $specific_record;
+				
+				ini_set('memory_limit','400M');
+				set_time_limit(120);
+				
+				require('../classes/Language/AmericanBritishSpellings.php');
+				$american_british_spellings = new AmericanBritishSpellings();
+				
+				$mysql_table_args = [
+					'type'=>$record_type,
+					'definition'=>[],
+				];
+				
+				if($specific_record != 0) {
+					$specific_record_pieces = explode('-', $specific_record);
+					$specific_record_pieces_count = count($specific_record_pieces);
+					
+					if($specific_record_pieces_count == 2) {
+						$min_id = (int)$specific_record_pieces[0];
+						$max_id = (int)$specific_record_pieces[1];
+						
+						$mysql_table_args['definition'] =
+							[
+								'RAW'=>[
+									'id'=>[
+										'>= ' . $min_id . ' AND id <= ',	# DB Accessor, I'm comin' for you!
+										$max_id,
+									],
+								],
+							];
+					} else {
+						$mysql_table_args['definition']['id'] = $specific_record;
+					}
+				}
+				
+				$mysql_table_results = $this->db_access_object->GetRecords($mysql_table_args);
+				$fix_results = [];
+				
+				foreach ($mysql_table_results as $mysql_table_result) {
+		//			print("BT: I have results!!!" . $mysql_table_result['id'] . "|<BR><BR>");
+					$update_record = FALSE;
+					$new_mysql_row = $mysql_table_result;
+					switch($record_type) {
+						case 'Entry':
+							$new_mysql_row['Title'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Title']]);
+							$new_mysql_row['Subtitle'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Subtitle']]);
+							$new_mysql_row['ListTitle'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['ListTitle']]);
+							$code_pieces = explode('-', $new_mysql_row['Code']);
+							
+							$new_code_pieces = [];
+							
+							foreach ($code_pieces as $code_piece) {
+								$new_code_pieces[] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['ListTitle']]);
+							}
+							
+							$new_mysql_row['Code'] = implode('-', $new_code_pieces);
+							
+							if(
+								($new_mysql_row['Title'] != $mysql_table_result['Title']) ||
+								($new_mysql_row['Subtitle'] != $mysql_table_result['Subtitle']) ||
+								($new_mysql_row['ListTitle'] != $mysql_table_result['ListTitle']) ||
+								($new_mysql_row['Code'] != $mysql_table_result['Code']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+							
+						case 'EntryTranslation':
+							$new_mysql_row['Title'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Title']]);
+							$new_mysql_row['Subtitle'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Subtitle']]);
+							$new_mysql_row['ListTitle'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['ListTitle']]);
+							
+							if(
+								($new_mysql_row['Title'] != $mysql_table_result['Title']) ||
+								($new_mysql_row['Subtitle'] != $mysql_table_result['Subtitle']) ||
+								($new_mysql_row['ListTitle'] != $mysql_table_result['ListTitle']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+							
+						case 'TextBody':
+							$new_mysql_row['Text'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Text']]);
+							$new_mysql_row['Source'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Source']]);
+							
+							if(
+								($new_mysql_row['Text'] != $mysql_table_result['Text']) ||
+								($new_mysql_row['Source'] != $mysql_table_result['Source']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+						
+						case 'Tag':
+							$new_mysql_row['Tag'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Tag']]);
+							
+							if(
+								($new_mysql_row['Tag'] != $mysql_table_result['Tag']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+							
+						case 'Description':
+							$new_mysql_row['Description'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Description']]);
+							$new_mysql_row['Source'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Source']]);
+							
+							if(
+								($new_mysql_row['Description'] != $mysql_table_result['Description']) ||
+								($new_mysql_row['Source'] != $mysql_table_result['Source']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+							
+						case 'Link':
+							$new_mysql_row['Title'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Title']]);
+							
+							if(
+								($new_mysql_row['Title'] != $mysql_table_result['Title']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+							
+						case 'Image':
+							$new_mysql_row['Title'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Title']]);
+							$new_mysql_row['Description'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Description']]);
+							
+							if(
+								($new_mysql_row['Title'] != $mysql_table_result['Title']) ||
+								($new_mysql_row['Description'] != $mysql_table_result['Description']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+							
+						case 'ImageTranslation':
+							$new_mysql_row['Title'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Title']]);
+							$new_mysql_row['Description'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Description']]);
+							
+							if(
+								($new_mysql_row['Title'] != $mysql_table_result['Title']) ||
+								($new_mysql_row['Description'] != $mysql_table_result['Description']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+						
+						case 'Quote':
+							$new_mysql_row['Quote'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Quote']]);
+							$new_mysql_row['Source'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Source']]);
+							
+							if(
+								($new_mysql_row['Quote'] != $mysql_table_result['Quote']) ||
+								($new_mysql_row['Source'] != $mysql_table_result['Source']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+							
+						case 'EventDate':
+							$new_mysql_row['Title'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Title']]);
+							$new_mysql_row['Description'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Description']]);
+							
+							if(
+								($new_mysql_row['Title'] != $mysql_table_result['Title']) ||
+								($new_mysql_row['Description'] != $mysql_table_result['Description']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+							
+						case 'Definition':
+							$new_mysql_row['Term'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Term']]);
+							$new_mysql_row['PartOfSpeech'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['PartOfSpeech']]);
+							$new_mysql_row['Etymology'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Etymology']]);
+							$new_mysql_row['Definition'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$new_mysql_row['Definition']]);
+							
+							if(
+								($new_mysql_row['Term'] != $mysql_table_result['Term']) ||
+								($new_mysql_row['PartOfSpeech'] != $mysql_table_result['PartOfSpeech']) ||
+								($new_mysql_row['Etymology'] != $mysql_table_result['Etymology']) ||
+								($new_mysql_row['Definition'] != $mysql_table_result['Definition']) ||
+							0) {
+								$update_record = TRUE;
+							}
+							
+							break;
+					}
+					
+					if($update_record) {
+						if(!$fix_results[$record_type]) {
+							$fix_results[$record_type] = [];
+						}
+						
+						$fix_results[$record_type][$new_mysql_row['id']] = $new_mysql_row;
+						
+						unset($new_mysql_row['id']);
+						$entry_update_args = [
+							type=>$record_type,
+							update=>$new_mysql_row,
+							where=>[
+								id=>$mysql_table_result['id'],
+							],
+						];
+						$this->db_access_object->UpdateRecord($entry_update_args);
+					}
+				}
+				$this->fixresults = $fix_results;
+				
+			//	$fixed = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$textbody['Text']]);
+			}
+			
+			return TRUE;
+		}
+		
+		public function ArchiveURLDetect() {
+			return $this->DetectURLIssue([
+				'definition'=>[
+					'Title'=>[
+						'= "Archive" AND URL RLIKE \'\\\\*\'',
+					],
+				],
+			]);
+		}
+		
+		public function ArchivesURLDetect() {
+			return $this->DetectURLIssue([
+				'definition'=>[
+					'Title'=>[
+						'= "Archives" AND URL != "http://www.oocities.org/" AND URL NOT RLIKE \'\\\\*\'',
+					],
+				],
+			]);
+		}
+		
+		public function CustomDelimitedDBSDetect() {
+			return $this->DetectURLIssue([
+				'definition'=>[
+					'URL'=>[
+						'RLIKE " ~ "',
+					],
+				],
+			]);
+		}
+		
+		public function DeactivatedSiteDetect() {
+			return $this->DetectURLIssue([
+				'definition'=>[
+					'URL'=>[
+						'RLIKE \'facebook.com|myspace.com|yahoo.com|.wayback.\'',
+					],
+				],
+			]);
+		}
+		
+		public function CopyPasteIssuesURLsDetect() {
+			return $this->DetectURLIssue([
+				'definition'=>[
+					'URL'=>[
+						'RLIKE \'^[^http|ftp]\'',
+					],
+				],
+			]);
+		}
+		
+		public function DetectURLIssue($args) {
+			$this->SetORMBasics();
+			$do_detection = $this->Param('do-detection');
+			
+			if($do_detection) {
+				$this->do_detection = $do_detection;
+				
+				$definition = $args['definition'];
+				$link_args = [
+					'type'=>'Link',
+					'definition'=>[
+						RAW=>$definition
+					],
+				];
+				
+				$bad_links = $this->db_access_object->GetRecords($link_args);
+			//	print_r($bad_links);
+				$entryids = [];
+				$bad_link_entryid_hash = [];
+				
+				$bad_links_length = count($bad_links);
+				
+				if($bad_links_length == 0) {
+					$this->StatusDataArray = [];
+					
+					return TRUE;
+				}
+				
+				for($i = 0; $i < $bad_links_length; $i++) {
+					$bad_link = $bad_links[$i];
+					$entryids[] = (int) $bad_link[Entryid];
+					$bad_link_entryid_hash[$bad_link[Entryid]] = $bad_link;
+				}
+				
+				$entryidstring = implode(',', $entryids);
+				
+				$get_record_where = [
+					type=>'Entry',
+					'definition'=>[
+						'RAW'=>[
+							id=>[
+								'IN',
+								'(' . $entryidstring . ')',
+							],
+						],
+					],
+				];
+				
+				$entries = $this->db_access_object->GetRecords($get_record_where);
+				$entries_count = count($entries);
+				
+				for($i = 0; $i < $entries_count; $i++) {
+					$entry = $entries[$i];
+					$bad_link = $bad_link_entryid_hash[$entry['id']];
+					
+					$entry['badlink'] = $bad_link;
+					$entries[$i] = $entry;
+				}
+				
+				#print("<PRE>");
+				$entries = $this->GetEntriesParents(['entries'=>$entries]);
+				
+				#print_r();
+				#print("</PRE>");
+				
+				$this->StatusDataArray = $entries;
+			}
+			
+			return TRUE;
+		}
+		
+				// Images
+				// -----------------------------------
+				// -----------------------------------
+				// -----------------------------------
+		
+		public function DetectBlankImageFields() {
+			$definition = 'StandardFileName = ""';# OR StandardPixelWidth = 0 OR StandardPixelHeight = 0';
+			$mysql_table_args = [
+				'type'=>'Image',
+				'definition'=>[
+					RAW=>$definition,
+				],
+			];
+			
+			$mysql_table_results = $this->db_access_object->GetRecords($mysql_table_args);
+			
+			$this->broken_records = $mysql_table_results;
+			$this->broken_entries_count = count($this->broken_records);
+			$image_fields = [
+				'id',
+				'Title',
+				'Description',
+				'FileName',
+				'FileDirectory',
+				'IconFileName',
+				'StandardFileName',
+				'Entryid',
+				'PixelWidth',
+				'PixelHeight',
+				'IconPixelWidth',
+				'IconPixelHeight',
+				'StandardPixelWidth',
+				'StandardPixelHeight',
+				'OriginalCreationDate',
+				'LastModificationDate',
+			];
+			array_unshift($this->broken_records, $image_fields);
+			
+			return TRUE;
+		}
+		
+		public function DetectMissingImageFiles() {
+			if(!$this->Param('fix')) {
+				return TRUE;
+			}
+			
+			$mysql_table_args = [
+				'type'=>'Image',
+				'definition'=>[
+				],
+			];
+			
+			$images = $this->db_access_object->GetRecords($mysql_table_args);
+			
+			$image_count = count($images);
+			
+			$this->image_count = $image_count;
+			
+			$images_dir = 'image/';
+			
+			$error_images = [];
+			
+			for($i = 0; $i < $image_count; $i++) {
+				$image = $images[$i];
+				$image_directory = $image['FileDirectory'];
+				
+				$image_hash_pieces = str_split($image_directory);
+				$image_dir = implode('/', $image_hash_pieces);
+				
+				$original_image_location = $images_dir . $image_dir . '/' . $image['FileName'];
+				$icon_image_location = $images_dir . $image_dir . '/' . $image['IconFileName'];
+				$standard_image_location = $images_dir . $image_dir . '/' . $image['StandardFileName'];
+				
+				if(!is_file($original_image_location)) {
+					$image['CAUSE OF ERROR'] = 'Missing file for, "Image.FileName".';
+					$error_images[] = $image;
+				}
+				
+				if(!is_file($icon_image_location)) {
+					$image['CAUSE OF ERROR'] = 'Missing file for, "Image.IconFileName".';
+					$error_images[] = $image;
+				}
+				
+				if(!is_file($standard_image_location)) {
+					$image['CAUSE OF ERROR'] = 'Missing file for, "Image.StandardFileName".';
+					$error_images[] = $image;
+				}
+			}
+			$this->broken_entries_count = count($error_images);
+			
+			$image_fields = [
+				'id',
+				'Title',
+				'Description',
+				'FileName',
+				'FileDirectory',
+				'IconFileName',
+				'StandardFileName',
+				'Entryid',
+				'PixelWidth',
+				'PixelHeight',
+				'IconPixelWidth',
+				'IconPixelHeight',
+				'StandardPixelWidth',
+				'StandardPixelHeight',
+				'OriginalCreationDate',
+				'LastModificationDate',
+				'Cause of Error',
+			];
+			
+			array_unshift($error_images, $image_fields);
+			
+			$this->broken_records = $error_images;
+			
+			return TRUE;
+		}
+		
+		public function FixBlankImageFields() {
+			if(!$this->Param('fix')) {
+				return TRUE;
+			}
+			
+			$definition = 'StandardFileName = ""';# OR StandardPixelWidth = 0 OR StandardPixelHeight = 0';
+			$mysql_table_args = [
+				'type'=>'Image',
+				'definition'=>[
+					RAW=>$definition,
+				],
+			];
+			
+			$blank_image_records = $this->db_access_object->GetRecords($mysql_table_args);
+			$blank_image_records_count = count($blank_image_records);
+			
+			for($i = 0; $i < $blank_image_records_count; $i++) {
+				$blank_image_record = $blank_image_records[$i];
+				
+				$alternate_old_filenames = $this->makeAlternateFileNames(['filename'=>$blank_image_record['FileName']]);
+				
+				if(!$blank_image_record['StandardFileName']) {
+					$image_update_args = [
+						type=>'Image',
+						update=>[
+							'StandardFileName'=>$alternate_old_filenames['standard_name'],
+						],
+						where=>[
+							id=>$blank_image_record['id'],
+						],
+					];
+					
+					$this->db_access_object->UpdateRecord($image_update_args);
+				}
+			}
+			
+			$this->broken_records = $blank_image_records;
+			$this->broken_entries_count = $blank_image_records_count;
+			$image_fields = [
+				'id',
+				'Title',
+				'Description',
+				'FileName',
+				'FileDirectory',
+				'IconFileName',
+				'StandardFileName',
+				'Entryid',
+				'PixelWidth',
+				'PixelHeight',
+				'IconPixelWidth',
+				'IconPixelHeight',
+				'StandardPixelWidth',
+				'StandardPixelHeight',
+				'OriginalCreationDate',
+				'LastModificationDate',
+			];
+			array_unshift($this->broken_records, $image_fields);
+			
+			return TRUE;
+		}
+		
+		public function FixMissingImages() {
+			if(!$this->Param('fix')) {
+				return TRUE;
+			}
+			
+			ini_set('memory_limit','400M');
+			ini_set('max_execution_time', 120);
+			$mysql_table_args = [
+				'type'=>'Image',
+				'definition'=>[
+				],
+			];
+			
+			$images = $this->db_access_object->GetRecords($mysql_table_args);
+			
+			$image_count = count($images);
+			
+			$this->image_count = $image_count;
+			
+			$images_dir = 'image/';
+			
+			$error_images = [];
+			
+			for($i = 0; $i < $image_count; $i++) {
+				$image = $images[$i];
+				$image_directory = $image['FileDirectory'];
+				
+				$image_hash_pieces = str_split($image_directory);
+				$image_dir = implode('/', $image_hash_pieces);
+				
+				$original_image_location = $images_dir . $image_dir . '/' . $image['FileName'];
+				$icon_image_location = $images_dir . $image_dir . '/' . $image['IconFileName'];
+				$standard_image_location = $images_dir . $image_dir . '/' . $image['StandardFileName'];
+				
+				if(!is_file($original_image_location)) {
+					$image['CAUSE OF ERROR'] = 'Missing file for, "Image.FileName".';
+					$error_images[] = $image;
+				}
+				
+				if(!is_file($icon_image_location)) {
+					$image['CAUSE OF ERROR'] = 'Missing file for, "Image.IconFileName".';
+					$error_images[] = $image;
+				}
+				
+				if(!is_file($standard_image_location) || $image['StandardPixelWidth'] == 0 || $image['StandardPixelHeight'] == 0) {
+					$resize_args = [
+						'filelocation'=>$original_image_location,
+						'resizedlocation'=>$standard_image_location,
+					];
+					$standard_results = $this->makeStandardImage($resize_args);
+					
+					if(!$standard_results['resizedwidth']) {
+						$standard_results['resizedwidth'] = $standard_results['originalwidth'];
+					}
+					
+					if(!$standard_results['resizedheight']) {
+						$standard_results['resizedheight'] = $standard_results['originalheight'];
+					}
+					
+					$image_update_args = [
+						type=>'Image',
+						update=>[
+							'StandardPixelWidth'=>$standard_results['resizedwidth'],
+							'StandardPixelHeight'=>$standard_results['resizedheight'],
+						],
+						where=>[
+							id=>$image['id'],
+						],
+					];
+					
+					$this->db_access_object->UpdateRecord($image_update_args);
+					
+					$image['CAUSE OF ERROR'] = 'Missing file for, "Image.StandardFileName".';
+					$error_images[] = $image;
+				}
+			}
+			
+			$this->broken_records = $error_images;
+			$this->broken_entries_count = count($error_images);
+			$image_fields = [
+				'id',
+				'Title',
+				'Description',
+				'FileName',
+				'FileDirectory',
+				'IconFileName',
+				'StandardFileName',
+				'Entryid',
+				'PixelWidth',
+				'PixelHeight',
+				'IconPixelWidth',
+				'IconPixelHeight',
+				'StandardPixelWidth',
+				'StandardPixelHeight',
+				'OriginalCreationDate',
+				'LastModificationDate',
+			];
+			array_unshift($this->broken_records, $image_fields);
+			
+			return TRUE;
+		}
+		
+		public function DetectMissingDates() {
+			$args = [
+				'missingtype'=>'EventDate',
+			];
+			
+			return $this->DetectMissingAnything($args);
+		}
+		
+		public function DetectMissingImages() {
+			$args = [
+				'missingtype'=>'Image',
+			];
+			
+			return $this->DetectMissingAnything($args);
+		}
+		
+		public function DetectMissingTags() {
+			$args = [
+				'missingtype'=>'Tag',
+			];
+			
+			return $this->DetectMissingAnything($args);
+		}
+		
+		public function DetectMissingLinks() {
+			$args = [
+				'missingtype'=>'Link',
+			];
+			
+			return $this->DetectMissingAnything($args);
+		}
+		
+		public function DetectMissingTextBodies() {
+			$args = [
+				'missingtype'=>'TextBody',
+			];
+			
+			return $this->DetectMissingAnything($args);
+		}
+		
+		public function DetectMissingDescriptions() {
+			$args = [
+				'missingtype'=>'Description',
+			];
+			
+			return $this->DetectMissingAnything($args);
+		}
+		
+		public function DetectMissingQuotes() {
+			$args = [
+				'missingtype'=>'Quote',
+			];
+			
+			return $this->DetectMissingAnything($args);
+		}
+		
+		public function DetectMissingAssociations() {
+			$args = [
+				'missingtype'=>'Association',
+			];
+			
+			return $this->DetectMissingAnything($args);
+		}
+		
+		public function DetectMissingAnything($args) {
+			if(!$this->Param('fix')) {
+				return TRUE;
+			}
+			
+			$entry_level = (int)$this->Param('level');
+			
+			if(!$entry_level) {
+				return TRUE;
+			}
+			
+			$missing_type = $args['missingtype'];
+			
+			$this->SetOrmBasics();
+			
+			$left_join = '';
+			
+			if($entry_level == 1) {
+				$left_join = 'LEFT JOIN ' . $missing_type . ' ON ' . $missing_type . '.Entryid = Entry.id WHERE ISNULL(' . $missing_type . '.id)';
+			}
+			
+			$entries = $this->getPrimaryEntries(['extrawhere'=>$left_join]);
+			
+			for($i = 1; $i < $entry_level; $i++) {
+				$entry_ids = [];
+				$entry_count = count($entries);
+				
+				for($j = 0; $j < $entry_count; $j++) {
+					$entry = $entries[$j];
+					$entry_ids[] = $entry['Childid'];
+				}
+				
+				$entry_id_string = implode(',', $entry_ids);
+				
+				$left_join = '';
+				
+				if($i + 1 == $entry_level) {
+					$left_join = 'LEFT JOIN ' . $missing_type . ' ON ' . $missing_type . '.Entryid = Entry.id WHERE ISNULL(' . $missing_type . '.id)';
+				}
+				
+				$entries = $this->db_access_object->RunQuery([
+					'sql'=>'SELECT Entry.*, ass.id AS Assignmentid, ass.Childid from Entry JOIN Assignment ass ON ass.Parentid IN(' . $entry_id_string . ') AND ass.Childid = Entry.id ' .
+					$left_join,
+				]);
+			}
+			
+			$entries_count = count($entries);
+			
+			for($i = 0; $i < $entries_count; $i++) {
+				$entry = $entries[$i];
+				$entry['Title'] = '<a href="/?id=' . $entry['Assignmentid'] . '">' . $entry['Title'] . '</a>';
+				$entries[$i] = $entry;
+			}
+			
+			$this->broken_records = $entries;
+			$this->broken_records_count = $entries_count;
+			
+			$entry_fields = [
+				'id',
+				'Title',
+				'Subtitle',
+				'ListTitle',
+				'Code',
+				'OriginalCreationDate',
+				'LastModificationDate',
+				'Assignment.id',
+				'Assignment.Childid',
+			];
+			array_unshift($this->broken_records, $entry_fields);
+			
+			return TRUE;
+		}
+		
+		public function getPrimaryEntries($args) {
+			$sql = 'SELECT Entry.*, ass.Childid from Entry JOIN Assignment ass ON ass.Parentid = ' . $this->master_record['id'] . ' AND ass.Childid = Entry.id';
+			
+			$extra_where = $args['extrawhere'];
+			
+			$sql .= ' ' . $extra_where;
+			
+			return $this->db_access_object->RunQuery([
+				'sql'=>$sql,
+			]);
+		}
+		
+		public function DetectEntryCodeLength($args) {
+			if(!$this->Param('fix')) {
+				return TRUE;
+			}
+			
+			$length = (int)$this->Param('length');
+			
+			if(!$length) {
+				return TRUE;
+			}
+			
+			$missing_type = $args['missingtype'];
+			
+			$this->SetOrmBasics();
+			
+			$entries = $this->db_access_object->RunQuery([
+				'sql'=>'SELECT Entry.*, ass.id AS Assignmentid, ass.Childid from Entry JOIN Assignment ass ON ass.Childid = Entry.id ' .
+				'WHERE LENGTH(Entry.Code) > ' . $length,
+			]);
+			
+			$entries_count = count($entries);
+			
+			for($i = 0; $i < $entries_count; $i++) {
+				$entry = $entries[$i];
+				$entry['Title'] = '<a href="/?id=' . $entry['Assignmentid'] . '">' . $entry['Title'] . '</a>';
+				$entries[$i] = $entry;
+			}
+			
+			$this->broken_records = $entries;
+			$this->broken_records_count = $entries_count;
+			
+			$entry_fields = [
+				'id',
+				'Title',
+				'Subtitle',
+				'ListTitle',
+				'Code',
+				'OriginalCreationDate',
+				'LastModificationDate',
+				'Assignment.id',
+				'Assignment.Childid',
+			];
+			array_unshift($this->broken_records, $entry_fields);
+			
+			return TRUE;
+		}
+		
 						// INFORMATION_SCHEMA Functions
 						// --------------------------------------------------------------
 		

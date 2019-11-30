@@ -40,11 +40,10 @@
 		
 		require('../modules/' . $this->script_format_lower . '/navigation.php');
 		$navigation_args = [
+			'globals'=>$this->globals,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
-			'text'=>$text,
 			'domainobject'=>$this->domain_object,
-			'callingtemplate'=>$this,
 		];
 		$navigation = new module_navigation($navigation_args);
 		
@@ -254,14 +253,7 @@
 		$divider->displayend($divider_end_args);
 		
 		$divider->displayend($divider_end_args);
-	}
-	
-			// Display Final Ending Navigation
 		
-		// -------------------------------------------------------------
-	
-	if($this->script_format_lower == 'html')
-	{
 				// Display Final Ending Navigation
 			
 			// -------------------------------------------------------------

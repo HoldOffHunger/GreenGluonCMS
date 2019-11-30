@@ -34,11 +34,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -128,12 +127,11 @@
 	
 	require('../modules/html/socialmediasharelinks.php');
 	$social_media_share_links_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
 		'domainobject'=>$this->domain_object,
 		'socialmedia'=>$this->social_media,
-		'sharetext'=>$this->share_text,
-		'sharewithtext'=>$this->share_with_text,
 		'socialmediasharelinkargs'=>[
 			url=>$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]),
 			title=>$this->header_title_text,
@@ -803,6 +801,20 @@
 				// -------------------------------------------------------
 	
 	$divider->displayend($divider_end_args);
+	
+			// Display Similar Sites
+		
+		// -------------------------------------------------------------
+	
+	require('../modules/html/similarsites-satellites.php');
+	
+	$similar_site_args = [
+		site=>$this->domain_object->primary_domain_lowercased,
+		language=>$this->language_object,
+	];
+	$similar_sites = new module_similarsites_satellites($similar_site_args);
+	
+	$similar_sites->display();
 	
 			// Display Social Media Options
 		

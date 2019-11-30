@@ -225,6 +225,7 @@
 			
 			$string_length = 350;
 			
+				// The search term "anarchist communism" matches.
 			if($text_pieces_count > 1)
 			{
 				$text_left_side = $text_pieces[0];
@@ -263,6 +264,7 @@
 			}
 			else
 			{
+					// The search terms "anarchist" or "communist" match.
 				$search_term_pieces = $this->search_term_pieces;
 				$search_term_piece_count = count($search_term_pieces);
 				

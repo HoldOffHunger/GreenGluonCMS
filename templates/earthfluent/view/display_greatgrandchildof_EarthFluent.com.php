@@ -756,12 +756,10 @@
 		
 		require('../modules/html/navigation.php');
 		$navigation_args = [
+			'globals'=>$this->globals,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
-			'text'=>$text,
 			'domainobject'=>$this->domain_object,
-			'callingtemplate'=>$this,
-			'backgroundcolor'=>'gray13',
 		];
 		$navigation = new module_navigation($navigation_args);
 		
@@ -771,6 +769,7 @@
 		
 		require('../modules/html/socialmediasharelinks.php');
 		$social_media_share_links_args = [
+			'globals'=>$this->globals,
 			'textonly'=>$this->mobile_friendly,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
@@ -867,6 +866,8 @@
 			
 			$float_right = $this->entry['image'][$random_image]['Description'];
 		}
+		
+		$this->entry['Title'] = ucwords($this->entry['Title']);
 		
 		$header_primary_args = [
 			'title'=>'How do I Say and Write <br>&quot;' . $this->entry['Title'] . '&quot; in ' . $this->record_list[0]['Title'] . '?',
@@ -1048,7 +1049,7 @@
 			
 			if($this->entry['Title'])
 			{
-				print($this->entry['Title']);
+				print(ucwords($this->entry['Title']));
 			}
 			elseif($this->entry['ListTitle'])
 			{
@@ -1131,11 +1132,14 @@
 		
 		print('<li><a href="#say">How do I Say &quot;' . $this->entry['Title'] . '&quot; in ' . $this->record_list[0]['Title'] . '?</a></li>');
 		print('<li><a href="#write">How do I Write &quot;' . $this->entry['Title'] . '&quot; in ' . $this->record_list[0]['Title'] . '?</a></li>');
+		print('<li><a href="#pronunciation">How do I Pronounce &quot;' . $this->entry['entrytranslation'][0]['Title'] . '&quot; in ' . $this->record_list[0]['Title'] . '?</a></li>');
+		
 		if($definitions_count)
 		{
 			print('<li><a href="#definition">Definitions</a></li>');
 		}
 		
+		print('<li><a href="#googlecse">Images</a></li>');
 		print('<li><a href="#lesson">Lesson</a></li>');
 		print('<li><a href="#quiz">Quiz</a></li>');
 		
@@ -2675,11 +2679,18 @@
 			
 			print('<div class="horizontal-center width-90percent">');
 			
+			$this->entry['entrytranslation'][0]['Title'] = mb_convert_case($this->entry['entrytranslation'][0]['Title'], MB_CASE_TITLE, "UTF-8");
+			
 			print('<div id="header_backgroundimageurl" class="border-2px background-color-gray15 margin-5px float-left">');
-			print('<div class="span-header-3"><h3 style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma"><span>&quot;' . $this->entry['Title'] . '&quot; in ' . $this->record_list[0]['Title'] . ' : <em>' . $this->entry['entrytranslation'][0]['Title'] . '</em></span></h3></div>');
+			print('<div class="span-header-3"><h4 style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma"><span>&quot;' . $this->entry['Title'] . '&quot; in ' . $this->record_list[0]['Title'] . ' : <strong style="font-size:300%;">' . $this->entry['entrytranslation'][0]['Title'] . '</strong></span></h4></div>');
 			print('</div>');
 			
 			print('<input type="hidden" id="listen-to-phrase-nonenglish-' . $child['id'] . '-word" value="' . $this->entry['entrytranslation'][0]['Title'] . '">');
+			
+			
+			print('<div style="float:right;width:500px;height:100px;">');
+			
+			print('</div>');
 			
 					// Finish Textbody Header
 				
@@ -2699,6 +2710,185 @@
 			$divider->displayend($clear_float_divider_end_args);
 			
 			print('</div>');
+		}
+		
+				// Display Pronunciation
+			
+			// -------------------------------------------------------------
+		
+		if(1)
+		{
+					// Textbody Header
+				
+				// -------------------------------------------------------------
+				
+			print('<a name="pronunciation"></a>');
+			
+			print('<center>');
+			print('<div class="horizontal-center width-95percent">');
+			print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+			print('<h2 class="horizontal-left margin-5px font-family-arial">');
+			print('Test Your Pronunciation');
+			print('</h2>');
+			print('</div>');
+			print('</div>');
+			print('</center>');
+			
+					// Finish Textbody Header
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+					// No-JS/Chrome Warning
+				
+				// -------------------------------------------------------------
+				
+						// No-Chrome Warning
+					
+					// -------------------------------------------------------------
+			
+			print('<div class="horizontal-center width-70percent google-chrome-warning" style="display:none;">');
+			print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
+			
+			print('<div class="float-left border-2px margin-5px background-color-gray15">');
+			print('<span class="horizontal-left margin-5px font-family-tahoma font-size-125percent">');
+			print('<nobr>');
+			print('<b>Browser Error :</b>');
+			print('</nobr>');
+			print('</span>');
+			print('</div>');
+			
+			print('<p class="horizontal-left margin-5px font-family-tahoma">');
+			print('You are not using Google Chrome.  Please use Google Chrome to get full audio and voice functionality of Earthfluent.com.');
+			print('</p>');
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+			print('</div>');
+			print('</div>');
+			
+			print("\n\n");
+			
+					// Hidden Language Information
+				
+				// -------------------------------------------------------------
+			
+			print('<input type="hidden" id="language-name" value="' . $this->record_list[0]['Code'] . '">');
+			
+					// Input Area
+				
+				// -------------------------------------------------------------
+			
+			print('<div id="wrapper" style="text-align: center">');
+			print('<div style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px font-family-tahoma horizontal-center">');
+			print('<input type="text" id="pronunciation-area" size="60">');
+			print('&nbsp;&nbsp;');
+			
+			print('<div id="recording-indicator" style="border: 1px solid black;display: inline-block; display:none;">');
+			print('<div style="margin:5px;">');
+			print('<span style="color:#FF0000">');
+			print('<img src="');
+			print($this->domain_object->GetPrimaryDomain);
+			print('/image/bouncing-red-ball.gif');
+			print('">');
+			print('&nbsp;');
+			print('<strong>');
+			print('RECORDING');
+			print('</strong>');
+			print('</span>');
+			print('</div>');
+			print('</div>');
+			
+			print('&nbsp;&nbsp;');
+			print('<input type="button" id="speak-button" value="Speak">');
+			print('</div>');
+			print('</div>');
+			
+					// Display Accent
+				
+				// -------------------------------------------------------------
+				
+			print('<div id="accent-wrapper" style="text-align: center;display:none;">');
+			print('<div style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px font-family-tahoma horizontal-center">');
+			
+			print('<span>');
+			print('What accent are you practicing?');
+			print('</span>');
+			
+			print('&nbsp;');
+			
+			print('<select id="language-accent-to-speak">');
+			print('</select>');
+			
+			print('</div>');
+			print('</div>');
+			
+					// Display Self
+				
+				// -------------------------------------------------------------
+			
+			print('<div class="horizontal-center width-50percent">');
+			print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
+			
+			print('<div id="pronounce-nonenglish-word-' . $this->entry['id'] . '" class="border-2px background-color-gray15 margin-5px float-left">');
+			print('<input type="hidden" id="pronounce-nonenglish-' . $this->entry['id'] . '-word" class="pronounce-nonenglish-words-hidden" value="' . $this->entry['entrytranslation'][0]['Title'] . '">');
+			print('<table style="margin:5px;">');
+			print('<tr><td>');
+			print('</td><td>');
+			print('<div class="span-header-3"><h3 style="margin:5px;padding:5px;display: inline-block;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma"><span>' . $this->entry['entrytranslation'][0]['Title'] . '</span></h3></div>');
+			print('</td></tr>');
+			print('</table>');
+			print('</div>');
+			
+					// Finish Float
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+				
+			print('</div>');
+			print('</div>');
+			
+			print('<center>');
+			print('<div style="margin:5px;">');
+			
+			
+			print('</div>');
+			print('</center>');
 		}
 		
 						// Display Definitions
@@ -2766,7 +2956,7 @@
 				
 				if($definition['Etymology'])
 				{
-					print('<strong>Part of Speech : </strong>' . $definition['Etymology']);
+					print('<strong>Etymology : </strong>' . $definition['Etymology']);
 					print('<br>');
 				}
 				
@@ -2786,6 +2976,157 @@
 			}
 			
 			print('</div>');
+		}
+		
+						// Display Images
+			
+			// -------------------------------------------------------------
+		
+		if(1)
+		{
+					// Quote Header
+				
+				// -------------------------------------------------------------
+				
+			print('<a name="googlecse"></a>');
+			
+			print('<center>');
+			print('<div class="horizontal-center width-95percent">');
+			print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+			print('<h2 class="horizontal-left margin-5px font-family-arial">');
+			print('Images');
+			print('</h2>');
+			print('</div>');
+			print('</div>');
+			print('</center>');
+			
+					// Finish Textbody Header
+				
+				// -------------------------------------------------------------
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+					// No-JS/Chrome Warning
+				
+				// -------------------------------------------------------------
+				
+						// No-JS Warning
+					
+					// -------------------------------------------------------------
+			
+			print("\n\n");
+			
+			print('<noscript>');
+			
+			print('<div class="horizontal-center width-70percent">');
+			print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
+			
+			print('<div class="float-left border-2px margin-5px background-color-gray15">');
+			print('<span class="horizontal-left margin-5px font-family-tahoma font-size-125percent">');
+			print('<nobr>');
+			print('<b>JavaScript Error :</b>');
+			print('</nobr>');
+			print('</span>');
+			print('</div>');
+			
+			print('<p class="horizontal-left margin-5px font-family-tahoma">');
+			print('Your JavaScript is turned off.  You will not be able to hear the audio in this section.  Please enable JavaScript to enjoy the full features of EarthFluent.com.');
+			print('</p>');
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+			print('</div>');
+			print('</div>');
+			
+			print('</noscript>');
+				
+						// Ad-Block Warning
+					
+					// -------------------------------------------------------------
+			
+			print('<div class="horizontal-center width-70percent adblock-warning" style="display:none;">');
+			print('<div class="horizontal-center width-100percent background-color-gray14 border-2px margin-top-5px">');
+			
+			print('<div class="float-left border-2px margin-5px background-color-gray15">');
+			print('<span class="horizontal-left margin-5px font-family-tahoma font-size-125percent">');
+			print('<nobr>');
+			print('<b>Ad-Blocker Error :</b>');
+			print('</nobr>');
+			print('</span>');
+			print('</div>');
+			
+			print('<p class="horizontal-left margin-5px font-family-tahoma">');
+			print('The image search comes from Google, which sometimes displays ads in exchange for allowing others to use their free image search.  Please disable your ad-blocker to take the quiz or the lesson.');
+			print('</p>');
+									
+			$clear_float_divider_start_args = [
+				'class'=>'clear-float',
+				'indentlevel'=>5,
+			];
+			
+			$divider->displaystart($clear_float_divider_start_args);
+			
+			$clear_float_divider_end_args = [
+				'indentlevel'=>5,
+			];
+			
+			$divider->displayend($clear_float_divider_end_args);
+			
+			print('</div>');
+			print('</div>');
+			
+			print("\n\n");
+			
+					// Display Lesson Words
+				
+				// -------------------------------------------------------------
+			
+			print('<center>');
+			print('<div class="horizontal-center">');
+			
+			print('<div id="header_backgroundimageurl" class="border-2px background-color-gray15 margin-5px" style="display: inline-block;">');
+			print('<button id="listen-to-phrase-nonenglish-' . $this->entry['id'] . '" class="font-family-arial font-size-150percent learn-phrase">Fetch Images for ' . ucwords($this->entry['Title']) . '</button>');
+			print('</div>');
+			
+			print('<input type="hidden" id="listen-to-phrase-english-' . $this->entry['id'] . '-word" value="' . $this->entry['Title'] . '">');
+			
+			print('</div>');
+			print('</center>');
+			
+					// Display Search
+				
+				// -------------------------------------------------------------
+			
+			print('<center>');
+			print('<div class="horizontal-center width-80percent">');
+			
+			print('<gcse:searchbox></gcse:searchbox>');
+			print('<gcse:searchresults defaultToImageSearch="true"></gcse:searchresults>');
+			
+			print('</div>');
+			print('</center>');
 		}
 		
 						// Display Lesson
@@ -3245,9 +3586,15 @@
 			print('</div>');
 			print('</div>');
 			print('</center>');
+			
+			print('<center>');
+			print('<div style="margin:5px;">');
+			
+			print('</div>');
+			print('</center>');
 		}
 		
-						// Display Quiz
+						// Display Siblings
 			
 			// -------------------------------------------------------------
 		
@@ -4161,6 +4508,7 @@
 			
 					print('<div class="width-90percent">');
 					print('<div class="border-2px background-color-gray13 margin-5px font-family-tahoma float-left">');
+					print('<div class="g-signin2" data-onsuccess="onSignIn"></div>');
 					
 					if(!$this->authentication_object->user_session['User.Username'])
 					{

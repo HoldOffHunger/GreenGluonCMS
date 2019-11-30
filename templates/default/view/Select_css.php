@@ -1,4 +1,3 @@
-jquery-ui.css
 jquery.timepicker.min.css
 pre.css
 width/width-33percent.css

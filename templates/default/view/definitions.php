@@ -1,4 +1,5 @@
 <?php
+
 			// Standard Requires
 		
 		// -------------------------------------------------------------
@@ -25,12 +26,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
-		'backgroundcolor'=>'gray13',
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -51,7 +50,7 @@
 			
 			if($image_count)
 			{
-				$primary_image = $this->entry['image'][0]['IconFileName'];
+				$primary_image = implode('/', str_split($this->entry['image'][0]['FileDirectory'])) . '/' . $this->entry['image'][0]['IconFileName'];
 				$primary_image_text = $this->entry['image'][0]['Title'];
 				$width_attribute = ' width-200px height-200px';
 				$vertical_attribute = ' vertical-specialcenter';

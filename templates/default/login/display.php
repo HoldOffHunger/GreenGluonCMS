@@ -34,7 +34,7 @@
 		$primary_color = '6495ED';
 	}
 	
-	$header_primary_args = array(
+	$header_primary_args = [
 		'indentlevel'=>1,
 		'title'=>'Login to ' . $this->domain_object->primary_domain,
 		'image'=>'master-c-icon.jpg',
@@ -48,7 +48,7 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	);
+	];
 	
 	$header->display($header_primary_args);
 		
@@ -56,24 +56,24 @@
 		
 		// -------------------------------------------------------------
 	
-	if($this->query_object->Parameter(array('parameter'=>'failure')))
+	if($this->query_object->Parameter(['parameter'=>'failure']))
 	{
-		$divider_padding_start_args = array(
+		$divider_padding_start_args = [
 			'class'=>'horizontal-center width-40percent margin-top-5px border-2px background-color-red15',
 			'indentlevel'=>1,
-		);
+		];
 		
 		$divider->displaystart($divider_padding_start_args);
 		
-		$failure_text_args = array(
+		$failure_text_args = [
 			text=>'<b>Login attempt failed.  Please try again.</b>',
 			indentlevel=>2,
-		);
+		];
 		$text->Display($failure_text_args);
 		
-		$divider_end_args = array(
+		$divider_end_args = [
 			indentlevel=>1,
-		);
+		];
 		$divider->displayend($divider_end_args);
 	}
 	
@@ -81,10 +81,10 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = array(
+	$divider_padding_start_args = [
 		'class'=>'horizontal-center width-80percent margin-top-5px border-2px',
 		'indentlevel'=>1,
-	);
+	];
 	
 	$divider->displaystart($divider_padding_start_args);
 		
@@ -92,13 +92,13 @@
 		
 		// -------------------------------------------------------------
 	
-	$start_form_args = array(
+	$start_form_args = [
 		'action'=>0,
 		'method'=>'post',
 		'files'=>0,
 		'formclass'=>'margin-0px',
 		'indentlevel'=>1,
-	);
+	];
 	
 	$form->StartForm($start_form_args);
 		
@@ -106,107 +106,108 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_fields_args = array(
+	$divider_fields_args = [
 		'class'=>'horizontal-center width-80percent margin-top-5px margin-bottom-5px',
 		'indentlevel'=>1,
-	);
+	];
 	
 	$divider->displaystart($divider_fields_args);
 	
-	$table_start_args = array(
+	$table_start_args = [
 		id=>'user-login-credentials-table',
-		tableclass=>'width-100percent margin-5px',
+		tableclass=>'width-100percent margin-5px font-family-tahoma',
 		tableborder=>'3',
 		indentlevel=>2,
-	);
+	];
 	
 	$table->DisplayComponent_StartTable($table_start_args);
 	
-	$username_text_args = array(
+	$username_text_args = [
 		text=>'Username',
 		indentlevel=>5,
-	);
+	];
 	$text->Display($username_text_args);
 	
-	$separate_cells_args = array(
+	$separate_cells_args = [
 		cellwidth=>'99%',
 		indentlevel=>2,
-	);
+	];
 	$table->DisplayComponent_SeparateCells($separate_cells_args);
 	
-	$username_args = array(
+	$username_args = [
 		type=>'text',
 		name=>'username',
 		indentlevel=>5,
 		size=>40,
-	);
+		autofocus=>true,
+	];
 	
 	$form->DisplayFormField($username_args);
 	
-	$separate_cells_and_rows_args = array(
+	$separate_cells_and_rows_args = [
 		indentlevel=>2,
-	);
+	];
 	$table->DisplayComponent_SeparateCellsAndRows($separate_cells_and_rows_args);
 	
-	$password_text_args = array(
+	$password_text_args = [
 		text=>'Password',
 		indentlevel=>5,
-	);
+	];
 	$text->Display($password_text_args);
 	
 	$table->DisplayComponent_SeparateCells($separate_cells_args);
 	
-	$password_args = array(
+	$password_args = [
 		type=>'password',
 		name=>'password',
 		indentlevel=>5,
 		size=>40,
-	);
+	];
 	
 	$form->DisplayFormField($password_args);
 	
-	$separate_cells_and_rows_args = array(
+	$separate_cells_and_rows_args = [
 		cellcolspan=>2,
 		indentlevel=>2,
-	);
+	];
 	$table->DisplayComponent_SeparateCellsAndRows($separate_cells_and_rows_args);
 	
-	$divider_fields_args = array(
+	$divider_fields_args = [
 		'class'=>'horizontal-center',
 		'indentlevel'=>1,
-	);
+	];
 	
 	$divider->displaystart($divider_fields_args);
 	
-	$login_args = array(
+	$login_args = [
 		value=>'Login',
 		type=>'submit',
 		indentlevel=>5,
-	);
+	];
 	
 	$form->DisplayFormField($login_args);
 	
-	$divider_end_args = array(
+	$divider_end_args = [
 		indentlevel=>1,
-	);
+	];
 	$divider->displayend($divider_end_args);
 	
-	$table_end_args = array(
+	$table_end_args = [
 		indentlevel=>2,
-	);
+	];
 	$table->DisplayComponent_EndTable($table_end_args);
 	
-	$divider_end_args = array(
+	$divider_end_args = [
 		indentlevel=>1,
-	);
+	];
 	$divider->displayend($divider_end_args);
 	
-	$hidden_action_args = array(
+	$hidden_action_args = [
 		name=>'action',
 		value=>'Authenticate',
 		type=>'hidden',
 		indentlevel=>1,
-	);
+	];
 	
 	$form->DisplayFormField($hidden_action_args);
 	
@@ -214,14 +215,14 @@
 		
 		// -------------------------------------------------------------
 	
-	$end_form_args = array(
+	$end_form_args = [
 		indentlevel=>1,
-	);
+	];
 	$form->EndForm($end_form_args);
 	
-	$divider_end_args = array(
+	$divider_end_args = [
 		indentlevel=>1,
-	);
+	];
 	$divider->displayend($divider_end_args);
 
 ?>

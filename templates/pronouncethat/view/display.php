@@ -1,5 +1,4 @@
 <?php
-
 		
 			// Standard Requires
 		
@@ -341,23 +340,18 @@
 		// -------------------------------------------------------------
 	
 	print('<BR>');
-	print('<BR>');
 	
 	print('<center><h4 class="margin-0px padding-0px font-family-tahoma">' . $list_one_main_header_text . '</h4>');
 	
-	print('<table>');
-	print('<tr><td>');
-	
-	print('<center>');
+	print('<textarea rows="5" cols="70" class="input-area" placeholder="' . $list_one_content_text . '">'); 
+	print('</textarea>');
+	print('<BR>');
+	print('<BR>');
 	
 	print('<input type="button" value="');
 	print($this->button_text);
 	print('" id="pronounce-it" class="margin-bottom-10px">');
 	print('<br>');
-	/*
-	print('<input type="button" value="Use Microphone" id="use-microphone" class="margin-bottom-10px">');
-	print('<br>');
-	*/
 	
 	print('<span class="font-family-tahoma"><nobr>');
 	print($this->language_text);
@@ -371,15 +365,6 @@
 	print('</span>');
 	
 	print('</center>');
-	
-	print('</td><td>');
-	print('<textarea rows="5" cols="70" class="input-area" placeholder="' . $list_one_content_text . '">'); 
-	print('</textarea>');
-	print('</td></tr>');
-	print('</table>');
-	print('</center>');
-	
-	print('<BR>');
 	print('<BR>');
 	
 			// Display Similar Sites

@@ -137,8 +137,56 @@
 		
 		public function Display_Attributes()
 		{
+			print('.document-image-holder {');
+			print("\n");
+			
+			print("\t");
+			print('margin:10px; border:1px solid black;');
+			
+			print("\n");
+			print('}');
+			print("\n\n");
+			
+			print('.document-image-holder-left {');
+			print("\n");
+			
+			print("\t");
+			print('float:left;');
+			
+			print("\n");
+			print('}');
+			print("\n\n");
+			
+			print('.document-image-holder-right {');
+			print("\n");
+			
+			print("\t");
+			print('float:right;');
+			
+			print("\n");
+			print('}');
+			print("\n\n");
+			
+			print('.document-image {');
+			print("\n");
+			
+			print("\t");
+			print('margin-top:2px;');
+			print('margin-bottom:2px;');
+			print('display:block;');
+			
+			print('margin-left:auto;');
+			print('margin-right:auto;');
+			
+	#						'margin-left'=>'auto',
+	#						'margin-right'=>'auto',
+			
+			print("\n");
+			print('}');
+			print("\n\n");
+			
 			if(!$this->format_object->OneCSSFilePerPage()) {
-				$definitions_array = array();
+				$definitions_array = [];
 				$class_definition = file_get_contents($this->CSS_ClassDefinitionLocation());
 				$class_definition_separator = file_get_contents($this->CSS_ClassSeparatorLocation());
 				$class_definition_spacing = file_get_contents('../format/html/basics/spacing/return.html');
@@ -153,10 +201,10 @@
 						$this->DisplaySingleReturn();
 						foreach ($definition as $key => $value)
 						{
-							$attribute_args = array(
+							$attribute_args = [
 								'desiredstyle'=>$key,
 								'desiredvalue'=>$value,
-							);
+							];
 							$this->Display_Attribute($attribute_args);
 						}
 						
@@ -164,7 +212,7 @@
 						$this->DisplayDoubleReturns();
 						
 						unset($definitions_array);
-						$definitions_array = array();
+						$definitions_array = [];
 					}
 					else
 					{
@@ -179,7 +227,7 @@
 			}
 			else
 			{
-				$definitions_array = array();
+				$definitions_array = [];
 				$class_definition = file_get_contents($this->CSS_ClassDefinitionLocation());
 				$class_definition_separator = file_get_contents($this->CSS_ClassSeparatorLocation());
 				$class_definition_spacing = file_get_contents('../format/html/basics/spacing/return.html');
@@ -241,10 +289,10 @@
 									$this->DisplaySingleReturn();
 									foreach ($definition as $key => $value)
 									{
-										$attribute_args = array(
+										$attribute_args = [
 											'desiredstyle'=>$key,
 											'desiredvalue'=>$value,
-										);
+										];
 										$this->Display_Attribute($attribute_args);
 									}
 									
@@ -252,7 +300,7 @@
 									$this->DisplayDoubleReturns();
 									
 									unset($definitions_array);
-									$definitions_array = array();
+									$definitions_array = [];
 								}
 								else
 								{
@@ -300,16 +348,16 @@
 				$pixel_count_string_length = strlen($this->desired_parameter);
 				$pixel_count_string = substr($this->desired_parameter, 0, $pixel_count_string_length - 2);
 				
-				$cleanse_count_args = array(
+				$cleanse_count_args = [
 					'input'=>$pixel_count_string,
-				);
+				];
 				
 				$pixel_count = $this->cleanser_object->CleanseInput_Integer($cleanse_count_args)[cleansedinput];
 				
-				return array(
+				return [
 					'number'=>$pixel_count,
 					'symbol'=>'px',
-				);
+				];
 			}
 			else
 			{
@@ -320,16 +368,16 @@
 					$percent_count_string_length = strlen($this->desired_parameter);
 					$percent_count_string = substr($this->desired_parameter, 0, $percent_count_string_length - 7);
 					
-					$cleanse_count_args = array(
+					$cleanse_count_args = [
 						'input'=>$percent_count_string,
-					);
+					];
 					
 					$percent_count = $this->cleanser_object->CleanseInput_Integer($cleanse_count_args)[cleansedinput];
 					
-					return array(
+					return [
 						'number'=>$percent_count,
 						'symbol'=>'%',
-					);
+					];
 				}
 			}
 			
@@ -356,12 +404,12 @@
 			
 			if($pixels_or_percentage)
 			{
-				return array(
+				return [
 					$classname,
-					array(
+					[
 						$syntax=>$pixels_or_percentage[number] . $pixels_or_percentage[symbol],
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -377,18 +425,18 @@
 		{
 			if($this->Display_Attributes_IsValidHTMLHexNumber())
 			{
-				return array(
+				return [
 					'background-color-' . $this->desired_parameter,
-					array(
+					[
 						'background-color'=>'#' . $this->desired_parameter,
-					),
-				);
+					],
+				];
 			}
 			else
 			{
 				$colors_and_numbers = preg_split('/([0-9]+)/', $this->desired_parameter, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 				
-				$color_assignments = array();
+				$color_assignments = [];
 				
 				foreach ($colors_and_numbers as $color_or_value)
 				{
@@ -405,7 +453,7 @@
 				
 				$color_hex_string;
 				
-				foreach (array('red','green','blue','gray') as $color)
+				foreach (['red','green','blue','gray'] as $color)
 				{
 					if(isset($color_assignments[$color]))
 					{
@@ -426,12 +474,12 @@
 					}
 				}
 				
-				return array(
+				return [
 					'background-color-' . $this->desired_parameter,
-					array(
+					[
 						'background-color'=>'#' . $color_hex_string,
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -444,18 +492,18 @@
 		{
 			if($this->Display_Attributes_IsValidHTMLHexNumber())
 			{
-				return array(
+				return [
 					'color-' . $this->desired_parameter,
-					array(
+					[
 						'color'=>'#' . $this->desired_parameter,
-					),
-				);
+					],
+				];
 			}
 			else
 			{
 				$colors_and_numbers = preg_split('/([0-9]+)/', $this->desired_parameter, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 				
-				$color_assignments = array();
+				$color_assignments = [];
 				
 				foreach ($colors_and_numbers as $color_or_value)
 				{
@@ -472,7 +520,7 @@
 				
 				$color_hex_string;
 				
-				foreach (array('red','green','blue','gray') as $color)
+				foreach (['red','green','blue','gray'] as $color)
 				{
 					if(isset($color_assignments[$color]))
 					{
@@ -493,12 +541,12 @@
 					}
 				}
 				
-				return array(
+				return [
 					'color-' . $this->desired_parameter,
-					array(
+					[
 						'color'=>'#' . $color_hex_string,
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -513,14 +561,14 @@
 			
 			if($pixels_or_percentage)
 			{
-				return array(
+				return [
 					'classname'=>'border-' . $this->desired_parameter,
-					array(
+					[
 						'border-width'=>$pixels_or_percentage[number] . $pixels_or_percentage[symbol],
 						'border-style'=>'solid',
 						'border-color'=>'#000000',
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -532,14 +580,14 @@
 			
 			if($pixels_or_percentage)
 			{
-				return array(
+				return [
 					'classname'=>'border-top-' . $this->desired_parameter,
-					array(
+					[
 						'border-top-width'=>$pixels_or_percentage[number] . $pixels_or_percentage[symbol],
 						'border-top-style'=>'solid',
 						'border-top-color'=>'#000000',
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -551,14 +599,14 @@
 			
 			if($pixels_or_percentage)
 			{
-				return array(
+				return [
 					'classname'=>'border-bottom-' . $this->desired_parameter,
-					array(
+					[
 						'border-bottom-width'=>$pixels_or_percentage[number] . $pixels_or_percentage[symbol],
 						'border-bottom-style'=>'solid',
 						'border-bottom-color'=>'#000000',
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -570,14 +618,14 @@
 			
 			if($pixels_or_percentage)
 			{
-				return array(
+				return [
 					'classname'=>'border-right-' . $this->desired_parameter,
-					array(
+					[
 						'border-right-width'=>$pixels_or_percentage[number] . $pixels_or_percentage[symbol],
 						'border-right-style'=>'solid',
 						'border-right-color'=>'#000000',
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -589,14 +637,14 @@
 			
 			if($pixels_or_percentage)
 			{
-				return array(
+				return [
 					'classname'=>'border-left-' . $this->desired_parameter,
-					array(
+					[
 						'border-left-width'=>$pixels_or_percentage[number] . $pixels_or_percentage[symbol],
 						'border-left-style'=>'solid',
 						'border-left-color'=>'#000000',
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -611,12 +659,12 @@
 			{
 				case 'pointer':
 				case 'hand':
-					return array(
+					return [
 						'classname'=>'cursor-' . $this->desired_parameter,
-						array(
+						[
 							'cursor'=>'pointer',
-						),
-					);
+						],
+					];
 					
 					break;
 			}
@@ -631,12 +679,12 @@
 			switch($this->desired_parameter)
 			{
 				case 'none':
-					return array(
+					return [
 						'display-' . $this->desired_parameter,
-						array(
+						[
 							'display'=>$this->desired_parameter,
-						),
-					);
+						],
+					];
 					
 					break;
 			}
@@ -651,12 +699,12 @@
 			switch($this->desired_parameter)
 			{
 				case 'auto':
-					return array(
+					return [
 						'overflow-' . $this->desired_parameter,
-						array(
+						[
 							'overflow'=>$this->desired_parameter,
-						),
-					);
+						],
+					];
 					
 					break;
 			}
@@ -677,12 +725,12 @@
 				case '4':
 				case '5':
 				case '6':
-					return array(
+					return [
 						'header-' . $this->desired_parameter,
-						array(
+						[
 							'font-family'=>'Tahoma',
-						),
-					);
+						],
+					];
 					break;
 			}
 			
@@ -695,12 +743,12 @@
 			
 			if($pixels_or_percentage)
 			{
-				return array(
+				return [
 					'classname'=>'font-size-' . $this->desired_parameter,
-					array(
+					[
 						'font-size'=>$pixels_or_percentage[number] . $pixels_or_percentage[symbol],
-					),
-				);
+					],
+				];
 			}
 			
 			return FALSE;
@@ -712,6 +760,10 @@
 			{
 				case 'arial':
 					$font_name = 'Arial';
+					break;
+					
+				case 'courier':
+					$font_name = 'Courier';
 					break;
 					
 				case 'couriernew':
@@ -743,7 +795,6 @@
 						'font-family'=>$font_name,
 					],
 				];
-				break;
 			}
 			
 			return FALSE;
@@ -754,10 +805,10 @@
 		
 		public function Display_Attributes_css_height_height()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'height-' . $this->desired_parameter,
 				'syntax'=>'height',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
@@ -765,18 +816,35 @@
 					// Parameter Attributes :: Location
 					// -----------------------------------------------
 		
+		public function Display_Attributes_css_spacing_wordbreak()
+		{
+			switch($this->desired_parameter)
+			{
+				case 'breakall':
+					return [
+						'word-break-break-all',
+						[
+							'word-break'=>'break-all',
+						],
+					];
+					break;
+			}
+			
+			return FALSE;
+		}
+		
 		public function Display_Attributes_css_location_float()
 		{
 			switch($this->desired_parameter)
 			{
 				case 'left':
 				case 'right':
-					return array(
+					return [
 						'float-' . $this->desired_parameter,
-						array(
+						[
 							'float'=>$this->desired_parameter,
-						),
-					);
+						],
+					];
 					break;
 			}
 			
@@ -788,36 +856,36 @@
 			switch($this->desired_parameter)
 			{
 				case 'center':
-					return array(
+					return [
 						'horizontal-center',
-						array(
+						[
 							'margin-left'=>'auto',
 							'margin-right'=>'auto',
 							'text-align'=>'center',
-						),
-					);
+						],
+					];
 					break;
 				
 				case 'left':
-					return array(
+					return [
 						'horizontal-left',
-						array(
+						[
 							'margin-left'=>'0px',
 							'margin-right'=>'auto',
 							'text-align'=>'left',
-						),
-					);
+						],
+					];
 					break;
 					
 				case 'right':
-					return array(
+					return [
 						'horizontal-right',
-						array(
+						[
 							'margin-left'=>'auto',
 							'margin-right'=>'0px',
 							'text-align'=>'right',
-						),
-					);
+						],
+					];
 					break;
 			}
 			
@@ -829,44 +897,41 @@
 			switch($this->desired_parameter)
 			{
 				case 'center':
-					return array(
+					return [
 						'vertical-center',
-						array(
+						[
 							'vertical-align'=>'middle',
-					#		'position'=>'relative',
-					#		'top'=>'50%',
-					#		'transform'=>'translateY(-50%);',
-						),
-					);
+						],
+					];
 					break;
 					
 				case 'specialcenter':
-					return array(
+					return [
 						'vertical-specialcenter',
-						array(
+						[
 							'position'=>'relative',
 							'top'=>'50%',
 							'transform'=>'translateY(-50%);',
-						),
-					);
+						],
+					];
 					break;
 					
 				case 'top':
-					return array(
+					return [
 						'vertical-top',
-						array(
+						[
 							'vertical-align'=>'text-top',
-						),
-					);
+						],
+					];
 					break;
 					
 				case 'bottom':
-					return array(
+					return [
 						'vertical-bottom',
-						array(
+						[
 							'vertical-align'=>'text-bottom',
-						),
-					);
+						],
+					];
 					break;
 			}
 			
@@ -878,50 +943,60 @@
 		
 		public function Display_Attributes_css_spacing_margin()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'margin-' . $this->desired_parameter,
 				'syntax'=>'margin',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
 		
 		public function Display_Attributes_css_spacing_margintop()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'margin-top-' . $this->desired_parameter,
 				'syntax'=>'margin-top',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
 		
 		public function Display_Attributes_css_spacing_marginbottom()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'margin-bottom-' . $this->desired_parameter,
 				'syntax'=>'margin-bottom',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
 		
 		public function Display_Attributes_css_spacing_marginright()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'margin-right-' . $this->desired_parameter,
 				'syntax'=>'margin-right',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
 		
 		public function Display_Attributes_css_spacing_marginleft()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'margin-left-' . $this->desired_parameter,
 				'syntax'=>'margin-left',
-			);
+			];
+			
+			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
+		}
+		
+		public function Display_Attributes_css_text_textindent()
+		{
+			$simple_args = [
+				'classname'=>'text-indent-' . $this->desired_parameter,
+				'syntax'=>'text-indent',
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
@@ -931,50 +1006,50 @@
 		
 		public function Display_Attributes_css_spacing_padding()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'padding' . '-' . $this->desired_parameter,
 				'syntax'=>'padding',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
 		
 		public function Display_Attributes_css_spacing_paddingtop()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'padding-top' . '-' . $this->desired_parameter,
 				'syntax'=>'padding-top',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
 		
 		public function Display_Attributes_css_spacing_paddingbottom()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'padding-bottom' . '-' . $this->desired_parameter,
 				'syntax'=>'padding-bottom',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
 		
 		public function Display_Attributes_css_spacing_paddingright()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'padding-right' . '-' . $this->desired_parameter,
 				'syntax'=>'padding-right',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
 		
 		public function Display_Attributes_css_spacing_paddingleft()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'padding-left' . '-' . $this->desired_parameter,
 				'syntax'=>'padding-left',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
@@ -984,10 +1059,10 @@
 		
 		public function Display_Attributes_css_width_width()
 		{
-			$simple_args = array(
+			$simple_args = [
 				'classname'=>'width-' . $this->desired_parameter,
 				'syntax'=>'width',
-			);
+			];
 			
 			return $this->Display_Attributes_SimplePixelOrPercentageDisplay($simple_args);
 		}
@@ -1000,17 +1075,17 @@
 		
 		public function Display_Attributes_css_font_noselect()
 		{
-			return array(
+			return [
 				'noselect',
-				array(
+				[
 					'user-select'=>'none',
 					'-webkit-touch-callout'=>'none',
 					'-webkit-user-select'=>'none',
 					'-khtml-user-select'=>'none',
 					'-moz-user-select'=>'none',
 					'-ms-user-select'=>'none',
-				)
-			);
+				],
+			];
 		}
 				
 					// Non-Parameter Attributes :: Image
@@ -1018,17 +1093,17 @@
 		
 		public function Display_Attributes_css_image_flipimage()
 		{
-			return array(
+			return [
 				'flip-image',
-				array(
+				[
 					'-moz-transform'=>'scaleX(-1)',
 					'-o-transform'=>'scaleX(-1)',
 					'-webkit-transform'=>'scaleX(-1)',
 					'transform'=>'scaleX(-1)',
 					'filter'=>'FlipH',
 					'-ms-filter'=>'"FlipH"',
-				)
-			);
+				],
+			];
 		}
 				
 					// Non-Parameter Attributes :: List
@@ -1036,58 +1111,58 @@
 		
 		public function Display_Attributes_css_list_arrow()
 		{
-			return array(
+			return [
 				'list-item-noarrow-image-level-1',
 				'list-item-noarrow-image-level-2',
 				'list-item-noarrow-image-level-3',
 				'list-item-noarrow-image-level-4',
 				'list-item-noarrow-image-level-5',
 				'list-item-noarrow-image-level-6',
-				array(
+				[
 					'margin'=>'4px',
 					'vertical-align'=>'middle',
-				),
+				],
 				'list-item-arrow-image-level-1',
 				'list-item-arrow-image-level-2',
 				'list-item-arrow-image-level-3',
 				'list-item-arrow-image-level-4',
 				'list-item-arrow-image-level-5',
 				'list-item-arrow-image-level-6',
-				array(
+				[
 					'margin'=>'4px',
 					'vertical-align'=>'middle',
-				),
+				],
 				'list-item-row-text-level-1',
 				'list-item-row-text-level-2',
 				'list-item-row-text-level-3',
 				'list-item-row-text-level-4',
 				'list-item-row-text-level-5',
 				'list-item-row-text-level-6',
-				array(
+				[
 					'vertical-align'=>'middle',
-				),
+				],
 				'list-item-link-level-1',
 				'list-item-link-level-2',
 				'list-item-link-level-3',
 				'list-item-link-level-4',
 				'list-item-link-level-5',
 				'list-item-link-level-6',
-				array(
+				[
 					'text-decoration'=>'none',
-				),
-			);
+				],
+			];
 		}
 		
 		public function Display_Attributes_css_list_hideable()
 		{
-			return array(
+			return [
 				'list-level-1',
 				'list-level-2',
 				'list-level-3',
 				'list-level-4',
 				'list-level-5',
 				'list-level-6',
-				array(
+				[
 					'width'=>'90%',
 					'margin-left'=>'auto',
 					'margin-right'=>'auto',
@@ -1096,20 +1171,20 @@
 					'list-style-position'=>'inside',
 					'padding'=>'0',
 					'background-color'=>'#CCCCCC',
-				),
+				],
 				'list-level-1',
-				array(
+				[
 					'width'=>'100%',
 					'border-style'=>'solid',
 					'border-width'=>'1px',
 					'border-color'=>'#000000',
-				),
+				],
 				'list-level-2',
 				'list-level-3',
 				'list-level-4',
 				'list-level-5',
 				'list-level-6',
-				array(
+				[
 					'width'=>'99%',
 					'display'=>'none',
 					'margin-left'=>'auto',
@@ -1119,38 +1194,38 @@
 					'border-style'=>'solid',
 					'border-width'=>'1px',
 					'border-color'=>'#000000',
-				),
+				],
 				'list-item-row-level-1',
 				'list-item-row-level-2',
 				'list-item-row-level-3',
 				'list-item-row-level-4',
 				'list-item-row-level-5',
 				'list-item-row-level-6',
-				array(
+				[
 					'margin'=>'3px',
 					'border-style'=>'solid',
 					'border-width'=>'1px',
 					'border-color'=>'#000000',
 					'background-color'=>'#FFFFFF',
 					'cursor'=>'pointer',
-				),
+				],
 				'list-item-row-text-level-1',
-				array(
+				[
 					'margin'=>'5px 5px 5px 0px',
 					'font-family'=>'"Arial"',
 					'font-size'=>'1.6em',
-				),
+				],
 				'list-item-row-text-level-2',
 				'list-item-row-text-level-3',
 				'list-item-row-text-level-4',
 				'list-item-row-text-level-5',
 				'list-item-row-text-level-6',
-				array(
+				[
 					'margin'=>'3px 3px 3px 0px',
 					'font-family'=>'"Arial"',
 					'font-size'=>'1.2em',
-				),
-			);
+				],
+			];
 		}
 				
 					// Non-Parameter Attributes :: Location
@@ -1158,83 +1233,112 @@
 		
 		public function Display_Attributes_css_location_clearfloat()
 		{
-			return array(
+			return [
 				'clear-float',
-				array(
+				[
 					'clear'=>'both',
-				),
-			);
+				],
+			];
 		}
 		
 		public function Display_Attributes_css_location_displayinlineblock()
 		{
-			return array(
+			return [
 				'display-inline-block',
-				array(
+				[
 					'display'=>'inline-block',
-				),
-			);
+				],
+			];
 		}
 		
 		public function Display_Attributes_css_location_wordwrap()
 		{
-			return array(
+			return [
 				'word-wrap',
-				array(
+				[
 					'white-space'=>'pre-wrap',
 					'word-wrap'=>'break-word',       /* Internet Explorer 5.5+ */
-				),
-			);
+				],
+			];
+		}
+		
+			// CSS-Type File Information ~ Definition Accessors
+			// -----------------------------------------------
+		
+		public function CSSStylesWithParameters()
+		{
+			$styles_with_parameters = $this->CSSStylesWithParameters_Definitions();
+			$styles_with_parameters_and_directories = [];
+			
+			foreach($styles_with_parameters as $style_with_parameter) {
+				$styles_with_parameters_and_directories[] = $this->CSSDirectory() . $style_with_parameter;
+			}
+			
+			return $styles_with_parameters_and_directories;
+		}
+		
+		public function CSSStylesWithoutParameters()
+		{
+			$styles_without_parameters = $this->CSSStylesWithoutParameters_Definitions();
+			$styles_without_parameters_and_directories = [];
+			
+			foreach($styles_without_parameters as $style_without_parameter) {
+				$styles_without_parameters_and_directories[] = $this->CSSDirectory() . $style_without_parameter;
+			}
+			
+			return $styles_without_parameters_and_directories;
 		}
 		
 			// CSS-Type File Information ~ Definitions
 			// -----------------------------------------------
 		
-		public function CSSStylesWithParameters()
+		public function CSSStylesWithParameters_Definitions()
 		{
-			return array(
-				$this->CSSDirectory() . 'background-color/background-color' ,
-				$this->CSSDirectory() . 'color/color' ,
-				$this->CSSDirectory() . 'border/border' ,
-				$this->CSSDirectory() . 'border/border-top' ,
-				$this->CSSDirectory() . 'border/border-bottom' ,
-				$this->CSSDirectory() . 'border/border-right' ,
-				$this->CSSDirectory() . 'border/border-left' ,
-				$this->CSSDirectory() . 'cursor/cursor' ,
-				$this->CSSDirectory() . 'display/display' ,
-				$this->CSSDirectory() . 'divider/overflow' ,
-				$this->CSSDirectory() . 'font/header' ,
-				$this->CSSDirectory() . 'font/font-size' ,
-				$this->CSSDirectory() . 'font/font-family' ,
-				$this->CSSDirectory() . 'height/height' ,
-				$this->CSSDirectory() . 'location/float' ,
-				$this->CSSDirectory() . 'location/horizontal' ,
-				$this->CSSDirectory() . 'location/vertical' ,
-				$this->CSSDirectory() . 'spacing/margin' ,
-				$this->CSSDirectory() . 'spacing/margin-top' ,
-				$this->CSSDirectory() . 'spacing/margin-bottom' ,
-				$this->CSSDirectory() . 'spacing/margin-right' ,
-				$this->CSSDirectory() . 'spacing/margin-left' ,
-				$this->CSSDirectory() . 'spacing/padding' ,
-				$this->CSSDirectory() . 'spacing/padding-top' ,
-				$this->CSSDirectory() . 'spacing/padding-bottom' ,
-				$this->CSSDirectory() . 'spacing/padding-right' ,
-				$this->CSSDirectory() . 'spacing/padding-left' ,
-				$this->CSSDirectory() . 'width/width' ,
-			);
+			return [
+				'background-color/background-color',
+				'color/color',
+				'border/border',
+				'border/border-top',
+				'border/border-bottom',
+				'border/border-right',
+				'border/border-left',
+				'cursor/cursor',
+				'display/display',
+				'divider/overflow',
+				'font/header',
+				'font/font-size',
+				'font/font-family',
+				'height/height',
+				'location/float',
+				'location/horizontal',
+				'location/vertical',
+				'spacing/margin',
+				'spacing/margin-top',
+				'spacing/margin-bottom',
+				'spacing/margin-right',
+				'spacing/margin-left',
+				'spacing/padding',
+				'spacing/padding-top',
+				'spacing/padding-bottom',
+				'spacing/padding-right',
+				'spacing/padding-left',
+				'spacing/word-break',
+				'text/text-indent',
+				'width/width',
+			];
 		}
 		
-		public function CSSStylesWithoutParameters()
+		public function CSSStylesWithoutParameters_Definitions()
 		{
-			return array(
-				$this->CSSDirectory() . 'font/noselect' ,
-				$this->CSSDirectory() . 'image/flip-image' ,
-				$this->CSSDirectory() . 'list/arrow' ,
-				$this->CSSDirectory() . 'list/hideable' ,
-				$this->CSSDirectory() . 'location/clear-float' ,
-				$this->CSSDirectory() . 'location/display-inline-block' ,
-				$this->CSSDirectory() . 'location/word-wrap' ,
-			);
+			return [
+				'font/noselect',
+				'image/flip-image',
+				'list/arrow',
+				'list/hideable',
+				'location/clear-float',
+				'location/display-inline-block',
+				'location/word-wrap',
+			];
 		}
 		
 			// CSS-Type File Information ~ Public Location

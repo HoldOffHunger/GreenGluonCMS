@@ -5,6 +5,7 @@
 	require('../traits/scripts/SimpleForms.php');
 	require('../traits/scripts/SimpleLookupLists.php');
 	require('../traits/scripts/SimpleORM.php');
+	require('../traits/scripts/SimpleORMSiteMap.php');
 	
 	class sitemap extends basicscript
 	{
@@ -16,6 +17,7 @@
 		use SimpleForms;
 		use SimpleLookupLists;
 		use SimpleORM;
+		use SimpleORMSiteMap;
 		
 						// Security Data
 						// ---------------------------------------------
@@ -47,7 +49,18 @@
 			$this->SetMasterRecord();
 			
 			$this->SetORMSiteMapObject();
-			$this->SetSiteMap();
+			
+			$this->page = $this->Param('page');
+			
+			$this->SetEntryCount();
+			if($this->IsPaginatedSitemap())
+			{
+				$this->SetSiteMapPages();
+			}
+			else
+			{
+				$this->SetSiteMap();
+			}
 			
 			$this->humanreadable = $this->Param('humanreadable');
 			
@@ -56,11 +69,63 @@
 			return TRUE;
 		}
 		
-		public function SetORMSiteMapObject()
+		public function SetSiteMapPages()
 		{
-			require('../classes/Database/ORMSiteMap.php');
+			$sitemap_data = $this->ormsitemap->GetSitemapPages([perpage=>$this->MaxToLimitSitemapPages()]);
+		#	print_r($sitemap_pages);
 			
-			return $this->ormsitemap = new ORMSiteMap([dbaccessobject=>$this->db_access_object]);
+			$sitemap_pages = [];
+			
+			foreach($sitemap_data as $sitemap_piece) {
+				$sitemap_pages[] = [
+					'sitemap'=>[
+						'url'=>$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '/sitemap.' . $this->script_format_lower . '?page=' . $sitemap_piece['Code'],
+						'lastmod'=>explode(' ', $sitemap_piece['LastModificationDate'])[0],
+					],
+				];
+			}
+			
+			$sitemap = [
+				[
+					'sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'=>$sitemap_pages,
+				],
+			];
+			return $this->sitemap = $sitemap;
+		}
+		
+		public function IsPaginatedSitemap()
+		{
+			if(!$this->page && $this->IsOverMaxToTriggerSitemapPagination())
+			{
+				return TRUE;
+			}
+			
+			return FALSE;
+		}
+		
+		public function IsOverMaxToTriggerSitemapPagination()
+		{
+			if($this->entrycount > $this->MaxToTriggerSitemapPagination())
+			{
+				return TRUE;
+			}
+			
+			return FALSE;
+		}
+		
+		public function MaxToTriggerSitemapPagination()
+		{
+			return 10000;
+		}
+		
+		public function MaxToLimitSitemapPages()
+		{
+			return 1000;
+		}
+		
+		public function SetEntryCount()
+		{
+			return $this->entrycount = $this->ormsitemap->GetEntrySiteMapCodeCount();
 		}
 		
 		public function SetSiteMap()
@@ -68,14 +133,15 @@
 			$sitemap = $this->SetSiteMap_BaseScriptLinks();
 			$sitemap = $this->SetSiteMap_EntryScriptLinks([sitemap=>$sitemap]);
 			
-			$this->sitemap = $sitemap;
+			return $this->sitemap = $sitemap;
 		}
 		
 		public function SetSiteMap_EntryScriptLinks($args)
 		{
 			$sitemap = $args['sitemap'];
 			
-			$entry_codes = $this->ormsitemap->GetEntrySiteMapCodes();
+			ini_set('memory_limit','200M');
+			$entry_codes = $this->ormsitemap->GetEntrySiteMapCodes([page=>$this->page]);
 			
 			$entry_code_count = count($entry_codes);
 			
@@ -101,7 +167,7 @@
 							$entry_title .= ' : ';
 							$entry_title .= $entry_code['E2_Subtitle'];
 						}
-						$last_modified = $entry_code['E2_LastModificationDate'];
+						$last_modified = explode(' ', $entry_code['E2_LastModificationDate'])[0];
 						$priority -= 0.1;
 						$change_freq = 'daily';
 						$action = 'index';
@@ -116,7 +182,7 @@
 							$entry_title .= ' : ';
 							$entry_title .= $entry_code['E3_Subtitle'];
 						}
-						$last_modified = $entry_code['E3_LastModificationDate'];
+						$last_modified = explode(' ', $entry_code['E3_LastModificationDate'])[0];
 						$priority -= 0.1;
 						$change_freq = 'weekly';
 						$action = '';
@@ -131,7 +197,7 @@
 							$entry_title .= ' : ';
 							$entry_title .= $entry_code['E4_Subtitle'];
 						}
-						$last_modified = $entry_code['E4_LastModificationDate'];
+						$last_modified = explode(' ', $entry_code['E4_LastModificationDate'])[0];
 						$priority -= 0.1;
 						$change_freq = 'monthly';
 						$action = '';
@@ -146,7 +212,7 @@
 							$entry_title .= ' : ';
 							$entry_title .= $entry_code['E5_Subtitle'];
 						}
-						$last_modified = $entry_code['E5_LastModificationDate'];
+						$last_modified = explode(' ', $entry_code['E5_LastModificationDate'])[0];
 						$priority -= 0.1;
 						$change_freq = 'monthly';
 						$action = '';
@@ -161,7 +227,7 @@
 							$entry_title .= ' : ';
 							$entry_title .= $entry_code['E6_Subtitle'];
 						}
-						$last_modified = $entry_code['E6_LastModificationDate'];
+						$last_modified = explode(' ', $entry_code['E6_LastModificationDate'])[0];
 						$priority -= 0.1;
 						$change_freq = 'monthly';
 						$action = '';
@@ -176,7 +242,7 @@
 							$entry_title .= ' : ';
 							$entry_title .= $entry_code['E7_Subtitle'];
 						}
-						$last_modified = $entry_code['E7_LastModificationDate'];
+						$last_modified = explode(' ', $entry_code['E7_LastModificationDate'])[0];
 						$priority -= 0.1;
 						$change_freq = 'monthly';
 						$action = '';
@@ -554,27 +620,52 @@
 			
 			if(!$home_last_mod)
 			{
-				$home_last_mod = '0000-00-00';
+				$home_last_mod = $this->primary_host_record['PublicReleaseDate'];
+				
+				if(!$home_last_mode)
+				{
+					$home_last_mode = '0000-00-00';
+				}
 			}
 			
 			if(!$about_last_mod)
 			{
-				$about_last_mod = '0000-00-00';
+				$about_last_mod = $this->primary_host_record['PublicReleaseDate'];
+				
+				if(!$about_last_mod)
+				{
+					$about_last_mod = '0000-00-00';
+				}
 			}
 			
 			if(!$contact_last_mod)
 			{
-				$contact_last_mod = '0000-00-00';
+				$contact_last_mod = $this->primary_host_record['PublicReleaseDate'];
+				
+				if(!$contact_last_mod)
+				{
+					$contact_last_mod = '0000-00-00';
+				}
 			}
 			
-			if(!$language_last_mod)
+			if(!$languages_last_mod)
 			{
-				$languages_last_mod = '0000-00-00';
+				$languages_last_mod = $this->primary_host_record['PublicReleaseDate'];
+				
+				if(!$languages_last_mod)
+				{
+					$languages_last_mod = '0000-00-00';
+				}
 			}
 			
 			if(!$search_last_mod)
 			{
-				$search_last_mod = '0000-00-00';
+				$search_last_mod = $this->primary_host_record['PublicReleaseDate'];
+				
+				if(!$search_last_mod)
+				{
+					$search_last_mod = '0000-00-00';
+				}
 			}
 			
 			$home_change_freq = $home_list['HomeChangeFreq'];
@@ -668,6 +759,7 @@
 			
 			if(!$this->primary_host_record['NotReadyForLanguages'])
 			{
+#				print_r($languages_last_mod);
 				$links[] = [
 					url=>[
 						loc=>$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '/languages.php',
@@ -731,9 +823,9 @@
 				$links[] = [
 					url=>[
 						loc=>$this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '/languages.php?language=en',
-						lastmod=>$language_last_mod,
-						changefreq=>$language_change_freq,
-						priority=>$language_priority,
+						lastmod=>$languages_last_mod,
+						changefreq=>$languages_change_freq,
+						priority=>$languages_priority,
 					],
 				];
 			}
@@ -820,19 +912,26 @@
 		{
 			if($this->script_format_lower == 'xml')
 			{
-				if($this->humanreadable)
+				if(!$this->IsPaginatedSitemap())
 				{
-					print("\n");
-				}
-				print('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
-				
-				if($this->humanreadable)
-				{
-					print("\n\n");
+					if($this->humanreadable)
+					{
+						print("\n");
+					}
+					print('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+					
+					if($this->humanreadable)
+					{
+						print("\n\n");
+					}
 				}
 				
 				$this->HandleRequires();
-				print('</urlset>');
+				
+				if(!$this->IsPaginatedSitemap())
+				{
+					print('</urlset>');
+				}
 				return TRUE;
 			}
 			

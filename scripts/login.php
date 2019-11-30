@@ -36,22 +36,16 @@
 		public function Authenticate()
 		{
 			$this->SetPrimaryHostRecords();
-		#	print('so.... you all are authenticatin, huh?');
 			
-			$username = $this->query_object->Parameter(array('parameter'=>'username'));
-			$password = $this->query_object->Parameter(array('parameter'=>'password'));
+			$username = $this->query_object->Parameter(['parameter'=>'username']);
+			$password = $this->query_object->Parameter(['parameter'=>'password']);
 			
-			$login_args = array(
-				username=>$username,
-				password=>$password,
-			);
+			$login_args = [
+				'username'=>$username,
+				'password'=>$password,
+			];
 			
 			return $this->login_results = $this->authentication_object->Login($login_args);
-			
-			#$hashed_password = hash('sha256', $password);
-			
-			#print("HASHED : " . $hashed_password);
-			#print("<BR><BR>");
 		}
 		
 		public function HTMLHeadDisplayExtra_HTTPEquivalents()
@@ -61,7 +55,7 @@
 			if($this->login_results[status] == 'Success')
 			{
 				$user_admin_account = $this->login_results[useraccount];
-			#	print_r($user_admin_account);
+				
 				if($user_admin_account['UserAdmin.id'])
 				{
 					$redirect_url = 'master-c.' . $this->script_extension;
@@ -70,7 +64,6 @@
 				{
 					$redirect_url = 'user-panel.' . $this->script_extension;
 				}
-				#$redirect_url = 'somewhere';
 			}
 			elseif($this->login_results[status] == 'Failure')
 			{
@@ -82,7 +75,6 @@
 			{
 				print("\n\t");
 				print('<meta http-equiv="refresh" content="3; url=' . $redirect_url . '">');
-			//	print("<direct it! $redirect_url>");
 			}
 		}
 		

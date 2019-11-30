@@ -157,9 +157,9 @@
 		
 		public function ViewCookieVariable()
 		{
-			$get_list_from_keys_args = array(
+			$get_list_from_keys_args = [
 				'list'=>$_COOKIE,
-			);
+			];
 			
 			$this->StatusDataArray = $this->DisplayListFromKeys($get_list_from_keys_args);
 			
@@ -168,9 +168,9 @@
 		
 		public function ViewServerVariable()
 		{
-			$get_list_from_keys_args = array(
+			$get_list_from_keys_args = [
 				'list'=>$_SERVER,
-			);
+			];
 			
 			$this->StatusDataArray = $this->DisplayListFromKeys($get_list_from_keys_args);
 			
@@ -179,9 +179,9 @@
 		
 		public function ViewPostVariable()
 		{
-			$get_list_from_keys_args = array(
+			$get_list_from_keys_args = [
 				'list'=>$_POST,
-			);
+			];
 			
 			$this->StatusDataArray = $this->DisplayListFromKeys($get_list_from_keys_args);
 			
@@ -190,9 +190,9 @@
 		
 		public function ViewGetVariable()
 		{
-			$get_list_from_keys_args = array(
+			$get_list_from_keys_args = [
 				'list'=>$_GET,
-			);
+			];
 			
 			$this->StatusDataArray = $this->DisplayListFromKeys($get_list_from_keys_args);
 			
@@ -204,21 +204,21 @@
 		
 		public function GetDefinedFunctions()
 		{
-			$this->StatusDataArray = array();
+			$this->StatusDataArray = [];
 			
 			$defined_functions = get_defined_functions();
 			$internal_functions = $defined_functions[internal];
 			$user_functions = $defined_functions[user];
 			
-			$get_files_args = array(
+			$get_files_args = [
 				arrayofstrings=>$internal_functions,
-			);
+			];
 			
 			$this->StatusDataArray[] = $this->NumberArrayOfStrings($get_files_args);
 			
-			$get_files_args = array(
+			$get_files_args = [
 				arrayofstrings=>$user_functions,
-			);
+			];
 			
 			$this->StatusDataArray[] = $this->NumberArrayOfStrings($get_files_args);
 			
@@ -229,22 +229,22 @@
 		{
 			$all_options = ini_get_all();
 			
-			$get_function_results = array();
+			$get_function_results = [];
 			
 			foreach ($all_options as $option_key => $option_value)
 			{
-				$current_row_array = array();
-				$current_row_array[] = array(
+				$current_row_array = [];
+				$current_row_array[] = [
 					'Option',
 					$option_key,
-				);
+				];
 				
 				foreach($option_value as $sub_option_key => $sub_option_value)
 				{
-					$current_row_array[] = array(
+					$current_row_array[] = [
 						$sub_option_key,
 						$sub_option_value,
-					);
+					];
 				}
 				
 				$get_function_results[] = $current_row_array;
@@ -386,24 +386,24 @@
 		
 		public function GetMXRR()
 		{
-			$set_input_and_function_results = array(
+			$set_input_and_function_results = [
 				'displaytext'=>$this->GetGoodFunctionName(),
 				'parameter'=>'mxrr',
 				'function'=>'getmxrr',
 				'arrays'=>2,
-			);
+			];
 			
 			return $this->SetInputAndFunctionArrayResults($set_input_and_function_results);
 		}
 		
 		public function GetClassVars()
 		{
-			$set_input_and_function_results = array(
+			$set_input_and_function_results = [
 				'displaytext'=>$this->GetGoodFunctionName(),
 				'parameter'=>'class',
 				'function'=>'get_class_vars',
 				'desiredoutput'=>'list',
-			);
+			];
 			
 			$this->SetInputAndFunctionListResults($set_input_and_function_results);
 			
@@ -412,12 +412,12 @@
 		
 		public function GetClassMethods()
 		{
-			$set_input_and_function_results = array(
+			$set_input_and_function_results = [
 				'displaytext'=>$this->GetGoodFunctionName(),
 				'parameter'=>'class',
 				'function'=>'get_class_methods',
 				'desiredoutput'=>'list',
-			);
+			];
 			
 			$this->SetInputAndFunctionListResults($set_input_and_function_results);
 			
@@ -427,13 +427,13 @@
 		public function BinaryIncrementBinaryValue()
 		{
 			$binary = new Binary();
-			$set_input_and_function_results = array(
+			$set_input_and_function_results = [
 				'displaytext'=>'Binary',
 				'parameter'=>'binary',
 				'function'=>'IncrementBinaryValue',
 				'object'=>$binary,
 				'arguments'=>'binary',
-			);
+			];
 			
 			$this->SetInputAndMethodResults($set_input_and_function_results);
 			
@@ -445,13 +445,13 @@
 		public function BinaryDecrementBinaryValue()
 		{
 			$binary = new Binary();
-			$set_input_and_function_results = array(
+			$set_input_and_function_results = [
 				'displaytext'=>'Binary',
 				'parameter'=>'binary',
 				'function'=>'DecrementBinaryValue',
 				'object'=>$binary,
 				'arguments'=>'binary',
-			);
+			];
 			
 			$this->SetInputAndMethodResults($set_input_and_function_results);
 			
@@ -462,11 +462,11 @@
 		
 		public function MHashGetHashName()
 		{
-			$set_input_and_function_results = array(
+			$set_input_and_function_results = [
 				'displaytext'=>$this->GetGoodFunctionName(),
 				'parameter'=>'mhash-hash-name',
 				'function'=>'mhash_get_hash_name',
-			);
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			$this->SetSelectableMHashValues();
@@ -485,23 +485,23 @@
 			{
 				$this->SubmittedValuePrintable = $this->cleanser_object->EscapeHTML([input=>$this->SubmittedValue])[cleansedinput];
 				
-				$dns_query_resource_results = array();
-				$dns_query_additional_results = array();
+				$dns_query_resource_results = [];
+				$dns_query_additional_results = [];
 				$primary_dns_query_results = $function($this->SubmittedValue, DNS_ANY, $dns_query_resource_results, $dns_query_additional_results);
 				
 				$all_records = array_merge($primary_dns_query_results, $dns_query_resource_results, $dns_query_additional_results);
 				
-				$get_function_results = array();
+				$get_function_results = [];
 				foreach ($all_records as $record)
 				{
-					$current_table_array = array();
+					$current_table_array = [];
 					
 					foreach ($record as $recordkey => $recordvalue)
 					{
-						$current_table_array[] = array(
+						$current_table_array[] = [
 							$recordkey,
 							$recordvalue,
-						);
+						];
 					}
 					
 					$get_function_results[] = $current_table_array;
@@ -558,12 +558,12 @@
 						$assert_results = 0;
 					}
 					
-					$this->StatusDataArray = array(
-						array(
+					$this->StatusDataArray = [
+						[
 							$this->GetNonLineBreakGoodFunctionName(),
 							$assert_results,
-						),
-					);
+						],
+					];
 				}
 			}
 			
@@ -575,17 +575,17 @@
 		
 		public function MHash()
 		{
-			$set_input_and_function_results = array(
-				'displaytext'=>array(
+			$set_input_and_function_results = [
+				'displaytext'=>[
 					'MHash Hash',
 					'Plaintext',
-				),
-				'parameter'=>array(
+				],
+				'parameter'=>[
 					'mhash-hash',
 					'plaintext',
-				),
+				],
 				'function'=>'mhash',
-			);
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			$this->SetSelectableMHashValues();
@@ -595,15 +595,15 @@
 		
 		public function GetServByPort()
 		{
-			$set_input_and_function_results = array(
+			$set_input_and_function_results = [
 				'displaytext'=>$this->GetGoodFunctionName(),
 				'parameter'=>'service-by-port',
 				'function'=>'getservbyport',
-				'arguments'=>array(
+				'arguments'=>[
 					'tcp',
 					'udp',
-				),
-			);
+				],
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			
@@ -612,15 +612,15 @@
 		
 		public function GetServByName()
 		{
-			$set_input_and_function_results = array(
+			$set_input_and_function_results = [
 				'displaytext'=>$this->GetGoodFunctionName(),
 				'parameter'=>'service-by-name',
 				'function'=>'getservbyname',
-				'arguments'=>array(
+				'arguments'=>[
 					'tcp',
 					'udp',
-				),
-			);
+				],
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			
@@ -629,17 +629,17 @@
 		
 		public function PropertyExists()
 		{
-			$set_input_and_function_results = array(
-				'displaytext'=>array(
+			$set_input_and_function_results = [
+				'displaytext'=>[
 					'Class',
 					'Property',
-				),
-				'parameter'=>array(
+				],
+				'parameter'=>[
 					'class',
 					'property',
-				),
+				],
 				'function'=>'property_exists',
-			);
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			
@@ -648,17 +648,17 @@
 		
 		public function RandomInt()
 		{
-			$set_input_and_function_results = array(
-				'displaytext'=>array(
+			$set_input_and_function_results = [
+				'displaytext'=>[
 					'Minimum',
 					'Maximum',
-				),
-				'parameter'=>array(
+				],
+				'parameter'=>[
 					'minimum',
 					'maximum',
-				),
+				],
 				'function'=>'random_int',
-			);
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			
@@ -667,17 +667,17 @@
 		
 		public function Hash()
 		{
-			$set_input_and_function_results = array(
-				'displaytext'=>array(
+			$set_input_and_function_results = [
+				'displaytext'=>[
 					'Hashing Algorithm',
 					'Plaintext',
-				),
-				'parameter'=>array(
+				],
+				'parameter'=>[
 					'hashing-algorithm',
 					'plaintext',
-				),
+				],
 				'function'=>'hash',
-			);
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			
@@ -689,26 +689,25 @@
 		public function BaseConvertBase()
 		{
 			$base = new Base();
-			$set_input_and_function_results = array(
-				'displaytext'=>array(
+			$set_input_and_function_results = [
+				'displaytext'=>[
 					'Starting Base',
 					'Ending Base',
 					'Value',
-				),
-				'parameter'=>array(
+				],
+				'parameter'=>[
 					'starting-base',
 					'ending-base',
 					'value',
-				),
+				],
 				'function'=>'ConvertBase',
 				'object'=>$base,
-				'arguments'=>array(
+				'arguments'=>[
 					'startingbase'=>'starting-base',
 					'endingbase'=>'ending-base',
 					'value'=>'value',
-				),
-				
-			);
+				],	
+			];
 			
 			$this->SetInputAndMethodResults($set_input_and_function_results);
 			
@@ -719,17 +718,17 @@
 		
 		public function HashFile()
 		{
-			$set_input_and_function_results = array(
-				'displaytext'=>array(
+			$set_input_and_function_results = [
+				'displaytext'=>[
 					'Hashing Algorithm',
 					'File',
-				),
-				'parameter'=>array(
+				],
+				'parameter'=>[
 					'hashing-algorithm',
 					'file',
-				),
+				],
 				'function'=>'hash_file',
-			);
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			
@@ -740,17 +739,17 @@
 		
 		public function MethodExists()
 		{
-			$set_input_and_function_results = array(
-				'displaytext'=>array(
+			$set_input_and_function_results = [
+				'displaytext'=>[
 					'Object',
 					'Method Name',
-				),
-				'parameter'=>array(
+				],
+				'parameter'=>[
 					'object',
 					'method-name',
-				),
+				],
 				'function'=>'method_exists',
-			);
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			
@@ -759,17 +758,17 @@
 		
 		public function IsSubclassOf()
 		{
-			$set_input_and_function_results = array(
-				'displaytext'=>array(
+			$set_input_and_function_results = [
+				'displaytext'=>[
 					'Object',
 					'Class Name',
-				),
-				'parameter'=>array(
+				],
+				'parameter'=>[
 					'object',
 					'class-name',
-				),
+				],
 				'function'=>'is_subclass_of',
-			);
+			];
 			
 			$this->SetInputAndFunctionResults($set_input_and_function_results);
 			
@@ -794,7 +793,7 @@
 				$dns_types = $dns_record->GetDNSRecordTypes();
 				$this->SubmittedValuePrintable = $this->cleanser_object->EscapeHTML([input=>$this->SubmittedValue])[cleansedinput];
 				
-				$get_function_results = array();
+				$get_function_results = [];
 				
 				foreach($dns_types as $dns_type)
 				{
@@ -805,10 +804,10 @@
 						$dns_type_query_results = 0;
 					}
 					
-					$get_function_results[] = array(
+					$get_function_results[] = [
 						$dns_type,
 						$dns_type_query_results,
-					);
+					];
 				}
 				
 				$this->StatusDataArray = $get_function_results;

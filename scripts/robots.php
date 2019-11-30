@@ -504,8 +504,24 @@
 			$this->robots_attributes = [
 				'Crawl-delay'=>'1',
 				'User-agent'=>'*',
-				'Disallow'=>'',
+				'Disallow'=>$this->getDisallowed(),
 				'Sitemap'=>$sitemap,
+			];
+		}
+		
+		public function getDisallowed() {
+			return "\n" . implode("\n", $this->getDisallowedList()) . "\n";
+		}
+		
+		public function getDisallowedList() {
+			return [
+				'/image/flags/',
+				'/image/master-c/',
+				'/image/privacy/',
+				'/image/social-media/',
+				'/image/terms/',
+				'/image/thumbs-up-right.jpg',		# TODO: improve this, move images to own dir
+				'/image/thumbs-down-right.jpg',
 			];
 		}
 		

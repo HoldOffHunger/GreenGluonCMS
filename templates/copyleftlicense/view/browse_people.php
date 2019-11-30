@@ -26,12 +26,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
-		'backgroundcolor'=>'gray13',
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -301,9 +299,9 @@
 	];
 	$header->display($header_secondary_args);
 	
-	$end_form_args = array(
+	$end_form_args = [
 		indentlevel=>1,
-	);
+	];
 	$form->EndForm($end_form_args);
 	
 			// Finish Top Two Displays

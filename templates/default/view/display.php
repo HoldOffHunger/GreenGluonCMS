@@ -68,12 +68,135 @@
 	$divider_end_args = [
 		'indentlevel'=>1,
 	];
+		
+			// Admin Controls
+		
+		// -------------------------------------------------------------
+	
+	if($this->authentication_object->user_session['UserAdmin.id'])
+	{
+		print('<div class="horizontal-center width-95percent margin-top-5px border-2px">');
+				// "Controls" Header
+			
+			// -------------------------------------------------------------
+			
+		print('<center>');
+		print('<div class="horizontal-center width-90percent">');
+		print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+		print('<h2 class="horizontal-left margin-5px font-family-arial">');
+		print('Controls for Entry ' . $this->entry['id']);
+		print('</h2>');
+		print('</div>');
+		print('</div>');
+		print('</center>');
+		
+				// Finish Admin Controls
+			
+			// -------------------------------------------------------------
+								
+		$clear_float_divider_start_args = [
+			'class'=>'clear-float',
+			'indentlevel'=>5,
+		];
+		
+		$divider->displaystart($clear_float_divider_start_args);
+		
+		$clear_float_divider_end_args = [
+			'indentlevel'=>5,
+		];
+		
+		$divider->displayend($clear_float_divider_end_args);
+		
+				// "Add" / "Edit" Option
+			
+			// -------------------------------------------------------------
+		
+		print('<div class="horizontal-center width-95percent margin-top-5px">');
+		
+		print('<div class="float-left margin-5px border-2px background-color-gray13">');
+		print('<p class="font-family-arial margin-5px">');
+		print('<a href="modify.php?action=Edit">EDIT</a>');
+		print('</p>');
+		print('</div>');
+		
+		print('<div class="float-left margin-5px border-2px background-color-gray13">');
+		print('<p class="font-family-arial margin-5px">');
+		print('<a href="modify.php?action=Add">ADD</a>');
+		print('</p>');
+		print('</div>');
+		
+		print('<div class="float-left margin-5px border-2px background-color-gray13">');
+		print('<p class="font-family-arial margin-5px">');
+		print('<a href="transfer.php">TRANSFER</a>');
+		print('</p>');
+		print('</div>');
+		
+		print('</div>');
+	
+				// Section
+			
+			// -------------------------------------------------------------
+								
+		$clear_float_divider_start_args = [
+			'class'=>'clear-float',
+			'indentlevel'=>5,
+		];
+		
+		$divider->displaystart($clear_float_divider_start_args);
+		
+		$clear_float_divider_end_args = [
+			'indentlevel'=>5,
+		];
+		
+		$divider->displayend($clear_float_divider_end_args);
+		
+				// "View" / "Index" Option
+			
+			// -------------------------------------------------------------
+		
+		print('<div class="horizontal-center width-95percent margin-top-5px">');
+		
+		print('<div class="float-left margin-5px border-2px background-color-gray13">');
+		print('<p class="font-family-arial margin-5px">');
+		print('<a href="view.php">VIEW</a>');
+		print('</p>');
+		print('</div>');
+		
+		print('<div class="float-left margin-5px border-2px background-color-gray13">');
+		print('<p class="font-family-arial margin-5px">');
+		print('<a href="view.php?action=index">INDEX</a>');
+		print('</p>');
+		print('</div>');
+		
+		print('</div>');
+		
+				// Finish Admin Controls
+			
+			// -------------------------------------------------------------
+								
+		$clear_float_divider_start_args = [
+			'class'=>'clear-float',
+			'indentlevel'=>5,
+		];
+		
+		$divider->displaystart($clear_float_divider_start_args);
+		
+		$clear_float_divider_end_args = [
+			'indentlevel'=>5,
+		];
+		
+		$divider->displayend($clear_float_divider_end_args);
+		
+		print('</div>');
+	}
 	
 			// View Selected Record List
 		
 		// -------------------------------------------------------------
 	
-	print("SOFTWARE WORKING AS EXPECTED!!!<BR><BR>");
+	print('<BR><BR><PRE>');
+	print('Green Gluon CMS installed and running properly.');
+	print('</PRE>');
 	/*
 	if($this->authentication_object->user_session['UserAdmin.id'])
 	{

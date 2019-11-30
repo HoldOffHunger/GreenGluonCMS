@@ -36,11 +36,10 @@
 		
 		require('../modules/' . $this->script_format_lower . '/navigation.php');
 		$navigation_args = [
+			'globals'=>$this->globals,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
-			'text'=>$text,
 			'domainobject'=>$this->domain_object,
-			'callingtemplate'=>$this,
 		];
 		$navigation = new module_navigation($navigation_args);
 	}
@@ -189,20 +188,27 @@
 		
 		// -------------------------------------------------------------
 	
-	$version_list_display_args = array(
-		'options'=>array(
-			'indentlevel'=>1,
+	$indent_level = 1;
+	
+	if($this->IsPaginatedSitemap())
+	{
+		$indent_level = 0;
+	}
+	
+	$version_list_display_args = [
+		'options'=>[
+			'indentlevel'=>$indent_level,
 			'tableheaders'=>0,
 			'tableclass'=>'width-90percent horizontal-center border-2px background-color-' . $third_color . ' margin-top-14px',
 			'rowclass'=>'border-1px horizontal-left',
-			'cellclass'=>array(
+			'cellclass'=>[
 				'border-1px vertical-top',
 				'border-1px width-100percent vertical-top',
-			),
+			],
 			'humanreadable'=>$this->humanreadable,
-		),
+		],
 		'list'=>$this->sitemap,
-	);
+	];
 	$generic_list->Display($version_list_display_args);
 	
 			// Display Final Ending Navigation

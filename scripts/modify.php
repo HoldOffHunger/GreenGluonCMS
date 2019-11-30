@@ -213,6 +213,7 @@
 		
 		public function Save()
 		{
+			set_time_limit(60);
 			$this->save_status = 'Save attempted.';
 		
 			$this->saveattempted = TRUE;
@@ -364,6 +365,11 @@
 				$set_results = FALSE;
 			}
 			
+			if(!$this->SetRecordFromQuery_Definition())
+			{
+				$set_results = FALSE;
+			}
+			
 			return $set_results;
 		}
 		
@@ -432,6 +438,11 @@
 			}
 			
 			if(!$this->CleanseRecordFromQuery_EntryPermission())
+			{
+				$cleanse_results = FALSE;
+			}
+			
+			if(!$this->CleanseRecordFromQuery_Definition())
 			{
 				$cleanse_results = FALSE;
 			}
@@ -513,6 +524,11 @@
 				$save_results = FALSE;
 			}
 			
+			if(!$this->ValidateRecordForSaving_Definition())
+			{
+				$save_results = FALSE;
+			}
+			
 			return $save_results;
 		}
 		
@@ -586,6 +602,11 @@
 			}
 			
 			if(!$this->PrepareRecordForSaving_EntryPermission())
+			{
+				$prepare_results = FALSE;
+			}
+			
+			if(!$this->PrepareRecordForSaving_Definition())
 			{
 				$prepare_results = FALSE;
 			}
@@ -710,6 +731,12 @@
 				$this->errors[] = ['There was a problem with saving the User Permission.'];
 			}
 			
+			if(!$this->SaveRecordFromQuery_Definition())
+			{
+				$save_results = FALSE;
+				$this->errors[] = ['There was a problem with saving the User Permission.'];
+			}
+			
 			return $save_results;
 		}
 		
@@ -789,6 +816,12 @@
 				$this->errors[] = ['There was a problem with saving the Association.'];
 			}
 			
+			if(!$this->SaveRecordFromQuery_Definition())
+			{
+				$save_results = FALSE;
+				$this->errors[] = ['There was a problem with saving the Association.'];
+			}
+			
 			return $save_results;
 		}
 		
@@ -825,7 +858,10 @@
 						recordidstokeep=>$record_ids_to_keep,
 					];
 					
-					$this->orm->DeleteChildRecords($delete_record_tree_args);
+					if(!$this->orm->DeleteChildRecords($delete_record_tree_args))
+					{
+						die("Record delete error.");
+					}
 				}
 				else
 				{
@@ -835,7 +871,10 @@
 						recordidstokeep=>$record_ids_to_keep,
 					];
 					
-					$this->orm->DeleteChildRecords($delete_record_tree_args);
+					if(!$this->orm->DeleteChildRecords($delete_record_tree_args))
+					{
+						die("Record delete error.");
+					}
 					
 					$records_to_delete = $unformatted_saved_records;
 				}
@@ -848,6 +887,7 @@
 						
 						if($record_to_delete && $record_to_delete['FileName'])
 						{
+						/*
 							$uploaded_filename_pieces = explode(".", $record_to_delete['FileName']);
 							
 							$last_uploaded_filename_piece = $uploaded_filename_pieces[count($uploaded_filename_pieces) - 1];
@@ -858,9 +898,18 @@
 							}
 							
 							$uploaded_icon_filename = implode(".", $uploaded_filename_pieces) . '-icon.' . $last_uploaded_filename_piece;
+						*/
 							
-							$image_file_location = 'image/' . $record_to_delete['FileName'];
-							$icon_file_location = 'image/' . $uploaded_icon_filename;
+							$original_image_location_pieces = str_split($record_to_delete['FileDirectory']);
+							$dir_pieces = implode('/', $original_image_location_pieces);
+							
+							$image_file_location = 'image/' . $dir_pieces . '/' . $record_to_delete['FileName'];
+							$icon_file_location = 'image/' . $dir_pieces . '/' . $record_to_delete['IconFileName'];
+							
+			//				$image_file_location = 'image/' . $record_to_delete['FileName'];
+			//				$icon_file_location = 'image/' . $record_to_delete['IconFileName'];
+							
+						//	$icon_file_location = 'image/' . $uploaded_icon_filename;
 							
 							unlink($icon_file_location);
 							unlink($image_file_location);
@@ -936,6 +985,11 @@
 				$format_results = FALSE;
 			}
 			
+			if(!$this->FormatSavedRecordFromQuery_Definition())
+			{
+				$format_results = FALSE;
+			}
+			
 			return $format_results;
 		}
 		
@@ -949,7 +1003,11 @@
 				'Title'=>$this->Param('Title'),
 				'Subtitle'=>$this->Param('Subtitle'),
 				'ListTitle'=>$this->Param('ListTitle'),
+				'ListTitleSortKey'=>$this->Param('ListTitleSortKey'),
 				'Code'=>$this->Param('Code'),
+				'ChildAdjective'=>$this->Param('ChildAdjective'),
+				'ChildNoun'=>$this->Param('ChildNoun'),
+				'ChildNounPlural'=>$this->Param('ChildNounPlural'),
 			];
 			
 			if($this->entry_unset['id'])
@@ -959,39 +1017,7 @@
 			
 			if(!$this->entry['Code'])
 			{
-				$possible_code = trim($this->entry['Title']);
-				$possible_code = str_replace(' ', '-', $possible_code);
-				$possible_code = str_replace(',', '-', $possible_code);
-				$possible_code = str_replace(':', '-', $possible_code);
-				$possible_code = str_replace('/', '-', $possible_code);
-				$possible_code = str_replace('\\', '-', $possible_code);
-				$possible_code = str_replace('.', '', $possible_code);
-				$possible_code = str_replace('?', '', $possible_code);
-				$possible_code = str_replace('"', '', $possible_code);
-				$possible_code = str_replace('', '', $possible_code);
-				$possible_code = str_replace('', '', $possible_code);
-				$possible_code = str_replace('&', '', $possible_code);
-				
-				$max_loops = 10;
-				
-				while($max_loops)
-				{
-					$possible_code = str_replace('--', '-', $possible_code, $replaced_dashes);
-					
-					$max_loops--;
-					
-					if(!$replaced_dashes)
-					{
-						$max_loops = 0;
-					}
-				}
-				
-				$possible_code = $this->TransliterateString(mb_strtolower($possible_code, 'UTF-8'));
-				
-				if($possible_code)
-				{
-					$this->entry['Code'] = $possible_code;
-				}
+				$this->entry['Code'] = $this->GenerateEntryCode();
 			}
 			
 			return TRUE;
@@ -1162,6 +1188,19 @@
 			return $this->SetRecordFromQuery($set_record_from_query_args);
 		}
 		
+		public function SetRecordFromQuery_Definition()
+		{
+			$this->definition_unset = $this->definition;
+			$set_record_from_query_args = [
+				variablename=>'definition',
+				objectdefinition=>[
+					'Term',
+					'definition_Definition',
+				],
+			];
+			return $this->SetRecordFromQuery($set_record_from_query_args);
+		}
+		
 						// Record Cleansing
 						// ---------------------------------------------
 		
@@ -1172,11 +1211,14 @@
 				'Title'=>$this->entry_original['Title'],
 				'Subtitle'=>$this->entry_original['Subtitle'],
 				'ListTitle'=>$this->entry_original['ListTitle'],
+				'ListTitleSortKey'=>$this->entry_original['ListTitleSortKey'],
 				'Code'=>$this->entry_original['Code'],
+				'ChildAdjective'=>$this->entry_original['ChildAdjective'],
+				'ChildNoun'=>$this->entry_original['ChildNoun'],
+				'ChildNounPlural'=>$this->entry_original['ChildNounPlural'],
 			];
 			
-			if($this->entry_original['id'])
-			{
+			if($this->entry_original['id']) {
 				$this->entry['id'] = $this->entry_original['id'];
 			}
 			
@@ -1194,6 +1236,7 @@
 					'Language',
 				],
 			];
+			
 			return $this->CleanseRecordFromQuery($cleanse_record_from_query_args);
 		}
 		
@@ -1330,6 +1373,18 @@
 			return $this->CleanseRecordFromQuery($cleanse_record_from_query_args);
 		}
 		
+		public function CleanseRecordFromQuery_Definition()
+		{
+			$cleanse_record_from_query_args = [
+				variablename=>'definition',
+				datastructure=>[
+					'Term',
+					'Definition',
+				],
+			];
+			return $this->CleanseRecordFromQuery($cleanse_record_from_query_args);
+		}
+		
 		public function CleanseRecordFromQuery_EntryPermission()
 		{
 			$entry_permission = [
@@ -1382,9 +1437,33 @@
 				$validation_results = FALSE;
 			}
 			
+			if(strlen($this->entry['ListTitleSortKey']) > 255)
+			{
+				$this->errors[] = ['The ListTitleSortkey may not be longer than 255 characters.'];
+				$validation_results = FALSE;
+			}
+			
 			if(strlen($this->entry['Code']) > 255)
 			{
 				$this->errors[] = ['The Code may not be longer than 255 characters.'];
+				$validation_results = FALSE;
+			}
+			
+			if(strlen($this->entry['ChildAdjective']) > 255)
+			{
+				$this->errors[] = ['The ChildAdjective may not be longer than 255 characters.'];
+				$validation_results = FALSE;
+			}
+			
+			if(strlen($this->entry['ChildNoun']) > 255)
+			{
+				$this->errors[] = ['The ChildNoun may not be longer than 255 characters.'];
+				$validation_results = FALSE;
+			}
+			
+			if(strlen($this->entry['ChildNounPlural']) > 255)
+			{
+				$this->errors[] = ['The ChildNounPlural may not be longer than 255 characters.'];
 				$validation_results = FALSE;
 			}
 			
@@ -1565,6 +1644,7 @@
 				{
 					$new_file_location = 'image/' . $image['FileName'];
 					$new_icon_file_location = 'image/' . $file['icon_name'];
+					$new_standard_file_location = 'image/' . $file['standard_name'];
 					
 					if($image['FileName'] != $original_image['FileName'])
 					{
@@ -1576,6 +1656,11 @@
 						}
 						
 						if(is_file($new_icon_file_location))
+						{
+							$taken_file_names[] = $new_icon_file_location;
+						}
+						
+						if(is_file($new_standard_file_location))
 						{
 							$taken_file_names[] = $new_icon_file_location;
 						}
@@ -1601,9 +1686,11 @@
 						}
 						
 						$uploaded_icon_filename = implode(".", $uploaded_filename_pieces) . '-icon.' . $last_uploaded_filename_piece;
+						$uploaded_standard_filename = implode(".", $uploaded_filename_pieces) . '-standard.' . $last_uploaded_filename_piece;
 						
 						$new_file_location = 'image/' . $image['FileName'];
 						$new_icon_file_location = 'image/' . $uploaded_icon_filename;
+						$new_standard_file_location = 'image/' . $uploaded_standard_filename;
 						
 						$taken_file_names = [];
 						
@@ -1615,6 +1702,11 @@
 						if(is_file($new_icon_file_location))
 						{
 							$taken_file_names[] = $new_icon_file_location;
+						}
+						
+						if(is_file($new_standard_file_location))
+						{
+							$taken_file_names[] = $new_standard_file_location;
 						}
 						
 						if(count($taken_file_names))
@@ -1763,6 +1855,22 @@
 			return TRUE;
 		}
 		
+		public function ValidateRecordForSaving_Definition()
+		{
+			$validation_results = TRUE;
+			
+			foreach ($this->definition as $definition)
+			{
+				if(strlen($definition['Term']) > 255)
+				{
+					$this->errors[] = ['Definition Terms may not be longer than 255 characters.'];
+					$validation_results = FALSE;
+				}
+			}
+			
+			return $validation_results;
+		}
+		
 						// Record Preparing
 						// ---------------------------------------------
 		
@@ -1770,15 +1878,9 @@
 		{
 			$this->entry_unprepared = $this->entry;
 			
-			if(#	$this->parent['id'] &&			// Is it the master record?
-				!strlen($this->entry['Code']))		// Is it missing a 'Code' field?
-			{
-				$this->entry['Code'] = $this->GenerateEntryCode();
-			}
-			
 			if(!strlen($this->entry['ListTitle']))
 			{
-				$this->entry['ListTitle'] = $this->GenerateEntryListTitle();
+				$this->entry['ListTitle'] = $this->GenerateEntryListTitle([]);
 			}
 			
 			if(	!$this->parent['id'] &&			// Is it a new master record?
@@ -1806,15 +1908,24 @@
 		{
 			return TRUE;
 		}
+		
 		public function PrepareRecordForSaving_TextBody()
 		{
 			$this->textbody_unprepared = $this->textbody;
 			$new_textbodies = [];
 			
+			$strip_urls = $this->Param('textbody_StripURLs');
+			$americanize_vocabularies = $this->Param('textbody_AmericanizeVocabulary');
+			$american_british_spellings = 0;
+			$index = 0;
+			
 			foreach($this->textbody as $textbody)
 			{
 				if($textbody['Text'])
 				{
+					$strip_url = $strip_urls[$index];
+					$americanize_vocabulary = $americanize_vocabularies[$index];
+					
 					$dom = new DOMDocument;
 					try {
 						@$dom->loadHTML(mb_convert_encoding($textbody['Text'], 'HTML-ENTITIES', 'UTF-8'));
@@ -1825,14 +1936,36 @@
 					$xpath = new DOMXPath($dom);
 					$nodes = $xpath->query('//@*');
 					
-					foreach ($nodes as $node_key => $node) {
-						if(
-							!($node->parentNode->tagName == 'a' && $node->nodeName == 'href') &&
-							!($node->parentNode->tagName == 'a' && $node->nodeName == 'name') &&
-							!($node->parentNode->tagName == 'img' && $node->nodeName == 'src')
-						)
-						{
-							$node->parentNode->removeAttribute($node->nodeName);
+					if($strip_url)
+					{
+						foreach ($nodes as $node_key => $node) {
+							if(
+								!($node->parentNode->tagName == 'img' && $node->nodeName == 'src') &&
+								!($node->parentNode->tagName == 'div' && $node->nodeName == 'class') &&
+								!($node->parentNode->tagName == 'img' && $node->nodeName == 'class') &&
+								!($node->parentNode->tagName == 'img' && $node->nodeName == 'alt') &&
+								!($node->parentNode->tagName == 'div' && $node->nodeName == 'title')
+							)
+							{
+								$node->parentNode->removeAttribute($node->nodeName);
+							}
+						}
+					}
+					else
+					{
+						foreach ($nodes as $node_key => $node) {
+							if(
+								!($node->parentNode->tagName == 'a' && $node->nodeName == 'href') &&
+								!($node->parentNode->tagName == 'a' && $node->nodeName == 'name') &&
+								!($node->parentNode->tagName == 'img' && $node->nodeName == 'src') &&
+								!($node->parentNode->tagName == 'div' && $node->nodeName == 'class') &&
+								!($node->parentNode->tagName == 'img' && $node->nodeName == 'class') &&
+								!($node->parentNode->tagName == 'img' && $node->nodeName == 'alt') &&
+								!($node->parentNode->tagName == 'div' && $node->nodeName == 'title')
+							)
+							{
+								$node->parentNode->removeAttribute($node->nodeName);
+							}
 						}
 					}
 					
@@ -1854,6 +1987,7 @@
 					
 				#	print_r($dom);
 					*/
+					#print_r($dom->saveHTML());
 					$textbody['Text'] = preg_replace('/^<!DOCTYPE.+?>/', '', str_replace( array('<html>', '</html>', '<body>', '</body>'), array('', '', '', ''),$dom->saveHTML()));
 				#	print_r($textbody['Text']);
 					$textbody['WordCount'] = str_word_count(strip_tags($textbody['Text']));
@@ -1865,11 +1999,21 @@
 					$textbody['Text'] = preg_replace("/<span>/i", "", $textbody['Text']);
 					$textbody['Text'] = preg_replace("/<\/span>/i", "", $textbody['Text']);
 					
-					$textbody['Text'] = preg_replace("/<div>/i", "", $textbody['Text']);
-					$textbody['Text'] = preg_replace("/<\/div>/i", "", $textbody['Text']);
+					$textbody['Text'] = preg_replace("/<div>/i", "<p>", $textbody['Text']);
+					$textbody['Text'] = preg_replace("/<\/div>/i", "</p>", $textbody['Text']);
+					
+					if($americanize_vocabulary) {
+						if(!$american_british_spellings) {
+							require('../classes/Language/AmericanBritishSpellings.php');
+							$american_british_spellings = new AmericanBritishSpellings();
+						}
+						
+						$textbody['Text'] = $american_british_spellings->SwapBritishSpellingsForAmericanSpellings(['text'=>$textbody['Text']]);
+					}
 				}
 				
 				$new_textbodies[] = $textbody;
+				$index++;
 			}
 			
 			return $this->textbody = $new_textbodies;
@@ -2001,6 +2145,11 @@
 			return TRUE;
 		}
 		
+		public function PrepareRecordForSaving_Definition()
+		{
+			return TRUE;
+		}
+		
 						// Record Saving
 						// ---------------------------------------------
 		
@@ -2097,16 +2246,15 @@
 					$file = $this->image_files[$i];
 					$original_image = $this->image_unset[$i];
 					
-					$new_file_location = 'image/' . $image['FileName'];
-					$new_icon_file_location = 'image/' . $file['icon_name'];
-					
 					$original_image_location_pieces = str_split($original_image['FileDirectory']);
-					$original_image_location = implode('/', $original_image_location_pieces) . '/';
+					$dir_pieces = implode('/', $original_image_location_pieces);
+					$original_image_location = $dir_pieces . '/';
 					
 					if($file['name'])	// New File Upload
 					{
 						$old_file_location = 'image/' . $original_image_location . $original_image['FileName'];
 						$old_icon_file_location = 'image/' . $original_image_location . $original_image['IconFileName'];
+						$old_standard_file_location = 'image/' . $original_image_location . $original_image['StandardFileName'];
 						
 						if(is_file($old_file_location))
 						{
@@ -2115,6 +2263,10 @@
 						if(is_file($old_icon_file_location))
 						{
 							unlink($old_icon_file_location);
+						}
+						if(is_file($old_standard_file_location))
+						{
+							unlink($old_standard_file_location);
 						}
 						
 						$image_subdirectory_depth = 4;
@@ -2131,21 +2283,27 @@
 						
 						$new_file_location = $new_image_directory . $image['FileName'];
 						$new_icon_file_location = $new_image_directory . $file['icon_name'];
+						$new_standard_file_location = $new_image_directory . $file['standard_name'];
 						
 						move_uploaded_file($file['tmp_name'], $new_file_location);
-						$make_icon_args = [
-							file=>$file,
-							filelocation=>$new_file_location,
-							newiconlocation=>$new_icon_file_location,
-						];
 						
-						$icon_results = $this->makeIcon($make_icon_args);
+						$resize_args = [
+							'filelocation'=>$new_file_location,
+							'resizedlocation'=>$new_icon_file_location,
+						];
+						$icon_results = $this->makeIcon($resize_args);
+						
+						$resize_args['resizedlocation'] = $new_standard_file_location;
+						$standard_results = $this->makeStandardImage($resize_args);
 						
 						$this->image[$i]['IconFileName'] = $file['icon_name'];
+						$this->image[$i]['StandardFileName'] = $file['standard_name'];
 						$this->image[$i]['PixelHeight'] = $icon_results['originalheight'];
 						$this->image[$i]['PixelWidth'] = $icon_results['originalwidth'];
-						$this->image[$i]['IconPixelHeight'] = $icon_results['iconheight'];
-						$this->image[$i]['IconPixelWidth'] = $icon_results['iconwidth'];
+						$this->image[$i]['IconPixelHeight'] = $icon_results['resizedheight'];
+						$this->image[$i]['IconPixelWidth'] = $icon_results['resizedwidth'];
+						$this->image[$i]['StandardPixelHeight'] = $standard_results['resizedheight'];
+						$this->image[$i]['StandardPixelWidth'] = $standard_results['resizedwidth'];
 						$this->image[$i]['FileDirectory'] = $file_directory;
 						
 						$save_image_results = $this->SaveRecordFromQuery_Base($save_record_from_query_args);
@@ -2161,40 +2319,22 @@
 								
 								rename($original_file_location, $new_file_location);
 								
-								$image_filename_pieces = explode('.', $image['FileName']);
-								$original_filename_pieces = explode('.', $original_image['FileName']);
+								$alternate_old_filenames = $this->makeAlternateFileNames(['filename'=>$original_image['FileName']]);
+								$alternate_new_filenames = $this->makeAlternateFileNames(['filename'=>$image['FileName']]);
 								
-								$image_filename_extension = $image_filename_pieces[count($image_filename_pieces) - 1];
-								$original_filename_extension = $original_filename_pieces[count($original_filename_pieces) - 1];
-								
-								if(count($image_filename_pieces) > 1)
-								{
-									$image_filename_pieces[count($image_filename_pieces) - 2] .= '-icon';
-								}
-								else
-								{
-									$image_filename_pieces[] = '-icon';
-								}
-								
-								if(count($original_filename_pieces) > 1)
-								{
-									$original_filename_pieces[count($original_filename_pieces) - 2] .= '-icon';
-								}
-								else
-								{
-									$original_filename_pieces[] = '-icon';
-								}
-								
-								$new_file_icon_name = implode('.', $image_filename_pieces);
-								$original_file_icon_name = implode('.', $original_filename_pieces);
-								
-								$original_file_icon_location = 'image/' . $original_file_icon_name;
-								$new_file_icon_location = 'image/' . $new_file_icon_name;
+								$original_file_icon_location = 'image/' . $original_image_location . $alternate_old_filenames['icon_name'];
+								$new_file_icon_location = 'image/' . $original_image_location . $alternate_new_filenames['icon_name'];
 								
 								rename($original_file_icon_location, $new_file_icon_location);
 								
+								$original_file_standard_location = 'image/' . $original_image_location . $alternate_old_filenames['standard_name'];
+								$new_file_standard_location = 'image/' . $original_image_location . $alternate_new_filenames['standard_name'];
+								
+								rename($original_file_standard_location, $new_file_standard_location);
+								
 								$this->image[$i]['FileName'] = $image['FileName'];
-								$this->image[$i]['IconFileName'] = $new_file_icon_name;
+								$this->image[$i]['IconFileName'] = $image['IconFileName'];
+								$this->image[$i]['StandardFileName'] = $image['StandardFileName'];
 								
 								$save_image_results = $this->SaveRecordFromQuery_Base($save_record_from_query_args);
 							}
@@ -2204,14 +2344,16 @@
 							unset($this->image[$i]);
 							
 							$file_location = 'image/' . $original_image_location . $original_image['FileName'];
+							$standard_file_location = 'image/' . $original_image_location . $original_image['StandardFileName'];
 							$icon_file_location = 'image/' . $original_image_location . $original_image['IconFileName'];
 							
-							if(is_file($file_location))
-							{
+							if(is_file($file_location)) {
 								unlink($file_location);
 							}
-							if(is_file($icon_file_location))
-							{
+							if(is_file($standard_file_location)) {
+								unlink($standard_file_location);
+							}
+							if(is_file($icon_file_location)) {
 								unlink($icon_file_location);
 							}
 						}
@@ -2339,6 +2481,16 @@
 			return $this->SaveRecordFromQuery_Base($save_record_from_query_args);
 		}
 		
+		public function SaveRecordFromQuery_Definition()
+		{
+			$save_record_from_query_args = [
+				objectname=>'definition',
+				objecttype=>'Definition',
+			];
+			
+			return $this->SaveRecordFromQuery_Base($save_record_from_query_args);
+		}
+		
 						// Saved Record Display Formatting
 						// ---------------------------------------------
 		
@@ -2346,7 +2498,7 @@
 		{
 			$format_args = [
 				recordtype=>'entry',
-				recordfields=>['Title', 'Subtitle', 'ListTitle', 'Code'],
+				recordfields=>['Title', 'Subtitle', 'ListTitle', 'ListTitleSortKey', 'Code', 'ChildAdjective', 'ChildNoun', 'ChildNounPlural',],
 			];
 			
 			return $this->FormatSavedRecordFromQuery_Base($format_args);
@@ -2487,6 +2639,84 @@
 				recordtype=>'entrypermission',
 				recordfields=>['Userid'],
 			];
+			
+			return $this->FormatSavedRecordFromQuery_Base($format_args);
+		}
+		
+		public function FormatSavedRecordFromQuery_Definition()
+		{
+			$format_args = [
+				recordtype=>'definition',
+				recordfields=>['Term', 'Definition'],
+			];
+
+			$autogenerate_definitions = $this->Param('autogenerate-definitions');
+			if($autogenerate_definitions) {
+				$autogenerated_definition_sources = [];
+				
+				foreach($this->textbody as $textbody) {
+					$autogenerated_definition_sources[] = $textbody['Text'];
+			//		print_r($textbody);
+				}
+				
+				$autogenerated_definition_sources_count = count($autogenerated_definition_sources);
+				
+				if($autogenerated_definition_sources_count) {
+					require('../classes/Language/Grammar.php');
+					$this->grammar = new Grammar();
+					
+					require('../classes/Language/TextCleanup.php');
+					$this->textcleanup = new TextCleanup(['grammar'=>$this->grammar]);
+					
+					require('../classes/Language/Definition.php');
+					$this->definition_object = new Definition(['grammar'=>$this->grammar, 'textcleanup'=>$this->textcleanup]);
+					
+				//	print_r($this->definition);
+					$definition_hash = [];
+					
+					foreach($this->definition as $defined_piece) {
+						$definition_hash[$defined_piece['Term']] = TRUE;
+					}
+					
+					$full_definition_list = [];
+					
+					for($i = 0; $i < $autogenerated_definition_sources_count; $i++) {
+						$autogenerated_definition_source = $autogenerated_definition_sources[$i];
+						$definitions_found = $this->definition_object->GetDefinitions([text=>strip_tags($autogenerated_definition_source)]);
+						
+				//		print_r($definitions_found);
+						
+						foreach($definitions_found as $term => $definition_list) {
+							if(!$definition_hash[$term]) {
+								if(!$full_definition_list[$term]) {
+									$full_definition_list[$term] = [];
+								}
+								
+								$full_definition_list[$term] = array_merge($full_definition_list[$term], $definition_list);
+							}
+						}
+					}
+			#		print_r($full_definition_list);
+					
+					foreach($full_definition_list as $term => $multiple_definitions) {
+						foreach($multiple_definitions as $single_definition) {
+							$definition_record = [
+								'Term'=>$term,
+								'Definition'=>$single_definition,
+								'Entryid'=>$this->entry['id'],
+							];
+							
+							$definition_insert_args = [
+								'type'=>'Definition',
+								definition=>$definition_record,
+							];
+							
+							$new_definition_record = $this->db_access_object->CreateRecord($definition_insert_args);
+							$this->definition[] = $new_definition_record;
+						}
+					}
+				}
+			}
 			
 			return $this->FormatSavedRecordFromQuery_Base($format_args);
 		}

@@ -1,4 +1,3 @@
-jquery.min.js
 jQueryRotate.js
 list/hideable-arrow.js
 link-clickable.js
@@ -13,3 +12,5 @@ https://www.google.com/jsapi
 google-cse.js
 language-lesson-and-quiz.js
 detect-browser.js
+voice-to-text.js
+game-play.js

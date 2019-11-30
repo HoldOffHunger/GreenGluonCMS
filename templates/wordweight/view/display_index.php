@@ -26,12 +26,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
-		'backgroundcolor'=>'gray13',
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -209,9 +207,9 @@
 	
 	print('<p class="horizontal-left margin-5px font-family-tahoma">');
 	
-	$definitions_count = $this->dictionary->GetDefinitionsCount();
-	$words_count = $this->dictionary->GetWordsCount();
-	$dictionaries_count = $this->dictionary->GetDictionariesCount();
+	$definitions_count = $this->dictionary->GetDefinitionsCount([]);
+	$words_count = $this->dictionary->GetWordsCount([]);
+	$dictionaries_count = $this->dictionary->GetDictionariesCount([]);
 	
 	print('We currently maintain ' . number_format($definitions_count) . ' definitions for ' . number_format($words_count) . ' words');
 	print('.');
@@ -277,7 +275,7 @@
 	
 	print('<br>');
 	
-	$random_definitions = $this->dictionary->LookUpRandomWords();
+	$random_definitions = $this->dictionary->LookUpRandomWords([]);
 	
 	foreach ($random_definitions as $random_word => $random_definition)
 	{
@@ -309,12 +307,27 @@
 	print("</PRE>");
 	*/
 	
+			// Display Similar Sites
+		
+		// -------------------------------------------------------------
+	
+	require('../modules/html/similarsites-satellites.php');
+	
+	$similar_site_args = [
+		site=>$this->domain_object->primary_domain_lowercased,
+		language=>$this->language_object,
+	];
+	$similar_sites = new module_similarsites_satellites($similar_site_args);
+	
+	$similar_sites->display();
+	
 			// Share Package
 		
 		// -------------------------------------------------------------
 	
 	require('../modules/html/socialmediasharelinks.php');
 	$social_media_share_links_args = [
+		'globals'=>$this->globals,
 		'textonly'=>$this->mobile_friendly,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
@@ -398,10 +411,3 @@
 	$navigation->DisplayBottomNavigation($bottom_navigation_args);
 	
 ?>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({
-    google_ad_client: "ca-pub-5613154091905636",
-    enable_page_level_ads: true
-  });
-</script>

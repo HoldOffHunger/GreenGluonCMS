@@ -41,8 +41,6 @@
 			$this->SetRecordTree();
 			$this->SetPrimaryHostRecords();
 			
-			$this->LoginUser();
-			
 			if(!$this->ValidateOrm())
 			{
 				return FALSE;	# 404
@@ -63,7 +61,39 @@
 			$this->SetRecordTree();
 			$this->SetPrimaryHostRecords();
 			
-			$this->LoginUser();
+			if(!$this->ValidateOrm())
+			{
+				return FALSE;	# 404
+			}
+			
+			if(!$this->SetUser())
+			{
+				return FALSE;	# 404
+			}
+			
+			$this->SetUserComments([
+				'limit'=>3,
+			]);
+			$this->SetUserCommentsCount();
+			
+			$this->SetUserLikesDislikes([
+				'limit'=>3,
+			]);
+			$this->SetUserLikesDislikesCount();
+			
+			$this->SetTagCounts();
+			
+			return TRUE;
+		}
+		
+						// Export User Functionality
+						// ---------------------------------------------
+		
+		public function exportuser()
+		{
+			$this->SetORMBasics();
+			$this->SetRecordTree();
+			$this->SetPrimaryHostRecords();
 			
 			if(!$this->ValidateOrm())
 			{
@@ -75,13 +105,17 @@
 				return FALSE;	# 404
 			}
 			
-			$this->SetUserComments();
+			$this->SetUserComments([]);
 			$this->SetUserCommentsCount();
 			
-			$this->SetUserLikesDislikes();
+			$this->SetUserLikesDislikes([]);
 			$this->SetUserLikesDislikesCount();
 			
-			$this->SetTagCounts();
+		//	print_r($this->comments);
+			
+		//	print("<BR><BR>");
+			
+		//	print_r($this->likedislikes);
 			
 			return TRUE;
 		}
@@ -128,7 +162,7 @@
 			return FALSE;
 		}
 		
-		public function SetUserComments()
+		public function SetUserComments($args)
 		{
 			$comment_definition = [
 				Userid=>$this->user['id'],
@@ -140,17 +174,24 @@
 				type=>'Comment',
 				definition=>$comment_definition,
 				orderby=>'OriginalCreationDate DESC',
-				limit=>3,
 			];
+			
+			if(isset($args['limit'])) {
+				$comment_get_args['limit'] = $args['limit'];
+			}
 			
 			$comments = $this->db_access_object->GetRecords($comment_get_args);
 			
-			$this->comments = $this->SetRecordEntries([records=>$comments]);
+			if(isset($args['limit'])) {
+				$this->comments = $this->SetRecordEntries(['records'=>$comments]);
+			} else {
+				$this->comments = $this->SetLimitedRecordEntries(['records'=>$comments]);
+			}
 			
 			return TRUE;
 		}
 		
-		public function SetUserLikesDislikes()
+		public function SetUserLikesDislikes($args)
 		{
 			$likedislike_definition = [
 				'Userid'=>$this->user['id'],
@@ -161,12 +202,19 @@
 				type=>'LikeDislike',
 				definition=>$likedislike_definition,
 				orderby=>'OriginalCreationDate DESC',
-				limit=>3,
 			];
+
+			if(isset($args['limit'])) {
+				$likedislike_get_args['limit'] = $args['limit'];
+			}
 			
 			$likedislikes = $this->db_access_object->GetRecords($likedislike_get_args);
 			
-			$this->likedislikes = $this->SetRecordEntries([records=>$likedislikes]);
+			if(isset($args['limit'])) {
+				$this->likedislikes = $this->SetRecordEntries(['records'=>$likedislikes]);
+			} else {
+				$this->likedislikes = $this->SetLimitedRecordEntries(['records'=>$likedislikes]);
+			}
 			
 			return TRUE;
 		}
@@ -189,8 +237,6 @@
 			$this->SetORMBasics();
 			$this->SetRecordTree();
 			$this->SetPrimaryHostRecords();
-			
-			$this->LoginUser();
 			
 			if(!$this->ValidateOrm())
 			{
@@ -221,8 +267,6 @@
 			$this->SetORMBasics();
 			$this->SetRecordTree();
 			$this->SetPrimaryHostRecords();
-			
-			$this->LoginUser();
 			
 			if(!$this->ValidateOrm())
 			{

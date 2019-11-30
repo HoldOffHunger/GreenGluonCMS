@@ -28,13 +28,13 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = array(
+	$divider_padding_start_args = [
 		'class'=>'margin-5px padding-5px',
-	);
+	];
 	
-	$divider_end_args = array(
+	$divider_end_args = [
 		'indentlevel'=>1,
-	);
+	];
 	
 			// Display Parent Record Info
 		
@@ -63,19 +63,19 @@
 		];
 	}
 	
-	$version_list_display_args = array(
-		'options'=>array(
+	$version_list_display_args = [
+		'options'=>[
 			'indentlevel'=>1,
 			'tableheaders'=>0,
 			'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13 margin-top-5px',
 			'rowclass'=>'border-1px horizontal-left',
-			'cellclass'=>array(
+			'cellclass'=>[
 				'border-1px vertical-top',
 				'border-1px width-100percent vertical-top',
-			),
-		),
+			],
+		],
 		'list'=>$info_list,
-	);
+	];
 	$generic_list->Display($version_list_display_args);
 	
 	$divider->displayend($divider_end_args);
@@ -88,24 +88,24 @@
 	{
 		$divider->displaystart($divider_padding_start_args);
 		
-		$version_list_display_args = array(
-			'options'=>array(
+		$version_list_display_args = [
+			'options'=>[
 				'indentlevel'=>1,
 				'tableheaders'=>0,
 				'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13 margin-top-5px',
 				'rowclass'=>'border-1px horizontal-left',
-				'cellclass'=>array(
+				'cellclass'=>[
 					'border-1px vertical-top',
 					'border-1px width-100percent vertical-top',
-				),
-			),
+				],
+			],
 			'list'=>[
 				[
 					'<nobr>Editing Primary Entry Record:</nobr>',
 					'The Code should be the case-sensitive version of the domain URL for this host.',
 				],
 			],
-		);
+		];
 		$generic_list->Display($version_list_display_args);
 		
 		$divider->displayend($divider_end_args);
@@ -147,19 +147,19 @@
 		{
 			$divider->displaystart($divider_padding_start_args);
 			
-			$version_list_display_args = array(
-				'options'=>array(
+			$version_list_display_args = [
+				'options'=>[
 					'indentlevel'=>1,
 					'tableheaders'=>0,
 					'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13 margin-top-5px',
 					'rowclass'=>'border-1px horizontal-left',
-					'cellclass'=>array(
+					'cellclass'=>[
 						'border-1px vertical-top',
 						'border-1px width-100percent vertical-top',
-					),
-				),
+					],
+				],
 				'list'=>$admin_error_to_display,
-			);
+			];
 			$generic_list->Display($version_list_display_args);
 			
 			$divider->displayend($divider_end_args);
@@ -253,9 +253,9 @@
 		);
 		$text->Display($element_text_args);
 		
-		$table_end_args = array(
+		$table_end_args = [
 			indentlevel=>2,
-		);
+		];
 		$table->DisplayComponent_EndTable($table_end_args);
 		
 				// Display Form Elements : End
@@ -298,7 +298,11 @@
 			'Title',
 			'Subtitle',
 			'List Title',
+			'List Title Sort Key',
 			'Code',
+			'Child Adjective',
+			'Child Noun',
+			'Child Noun Plural',
 			'Entry Translation',
 			'Availability Start',
 			'Availability End',
@@ -311,6 +315,7 @@
 			'Link',
 			'Event Date',
 			'Association',
+			'Definition',
 			'Save',
 		];
 		
@@ -355,56 +360,112 @@
 			
 			switch($element) {
 				case 'Title':
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'Title',
 						size=>60,
 						indentlevel=>5,
 						value=>$this->entry['Title'],
 						maxlength=>255,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 				
 					break;
 				
 				case 'Subtitle':
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'Subtitle',
 						size=>60,
 						indentlevel=>5,
 						value=>$this->entry['Subtitle'],
 						maxlength=>255,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
 					break;
 				
 				case 'List Title':
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'ListTitle',
 						size=>60,
 						indentlevel=>5,
 						value=>$this->entry['ListTitle'],
 						maxlength=>255,
-					);
+					];
+					
+					$form->DisplayFormField($type_args);
+					
+					break;
+				
+				case 'List Title Sort Key':
+					$type_args = [
+						type=>'text',
+						name=>'ListTitleSortKey',
+						size=>60,
+						indentlevel=>5,
+						value=>$this->entry['ListTitleSortKey'],
+						maxlength=>255,
+					];
 					
 					$form->DisplayFormField($type_args);
 					
 					break;
 					
 				case 'Code':
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'Code',
 						size=>60,
 						indentlevel=>5,
 						value=>$this->entry['Code'],
 						maxlength=>255,
-					);
+					];
+					
+					$form->DisplayFormField($type_args);
+					
+					break;
+					
+				case 'Child Adjective':
+					$type_args = [
+						type=>'text',
+						name=>'ChildAdjective',
+						size=>60,
+						indentlevel=>5,
+						value=>$this->entry['ChildAdjective'],
+						maxlength=>255,
+					];
+					
+					$form->DisplayFormField($type_args);
+					
+					break;
+					
+				case 'Child Noun':
+					$type_args = [
+						type=>'text',
+						name=>'ChildNoun',
+						size=>60,
+						indentlevel=>5,
+						value=>$this->entry['ChildNoun'],
+						maxlength=>255,
+					];
+					
+					$form->DisplayFormField($type_args);
+					
+					break;
+					
+				case 'Child Noun Plural':
+					$type_args = [
+						type=>'text',
+						name=>'ChildNounPlural',
+						size=>60,
+						indentlevel=>5,
+						value=>$this->entry['ChildNounPlural'],
+						maxlength=>255,
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -517,13 +578,13 @@
 										// Display 'Add' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'add-entry-translation-button',
 									'class'=>'float-right',
 									'value'=>'Add Entry Translation',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -532,13 +593,13 @@
 										// Display 'Delete' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'delete-entry-translation-button',
 									'class'=>'float-right',
 									'value'=>'Remove',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -659,13 +720,13 @@
 								// Display 'Add' Button
 								// -------------------------------------------------------
 						
-						$type_args = array(
+						$type_args = [
 							'type'=>'button',
 							'id'=>'add-entry-translation-button',
 							'class'=>'float-right',
 							'value'=>'Add Entry Translation',
 							'indentlevel'=>5,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 						
@@ -760,13 +821,13 @@
 							// Display 'Delete' Button
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						'type'=>'button',
 						'id'=>'delete-entry-translation-button',
 						'class'=>'float-right',
 						'value'=>'Remove',
 						'indentlevel'=>7,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -814,50 +875,50 @@
 					break;
 					
 				case 'Availability Start':
-					$availability_start_args = array(
+					$availability_start_args = [
 						'type'=>'text',
 						'name'=>'AvailabilityStartDate[]',
 						'size'=>20,
 						'indentlevel'=>5,
 						'class'=>'datepicker',
 						'value'=>$this->availabilitydaterange[0][AvailabilityStartDate],
-					);
+					];
 					
 					$form->DisplayFormField($availability_start_args);
 					
-					$availability_start_args = array(
+					$availability_start_args = [
 						type=>'text',
 						name=>'AvailabilityStartTime[]',
 						size=>20,
 						indentlevel=>5,
 						'class'=>'timepicker',
 						'value'=>$this->availabilitydaterange[0][AvailabilityStartTime],
-					);
+					];
 					
 					$form->DisplayFormField($availability_start_args);
 				
 					break;
 					
 				case 'Availability End':
-					$availability_end_args = array(
+					$availability_end_args = [
 						type=>'text',
 						name=>'AvailabilityEndDate[]',
 						size=>20,
 						indentlevel=>5,
 						'class'=>'datepicker',
 						'value'=>$this->availabilitydaterange[0][AvailabilityEndDate],
-					);
+					];
 					
 					$form->DisplayFormField($availability_end_args);
 					
-					$availability_end_args = array(
+					$availability_end_args = [
 						type=>'text',
 						name=>'AvailabilityEndTime[]',
 						size=>20,
 						indentlevel=>5,
 						'class'=>'timepicker',
 						'value'=>$this->availabilitydaterange[0][AvailabilityEndTime],
-					);
+					];
 					
 					$form->DisplayFormField($availability_end_args);
 				
@@ -889,7 +950,7 @@
 										// Display Field
 										// -------------------------------------------------------
 							
-							$type_args = array(
+							$type_args = [
 								type=>'textarea',
 								name=>'Description[]',
 								cols=>60,
@@ -898,7 +959,7 @@
 								value=>$description['Description'],
 								maxlength=>512,
 								'class'=>'float-left',
-							);
+							];
 							
 							$form->DisplayFormField($type_args);
 								
@@ -911,14 +972,14 @@
 							];
 							$text->Display($element_text_args);
 							
-							$type_args = array(
+							$type_args = [
 								type=>'text',
 								name=>'description_Source[]',
 								size=>30,
 								indentlevel=>5,
 								value=>$description['Source'],
 								maxlength=>512,
-							);
+							];
 							
 							$form->DisplayFormField($type_args);
 								
@@ -946,13 +1007,13 @@
 										// Display 'Add' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'add-description-button',
 									'class'=>'float-right',
 									'value'=>'Add Description',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -961,13 +1022,13 @@
 										// Display 'Delete' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'delete-description-button',
 									'class'=>'float-right',
 									'value'=>'Remove',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -1015,14 +1076,14 @@
 								// Display Field
 								// -------------------------------------------------------
 								
-						$type_args = array(
+						$type_args = [
 							type=>'textarea',
 							name=>'Description[]',
 							cols=>60,
 							rows=>5,
 							indentlevel=>5,
 							'class'=>'float-left',
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 							
@@ -1035,13 +1096,13 @@
 						];
 						$text->Display($element_text_args);
 						
-						$type_args = array(
+						$type_args = [
 							type=>'text',
 							name=>'description_Source[]',
 							size=>30,
 							indentlevel=>5,
 							maxlength=>512,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 						
@@ -1067,13 +1128,13 @@
 								// Display 'Add' Button
 								// -------------------------------------------------------
 						
-						$type_args = array(
+						$type_args = [
 							'type'=>'button',
 							'id'=>'add-description-button',
 							'class'=>'float-right',
 							'value'=>'Add Description',
 							'indentlevel'=>5,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 						
@@ -1108,14 +1169,14 @@
 							// Display Hidden Input
 							// -------------------------------------------------------
 							
-					$type_args = array(
+					$type_args = [
 						type=>'textarea',
 						name=>'Description-Hidden',
 						cols=>60,
 						rows=>5,
 						indentlevel=>5,
 						'class'=>'float-left',
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 							
@@ -1128,13 +1189,13 @@
 					];
 					$text->Display($element_text_args);
 					
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'description_Source-Hidden',
 						size=>30,
 						indentlevel=>5,
 						maxlength=>512,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -1161,13 +1222,13 @@
 							// Display 'Delete' Button
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						'type'=>'button',
 						'id'=>'delete-description-button',
 						'class'=>'float-right',
 						'value'=>'Remove',
 						'indentlevel'=>7,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -1240,7 +1301,7 @@
 										// Display Field
 										// -------------------------------------------------------
 							
-							$type_args = array(
+							$type_args = [
 								type=>'textarea',
 								name=>'Quote[]',
 								cols=>60,
@@ -1249,7 +1310,7 @@
 								value=>$quote['Quote'],
 								maxlength=>512,
 								'class'=>'float-left',
-							);
+							];
 							
 							$form->DisplayFormField($type_args);
 								
@@ -1262,14 +1323,14 @@
 							];
 							$text->Display($element_text_args);
 							
-							$type_args = array(
+							$type_args = [
 								type=>'text',
 								name=>'quote_Source[]',
 								size=>30,
 								indentlevel=>5,
 								value=>$quote['Source'],
 								maxlength=>512,
-							);
+							];
 							
 							$form->DisplayFormField($type_args);
 								
@@ -1297,13 +1358,13 @@
 										// Display 'Add' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'add-quote-button',
 									'class'=>'float-right',
 									'value'=>'Add Quote',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -1312,13 +1373,13 @@
 										// Display 'Delete' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'delete-quote-button',
 									'class'=>'float-right',
 									'value'=>'Remove',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -1364,7 +1425,7 @@
 									// Display Field
 									// -------------------------------------------------------
 						
-						$type_args = array(
+						$type_args = [
 							type=>'textarea',
 							name=>'Quote[]',
 							cols=>60,
@@ -1372,7 +1433,7 @@
 							indentlevel=>5,
 							maxlength=>512,
 							'class'=>'float-left',
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 							
@@ -1385,13 +1446,13 @@
 						];
 						$text->Display($element_text_args);
 						
-						$type_args = array(
+						$type_args = [
 							type=>'text',
 							name=>'quote_Source[]',
 							size=>30,
 							indentlevel=>5,
 							maxlength=>512,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 							
@@ -1417,13 +1478,13 @@
 								// Display 'Add' Button
 								// -------------------------------------------------------
 						
-						$type_args = array(
+						$type_args = [
 							'type'=>'button',
 							'id'=>'add-quote-button',
 							'class'=>'float-right',
 							'value'=>'Add Quote',
 							'indentlevel'=>5,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 						
@@ -1458,14 +1519,14 @@
 							// Display Hidden Input
 							// -------------------------------------------------------
 							
-					$type_args = array(
+					$type_args = [
 						type=>'textarea',
 						name=>'Quote-Hidden',
 						cols=>60,
 						rows=>5,
 						indentlevel=>5,
 						'class'=>'float-left',
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 						
@@ -1478,13 +1539,13 @@
 					];
 					$text->Display($element_text_args);
 					
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'quote_Source-Hidden',
 						size=>30,
 						indentlevel=>5,
 						maxlength=>512,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 						
@@ -1511,13 +1572,13 @@
 							// Display 'Delete' Button
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						'type'=>'button',
 						'id'=>'delete-quote-button',
 						'class'=>'float-right',
 						'value'=>'Remove',
 						'indentlevel'=>7,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -1591,7 +1652,7 @@
 										// -------------------------------------------------------
 
 							
-							$type_args = array(
+							$type_args = [
 								type=>'textarea',
 								name=>'Text[]',
 								cols=>60,
@@ -1599,7 +1660,7 @@
 								indentlevel=>5,
 								value=>$textbody['Text'],
 								'class'=>'float-left',
-							);
+							];
 							
 							$form->DisplayFormField($type_args);
 								
@@ -1612,16 +1673,59 @@
 							];
 							$text->Display($element_text_args);
 							
-							$type_args = array(
+							$type_args = [
 								type=>'text',
 								name=>'textbody_Source[]',
 								size=>30,
 								indentlevel=>5,
 								value=>$textbody['Source'],
 								maxlength=>512,
-							);
+							];
 							
 							$form->DisplayFormField($type_args);
+								
+									// Display Field
+									// -------------------------------------------------------
+							
+							print("<br>");
+							$element_text_args = [
+								text=>'Strip URLs : ',
+								indentlevel=>5,
+							];
+							$text->Display($element_text_args);
+							
+							$type_args = [
+								type=>'checkbox',
+								name=>'textbody_StripURLs[]',
+								size=>30,
+								indentlevel=>5,
+								value=>1,
+								maxlength=>512,
+							];
+							
+							$form->DisplayFormField($type_args);
+								
+									// Display Field
+									// -------------------------------------------------------
+							
+							print("<br>");
+							$element_text_args = [
+								text=>'Americanize Vocabulary : ',
+								indentlevel=>5,
+							];
+							$text->Display($element_text_args);
+							
+							$type_args = [
+								type=>'checkbox',
+								name=>'textbody_AmericanizeVocabulary[]',
+								size=>30,
+								indentlevel=>5,
+								value=>1,
+								maxlength=>512,
+							];
+							
+							$form->DisplayFormField($type_args);
+							print("<br>");
 							
 									// Display Field
 									// -------------------------------------------------------
@@ -1647,13 +1751,13 @@
 										// Display 'Add' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'add-text-button',
 									'class'=>'float-right',
 									'value'=>'Add Text',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -1662,13 +1766,13 @@
 										// Display 'Delete' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'delete-text-button',
 									'class'=>'float-right',
 									'value'=>'Remove',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -1714,14 +1818,14 @@
 								// Display Field
 								// -------------------------------------------------------
 								
-						$type_args = array(
+						$type_args = [
 							type=>'textarea',
 							name=>'Text[]',
 							cols=>60,
 							rows=>20,
 							indentlevel=>5,
 							'class'=>'float-left',
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 								
@@ -1734,15 +1838,56 @@
 						];
 						$text->Display($element_text_args);
 						
-						$type_args = array(
+						$type_args = [
 							type=>'text',
 							name=>'textbody_Source[]',
 							size=>30,
 							indentlevel=>5,
 							maxlength=>512,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
+								
+								// Display Field
+								// -------------------------------------------------------
+						
+						print("<br>");
+						$element_text_args = [
+							text=>'Strip URLs : ',
+							indentlevel=>5,
+						];
+						$text->Display($element_text_args);
+						
+						$type_args = [
+							type=>'checkbox',
+							name=>'textbody_StripURLs[]',
+							value=>1,
+							indentlevel=>5,
+							maxlength=>512,
+						];
+						
+						$form->DisplayFormField($type_args);
+								
+								// Display Field
+								// -------------------------------------------------------
+						
+						print("<br>");
+						$element_text_args = [
+							text=>'Americanize Vocabulary : ',
+							indentlevel=>5,
+						];
+						$text->Display($element_text_args);
+						
+						$type_args = [
+							type=>'checkbox',
+							name=>'textbody_AmericanizeVocabulary[]',
+							value=>1,
+							indentlevel=>5,
+							maxlength=>512,
+						];
+						
+						$form->DisplayFormField($type_args);
+						print("<br>");
 							
 								// Display Field
 								// -------------------------------------------------------
@@ -1766,13 +1911,13 @@
 								// Display 'Add' Button
 								// -------------------------------------------------------
 						
-						$type_args = array(
+						$type_args = [
 							'type'=>'button',
 							'id'=>'add-text-button',
 							'class'=>'float-right',
 							'value'=>'Add Text',
 							'indentlevel'=>5,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 						
@@ -1807,14 +1952,14 @@
 							// Display Hidden Input
 							// -------------------------------------------------------
 							
-					$type_args = array(
+					$type_args = [
 						type=>'textarea',
 						name=>'Text-Hidden',
 						cols=>60,
 						rows=>20,
 						indentlevel=>5,
 						'class'=>'float-left',
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 							
@@ -1827,13 +1972,13 @@
 					];
 					$text->Display($element_text_args);
 					
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'textbody_Source-Hidden',
 						size=>30,
 						indentlevel=>5,
 						maxlength=>512,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 						
@@ -1860,13 +2005,13 @@
 							// Display 'Delete' Button
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						'type'=>'button',
 						'id'=>'delete-text-button',
 						'class'=>'float-right',
 						'value'=>'Remove',
 						'indentlevel'=>7,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -1945,14 +2090,14 @@
 							];
 							$text->Display($element_text_args);
 							
-							$type_args = array(
+							$type_args = [
 								type=>'text',
 								name=>'image_Title[]',
 								size=>40,
 								indentlevel=>5,
 								value=>$image['Title'],
 								maxlength=>255,
-							);
+							];
 							
 							$form->DisplayFormField($type_args);
 							
@@ -2005,13 +2150,13 @@
 							];
 							$text->Display($element_text_args);
 									
-							$type_args = array(
+							$type_args = [
 								type=>'file',
 								name=>'Image[]',
 								size=>40,
 								indentlevel=>5,
 								maxlength=>255,
-							);
+							];
 							
 							$form->DisplayFormField($type_args);
 							
@@ -2023,13 +2168,13 @@
 										// Display 'Add' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'add-image-button',
 									'class'=>'float-right',
 									'value'=>'Add Image',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -2038,13 +2183,13 @@
 										// Display 'Delete' Button
 										// -------------------------------------------------------
 								
-								$type_args = array(
+								$type_args = [
 									'type'=>'button',
 									'id'=>'delete-image-button',
 									'class'=>'float-right',
 									'value'=>'Remove',
 									'indentlevel'=>5,
-								);
+								];
 								
 								$form->DisplayFormField($type_args);
 							}
@@ -2096,13 +2241,13 @@
 						];
 						$text->Display($element_text_args);
 						
-						$type_args = array(
+						$type_args = [
 							type=>'text',
 							name=>'image_Title[]',
 							size=>40,
 							indentlevel=>5,
 							maxlength=>255,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 						
@@ -2153,26 +2298,26 @@
 						];
 						$text->Display($element_text_args);
 								
-						$type_args = array(
+						$type_args = [
 							type=>'file',
 							name=>'Image[]',
 							size=>40,
 							indentlevel=>5,
 							maxlength=>255,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 						
 								// Display 'Add' Button
 								// -------------------------------------------------------
 						
-						$type_args = array(
+						$type_args = [
 							'type'=>'button',
 							'id'=>'add-image-button',
 							'class'=>'float-right',
 							'value'=>'Add Image',
 							'indentlevel'=>5,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 						
@@ -2270,26 +2415,26 @@
 					];
 					$text->Display($element_text_args);
 							
-					$type_args = array(
+					$type_args = [
 						type=>'file',
 						name=>'Image-Hidden',
 						size=>40,
 						indentlevel=>5,
 						maxlength=>255,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
 							// Display 'Delete' Button
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						'type'=>'button',
 						'id'=>'delete-image-button',
 						'class'=>'float-right',
 						'value'=>'Remove',
 						'indentlevel'=>7,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -4255,6 +4400,330 @@
 					
 					$clear_float_divider_start_args = [
 						'id'=>'association-list',
+						'indentlevel'=>5,
+					];
+					
+					$divider->displaystart($clear_float_divider_start_args);
+					
+					$clear_float_divider_end_args = [
+						'indentlevel'=>5,
+					];
+					
+					$divider->displayend($clear_float_divider_end_args);
+					
+					break;
+				
+				case 'Definition':
+							// Preset Check if Displayed
+							// -------------------------------------------------------
+					
+					$definitions_displayed = 0;
+					
+					foreach ($this->definition as $definition)
+					{
+						if($definition && strlen($definition['Term']))
+						{
+							if($definitions_displayed)
+							{
+										// Start Field
+										// -------------------------------------------------------
+								
+								$clear_float_divider_start_args = [
+									'class'=>'input-divider',
+									'indentlevel'=>6,
+								];
+								
+								$divider->displaystart($clear_float_divider_start_args);
+							} else {
+								
+										// Autogen?
+										// -------------------------------------------------------
+							
+								$element_text_args = [
+									text=>'Autogenerate Definitions : ',
+									indentlevel=>5,
+								];
+								$text->Display($element_text_args);
+								
+								$type_args = array(
+									type=>'checkbox',
+									name=>'autogenerate-definitions',
+									value=>1,
+									indentlevel=>5,
+									maxlength=>512,
+								);
+								
+								$form->DisplayFormField($type_args);
+								
+								print('<br>');
+							}
+							
+									// Display Field
+									// -------------------------------------------------------
+							
+							$element_text_args = [
+								text=>'Definition : ',
+								indentlevel=>5,
+							];
+							$text->Display($element_text_args);
+							
+							$type_args = array(
+								type=>'text',
+								name=>'Term[]',
+								size=>20,
+								indentlevel=>5,
+								value=>$definition['Term'],
+								maxlength=>255,
+								'class'=>'definition',
+							);
+							
+							$form->DisplayFormField($type_args);
+							
+							$type_args = array(
+								type=>'text',
+								name=>'definition_Definition[]',
+								size=>60,
+								indentlevel=>5,
+								value=>$definition['Definition'],
+								'class'=>'definition',
+							);
+							
+							$form->DisplayFormField($type_args);
+							
+							if(!$definitions_displayed)
+							{
+										// Display 'Add' Button
+										// -------------------------------------------------------
+								
+								$type_args = array(
+									'type'=>'button',
+									'id'=>'add-definition-button',
+									'class'=>'float-right',
+									'value'=>'Add Definition',
+									'indentlevel'=>5,
+								);
+								
+								$form->DisplayFormField($type_args);
+							}
+							else
+							{
+										// Display 'Delete' Button
+										// -------------------------------------------------------
+								
+								$type_args = array(
+									'type'=>'button',
+									'id'=>'delete-definition-button',
+									'class'=>'float-right',
+									'value'=>'Remove',
+									'indentlevel'=>5,
+								);
+								
+								$form->DisplayFormField($type_args);
+							}
+							
+									// Finish Field
+									// -------------------------------------------------------
+							
+							if($definitions_displayed)
+							{
+								$clear_float_divider_end_args = [
+									'indentlevel'=>6,
+								];
+								
+								$divider->displayend($clear_float_divider_end_args);
+							}
+							
+									// Clear Float
+									// -------------------------------------------------------
+							
+							$clear_float_divider_start_args = [
+								'class'=>'clear-float',
+								'indentlevel'=>5,
+							];
+							
+							$divider->displaystart($clear_float_divider_start_args);
+							
+							$clear_float_divider_end_args = [
+								'indentlevel'=>5,
+							];
+							
+							$divider->displayend($clear_float_divider_end_args);
+
+							$definitions_displayed = 1;
+						}
+					}
+					
+							// Display Field if Not Yet Displayed
+							// -------------------------------------------------------
+					
+					if(!$definitions_displayed) {
+						
+								// Autogen?
+								// -------------------------------------------------------
+					
+						$element_text_args = [
+							text=>'Autogenerate Definitions : ',
+							indentlevel=>5,
+						];
+						$text->Display($element_text_args);
+						
+						$type_args = array(
+							type=>'checkbox',
+							name=>'autogenerate-definitions',
+							value=>1,
+							indentlevel=>5,
+							maxlength=>512,
+						);
+						
+						$form->DisplayFormField($type_args);
+						
+						print('<br>');
+						
+								// Display Field
+								// -------------------------------------------------------
+						
+						$element_text_args = [
+							text=>'Definition : ',
+							indentlevel=>5,
+						];
+						$text->Display($element_text_args);
+						
+						$type_args = array(
+							type=>'text',
+							name=>'Term[]',
+							size=>20,
+							indentlevel=>5,
+							maxlength=>255,
+							'class'=>'definition',
+						);
+						
+						$form->DisplayFormField($type_args);
+						
+						$type_args = array(
+							type=>'text',
+							name=>'definition_Definition[]',
+							size=>60,
+							indentlevel=>5,
+							'class'=>'definition',
+						);
+						
+						$form->DisplayFormField($type_args);
+						
+								// Display 'Add' Button
+								// -------------------------------------------------------
+						
+						$type_args = array(
+							'type'=>'button',
+							'id'=>'add-definition-button',
+							'class'=>'float-right',
+							'value'=>'Add Definition',
+							'indentlevel'=>5,
+						);
+						
+						$form->DisplayFormField($type_args);
+						
+								// Clear Float
+								// -------------------------------------------------------
+						
+						$clear_float_divider_start_args = [
+							'class'=>'clear-float',
+							'indentlevel'=>5,
+						];
+						
+						$divider->displaystart($clear_float_divider_start_args);
+						
+						$clear_float_divider_end_args = [
+							'indentlevel'=>5,
+						];
+						
+						$divider->displayend($clear_float_divider_end_args);
+					}
+					
+							// Start Hidden Field
+							// -------------------------------------------------------
+					
+					$clear_float_divider_start_args = [
+						'id'=>'hidden-definition-input',
+						'class'=>'display-none',
+						'indentlevel'=>6,
+					];
+					
+					$divider->displaystart($clear_float_divider_start_args);
+					
+							// Display Hidden Input
+							// -------------------------------------------------------
+					
+					$element_text_args = [
+						text=>'Definition : ',
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					$type_args = array(
+						'type'=>'text',
+						'name'=>'Term-Hidden',
+						'size'=>20,
+						'indentlevel'=>7,
+						maxlength=>255,
+						'class'=>'definition',
+					);
+					
+					$form->DisplayFormField($type_args);
+					
+					$type_args = array(
+						'type'=>'text',
+						'name'=>'definition_Definition-Hidden',
+						'size'=>60,
+						'indentlevel'=>7,
+						maxlength=>255,
+						'class'=>'definition',
+					);
+					
+					$form->DisplayFormField($type_args);
+					
+							// Display 'Delete' Button
+							// -------------------------------------------------------
+					
+					$type_args = array(
+						'type'=>'button',
+						'id'=>'delete-definition-button',
+						'class'=>'float-right',
+						'value'=>'Remove',
+						'indentlevel'=>7,
+					);
+					
+					$form->DisplayFormField($type_args);
+					
+							// Clear Float
+							// -------------------------------------------------------
+					
+					$clear_float_divider_start_args = [
+						'class'=>'clear-float',
+						'indentlevel'=>7,
+					];
+					
+					$divider->displaystart($clear_float_divider_start_args);
+					
+					$clear_float_divider_end_args = [
+						'indentlevel'=>7,
+					];
+					
+					$divider->displayend($clear_float_divider_end_args);
+					
+							// Finish Hidden Field
+							// -------------------------------------------------------
+					
+					$clear_float_divider_end_args = [
+						'indentlevel'=>6,
+					];
+					
+					$divider->displayend($clear_float_divider_end_args);
+					
+							// Establish Bottom Hidden Div for JS-Showing
+							// -------------------------------------------------------
+					
+					$clear_float_divider_start_args = [
+						'id'=>'definition-list',
 						'indentlevel'=>5,
 					];
 					

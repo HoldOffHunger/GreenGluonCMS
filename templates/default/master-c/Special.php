@@ -28,19 +28,19 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = array(
+	$divider_padding_start_args = [
 		'class'=>'margin-5px padding-5px',
-	);
+	];
 	
-	$divider_end_args = array(
+	$divider_end_args = [
 		'indentlevel'=>1,
-	);
+	];
 	
 			// Display Header
 		
 		// -------------------------------------------------------------
 	
-	$header_primary_args = array(
+	$header_primary_args = [
 		'indentlevel'=>1,
 		'title'=>$this->domain_object->primary_domain . ' System Status : Special Eval',
 		'image'=>'system-status-icon.jpg',
@@ -54,7 +54,7 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	);
+	];
 	
 	$header->display($header_primary_args);
 			
@@ -62,7 +62,7 @@
 		
 		// -------------------------------------------------------------
 	
-	$return_to_master_c_args = array(
+	$return_to_master_c_args = [
 		'indentlevel'=>1,
 		'title'=>'Return to the Master Control Program',
 		'image'=>'master-c-icon.jpg',
@@ -77,7 +77,7 @@
 		'leftimageenable'=>1,
 		'rightimageenable'=>0,
 		'link'=>'master-c.php',
-	);
+	];
 	
 	$header->display($return_to_master_c_args);
 	
@@ -85,10 +85,10 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = array(
+	$divider_padding_start_args = [
 		'class'=>'horizontal-center width-70percent margin-top-5px border-2px',
 		'indentlevel'=>1,
-	);
+	];
 	
 	$divider->displaystart($divider_padding_start_args);
 	
@@ -96,13 +96,13 @@
 		
 		// -------------------------------------------------------------
 	
-	$start_form_args = array(
+	$start_form_args = [
 		'action'=>0,
 		'method'=>'post',
 		'files'=>0,
 		'formclass'=>'margin-0px',
 		'indentlevel'=>1,
-	);
+	];
 	
 	$form->StartForm($start_form_args);
 	
@@ -110,10 +110,10 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_fields_args = array(
+	$divider_fields_args = [
 		'class'=>'horizontal-center width-100percent margin-top-5px margin-bottom-5px',
 		'indentlevel'=>1,
-	);
+	];
 	
 	$divider->displaystart($divider_fields_args);
 	
@@ -121,9 +121,9 @@
 	print($this->results);
 	print('</p>');
 	
-	$divider_end_args = array(
+	$divider_end_args = [
 		indentlevel=>1,
-	);
+	];
 	$divider->displayend($divider_end_args);
 	
 ?>

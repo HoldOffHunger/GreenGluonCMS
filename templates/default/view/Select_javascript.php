@@ -1,5 +1,3 @@
-jquery.min.js
-jquery-ui.min.js
 jquery.timepicker.min.js
 datepicker.js
 timepicker.js

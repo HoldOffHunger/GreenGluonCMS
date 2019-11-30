@@ -38,7 +38,9 @@
 			return TRUE;
 		}
 		
-						// Functionality
+						// Comments
+						// ---------------------------------------------
+						// ---------------------------------------------
 						// ---------------------------------------------
 	
 					// Review Pending Comments
@@ -57,7 +59,7 @@
 		public function SetComments()
 		{
 			$comments = $this->SetComments_GetRecords();
-			$comments = $this->SetCommentUsers([comments=>$comments]);
+			$comments = $this->SetRecordUsers([records=>$comments]);
 			$comments = $this->SetRecordEntries([records=>$comments]);
 			
 			return $this->comments = $comments;
@@ -142,7 +144,7 @@
 		public function SetRejectedComments()
 		{
 			$comments = $this->SetRejectedComments_GetRecords();
-			$comments = $this->SetCommentUsers([comments=>$comments]);
+			$comments = $this->SetRecordUsers([records=>$comments]);
 			$comments = $this->SetRecordEntries([records=>$comments]);
 			
 			return $this->comments = $comments;
@@ -179,7 +181,7 @@
 		public function SetAcceptedComments()
 		{
 			$comments = $this->SetAcceptedComments_GetRecords();
-			$comments = $this->SetCommentUsers([comments=>$comments]);
+			$comments = $this->SetRecordUsers([records=>$comments]);
 			$comments = $this->SetRecordEntries([records=>$comments]);
 			
 			return $this->comments = $comments;
@@ -199,6 +201,175 @@
 			
 			return $accepted_comment_records;
 		}
+		
+						// Suggestions
+						// ---------------------------------------------
+						// ---------------------------------------------
+						// ---------------------------------------------
+	
+					// Review Pending Suggestions
+					// ---------------------------------------------
+		
+		public function ReviewSuggestions()
+		{
+			$this->SetOrmBasics();
+			$this->SetDBAdmin();
+			$this->SetSuggestions();
+			$this->SaveSuggestionChanges();
+			
+			return TRUE;
+		}
+		
+		public function SetSuggestions()
+		{
+			$suggestions = $this->SetSuggestions_GetRecords();
+			$suggestions = $this->SetRecordUsers([records=>$suggestions]);
+			$suggestions = $this->SetRecordEntries([records=>$suggestions]);
+			
+			return $this->suggestions = $suggestions;
+		}
+		
+		public function SetSuggestions_GetRecords()
+		{
+			$suggestion_get_args = [
+				type=>'Suggestion',
+				definition=>[
+					Rejected=>0,
+					Approved=>0,
+				],
+			];
+			
+			$unapproved_suggestion_records = $this->db_access_object->GetRecords($suggestion_get_args);
+			
+			return $unapproved_suggestion_records;
+		}
+		
+		public function SaveSuggestionChanges()
+		{
+			$suggestions = $this->suggestions;
+			
+			foreach($suggestions as $suggestion_key => $suggestion)
+			{
+				$query_suggestion_key = 'accept_reject_suggestion_' . $suggestion['id'];
+				$decision = $this->Param($query_suggestion_key);
+				
+				if($decision)
+				{
+					$new_accept = 0;
+					$new_reject = 0;
+					if($decision == 'Accept')
+					{
+						$new_accept = 1;
+					}
+					elseif($decision == 'Reject')
+					{
+						$new_reject = 1;
+					}
+					
+					if($new_accept != $suggestion['Approved'] || $new_reject != $suggestion['Rejected'])
+					{
+						$suggestion['Approved'] = $new_accept;
+						$suggestion['Rejected'] = $new_reject;
+					
+						$suggestion_update_args = [
+							type=>'Suggestion',
+							update=>[
+								'Approved'=>$suggestion['Approved'],
+								'Rejected'=>$suggestion['Rejected'],
+							],
+							where=>[
+								id=>$suggestion['id'],
+							],
+						];
+						
+						$new_suggestion = $this->db_access_object->UpdateRecord($suggestion_update_args);
+						
+						unset($this->suggestions[$suggestion_key]);
+					}
+				}
+			}
+			
+			return TRUE;
+		}
+	
+					// Review Rejected Suggestions
+					// ---------------------------------------------
+		
+		public function ReviewRejectedSuggestions()
+		{
+			$this->SetOrmBasics();
+			$this->SetDBAdmin();
+			$this->SetRejectedSuggestions();
+			$this->SaveSuggestionChanges();
+			
+			return TRUE;
+		}
+		
+		public function SetRejectedSuggestions()
+		{
+			$suggestions = $this->SetRejectedSuggestions_GetRecords();
+			$suggestions = $this->SetRecordUsers([records=>$suggestions]);
+			$suggestions = $this->SetRecordEntries([records=>$suggestions]);
+			
+			return $this->suggestions = $suggestions;
+		}
+		
+		public function SetRejectedSuggestions_GetRecords()
+		{
+			$suggestion_get_args = [
+				type=>'Suggestion',
+				definition=>[
+					Rejected=>1,
+					Approved=>0,
+				],
+			];
+			
+			$rejected_suggestion_records = $this->db_access_object->GetRecords($suggestion_get_args);
+			
+			return $rejected_suggestion_records;
+		}
+	
+					// Review Accepted Suggestions
+					// ---------------------------------------------
+		
+		public function ReviewAcceptedSuggestions()
+		{
+			$this->SetOrmBasics();
+			$this->SetDBAdmin();
+			$this->SetAcceptedSuggestions();
+			$this->SaveSuggestionChanges();
+			
+			return TRUE;
+		}
+		
+		public function SetAcceptedSuggestions()
+		{
+			$suggestions = $this->SetAcceptedSuggestions_GetRecords();
+			$suggestions = $this->SetRecordUsers([records=>$suggestions]);
+			$suggestions = $this->SetRecordEntries([records=>$suggestions]);
+			
+			return $this->suggestions = $suggestions;
+		}
+		
+		public function SetAcceptedSuggestions_GetRecords()
+		{
+			$suggestion_get_args = [
+				type=>'Suggestion',
+				definition=>[
+					Rejected=>0,
+					Approved=>1,
+				],
+			];
+			
+			$accepted_suggestion_records = $this->db_access_object->GetRecords($suggestion_get_args);
+			
+			return $accepted_suggestion_records;
+		}
+		
+						// Statistics
+						// ---------------------------------------------
+						// ---------------------------------------------
+						// ---------------------------------------------
 	
 					// Page Statistics
 					// ---------------------------------------------
@@ -206,6 +377,7 @@
 		public function PageStatistics()
 		{
 			$this->SetDBAdmin();
+			ini_set('memory_limit','400M');
 			
 			$this->SetPrimaryHostList();
 			$this->primary_host_options = $this->GetPrimaryHostSelectList();

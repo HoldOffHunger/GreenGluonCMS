@@ -737,12 +737,10 @@
 		
 		require('../modules/html/navigation.php');
 		$navigation_args = [
+			'globals'=>$this->globals,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
-			'text'=>$text,
 			'domainobject'=>$this->domain_object,
-			'callingtemplate'=>$this,
-			'backgroundcolor'=>'gray13',
 		];
 		$navigation = new module_navigation($navigation_args);
 		
@@ -752,6 +750,7 @@
 		
 		require('../modules/html/socialmediasharelinks.php');
 		$social_media_share_links_args = [
+			'globals'=>$this->globals,
 			'textonly'=>$this->mobile_friendly,
 			'languageobject'=>$this->language_object,
 			'divider'=>$divider,
@@ -1061,7 +1060,9 @@
 		
 		print('<li><a href="#search">Search</a></li>');
 		
-#		print('<li><a href="#share">Share</a></li>');
+		print('<li><a href="#random">Random Words</a></li>');
+		
+		print('<li><a href="#share">Share</a></li>');
 		
 #		print('<li><a href="#comments">Comments</a></li>');
 		
@@ -1172,7 +1173,7 @@
 			
 			if($definition['Etymology'])
 			{
-				print('<strong>Part of Speech : </strong>' . $definition['Etymology']);
+				print('<strong>Etymology : </strong>' . $definition['Etymology']);
 				print('<br>');
 			}
 			
@@ -1232,23 +1233,117 @@
 		
 		print('<center>');
 		
-		print('<div class="border-2px background-color-gray15 margin-5px horizontal-left width-50percent">');
-		print('<div style="margin:5px;padding:5px;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma">');
+		
+	
+	print('<form class="margin-0px" method="post" action="http://www.wordweight.com/">');
+	
+	print('<div class="border-2px background-color-gray15 margin-5px horizontal-left width-50percent">');
+	print('<div style="margin:5px;padding:5px;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma">');
+	
+	print('<center>');
+	
+	if($this->search_term)
+	{
+		print("Sorry, no results for " . $this->search_term . ".  Please try again!");
+		print('<BR><BR>');
+	}
+	
+	print('Search : <input type="text" name="search" size="60">');
+	
+	print('<br><br>');
+	
+	print('<input type="submit" value="Lookup Definition">');
+	print('</center>');
+	
+	print('</div>');
+	print('</div>');
+	
+	print('</form>');
+		
+		
+		print('</center>');
+		
+				// Display Random Words
+			
+			// -------------------------------------------------------------
+				
+					// Share Links Header
+				
+				// -------------------------------------------------------------
+				
+		print('<a name="random"></a>');
 		
 		print('<center>');
-		print('<a href="');
-		print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
-		print('">');
+		print('<div class="horizontal-center width-95percent">');
+		print('<div class="border-2px background-color-gray15 margin-5px float-left">');
+		print('<h2 class="horizontal-left margin-5px font-family-arial">');
+		print('Random Words');
+		print('</h2>');
+		print('</div>');
+		print('</div>');
+		print('</center>');
+			
+					// Finish Share Links Header
+				
+				// -------------------------------------------------------------
+									
+		$clear_float_divider_start_args = [
+			'class'=>'clear-float',
+			'indentlevel'=>5,
+		];
 		
-		print('Back to WordWeight.com\'s Search!');
+		$divider->displaystart($clear_float_divider_start_args);
 		
+		$clear_float_divider_end_args = [
+			'indentlevel'=>5,
+		];
+		
+		$divider->displayend($clear_float_divider_end_args);
+	
+	print('<center>');
+	print('<div class="border-2px background-color-gray15 margin-5px horizontal-left width-70percent">');
+	print('<div style="margin:5px;padding:5px;border:black 2px solid;background-color:#FFFFFF;" class="header-3 padding-0px margin-5px horizontal-left font-family-tahoma">');
+	
+	print('<center>');
+	print('<div class="border-2px background-color-gray13 margin-5px" style="display: inline-block;">');
+	print('<div class="margin-5px">');
+	print('<center><h3 class="margin-0px">Some Random Definitions!</h3></center>');
+	print('</div>');
+	print('</div>');
+	print('</center>');
+	
+	print('<br>');
+	
+	$random_definitions = $this->dictionary->LookUpRandomWords([]);
+	
+	foreach ($random_definitions as $random_word => $random_definition)
+	{
+		print('<div id="header_backgroundimageurl" class="border-2px background-color-gray13 margin-5px" style="display: inline-block;">');
+		print('<div class="margin-5px">');
+		print('<a href="' . urlencode(ucwords($random_word)) . '/view.php">');
+		print(ucwords($random_word));
 		print('</a>');
-		print('</center>');
-		
 		print('</div>');
 		print('</div>');
+	}
+	
+	print('</div>');
+	print('</div>');
+	print('</center>');
+	
+			// Display Similar Sites
 		
-		print('</center>');
+		// -------------------------------------------------------------
+	
+	require('../modules/html/similarsites-satellites.php');
+	
+	$similar_site_args = [
+		site=>$this->domain_object->primary_domain_lowercased,
+		language=>$this->language_object,
+	];
+	$similar_sites = new module_similarsites_satellites($similar_site_args);
+	
+	$similar_sites->display();
 		
 				// Display Share Links
 			

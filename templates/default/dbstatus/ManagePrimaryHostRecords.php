@@ -28,19 +28,19 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = array(
+	$divider_padding_start_args = [
 		'class'=>'',
-	);
+	];
 	
-	$divider_end_args = array(
+	$divider_end_args = [
 		'indentlevel'=>1,
-	);
+	];
 	
 			// Display Header
 		
 		// -------------------------------------------------------------
 	
-	$header_primary_args = array(
+	$header_primary_args = [
 		'indentlevel'=>1,
 		'title'=>$this->domain_object->primary_domain . ' System Status : Manage Primary Host Records',
 		'image'=>'system-status-icon.jpg',
@@ -54,7 +54,7 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	);
+	];
 	
 	$header->display($header_primary_args);
 	
@@ -64,17 +64,17 @@
 	
 	$divider->displaystart($divider_padding_start_args);
 	
-	$version_list_display_args = array(
-		'options'=>array(
+	$version_list_display_args = [
+		'options'=>[
 			'indentlevel'=>1,
 			'tableheaders'=>0,
 			'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13 margin-top-5px',
 			'rowclass'=>'border-1px horizontal-left',
-			'cellclass'=>array(
+			'cellclass'=>[
 				'border-1px vertical-top',
 				'border-1px width-100percent vertical-top',
-			),
-		),
+			],
+		],
 		'list'=>[
 			[
 				'<nobr>Primary Host:</nobr>', $this->domain_object->primary_domain,
@@ -83,7 +83,7 @@
 				'<nobr>Total Primary Host Records:</nobr>', count($this->primary_host_records),
 			],
 		],
-	);
+	];
 	$generic_list->Display($version_list_display_args);
 	
 	$divider->displayend($divider_end_args);
@@ -94,23 +94,23 @@
 	
 	$divider->displaystart($divider_padding_start_args);
 	
-	$version_list_display_args = array(
-		'options'=>array(
+	$version_list_display_args = [
+		'options'=>[
 			'indentlevel'=>1,
 			'tableheaders'=>0,
 			'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13 margin-top-5px',
 			'rowclass'=>'border-1px horizontal-left',
-			'cellclass'=>array(
+			'cellclass'=>[
 				'border-1px vertical-top',
 				'border-1px width-100percent vertical-top',
-			),
-		),
+			],
+		],
 		'list'=>[
 			[
 				'<nobr>Active Options:</nobr>', 'Author, BaseTemplate, Classification, Contact, Contributor, Copyright, Creator, NewsKeywords, PublicReleaseDate, Publisher, Rights, Subject, ApplicationName, PrimaryImageLeft, PrimaryImageRight.  You may <a href="#" onclick="return false;" name="generate-primary-host-records" class="generate-primary-host-records" id="generate-primary-host-records">Auto-Generate Base Primary Host Records</a> if not all are configured yet.',
 			],
 		],
-	);
+	];
 	$generic_list->Display($version_list_display_args);
 	
 	$divider->displayend($divider_end_args);
@@ -151,19 +151,19 @@
 		{
 			$divider->displaystart($divider_padding_start_args);
 			
-			$version_list_display_args = array(
-				'options'=>array(
+			$version_list_display_args = [
+				'options'=>[
 					'indentlevel'=>1,
 					'tableheaders'=>0,
 					'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13 margin-top-5px',
 					'rowclass'=>'border-1px horizontal-left',
-					'cellclass'=>array(
+					'cellclass'=>[
 						'border-1px vertical-top',
 						'border-1px width-100percent vertical-top',
-					),
-				),
+					],
+				],
 				'list'=>$admin_error_to_display,
-			);
+			];
 			$generic_list->Display($version_list_display_args);
 			
 			$divider->displayend($divider_end_args);
@@ -173,10 +173,10 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = array(
+	$divider_padding_start_args = [
 		'class'=>'horizontal-center width-80percent margin-top-5px border-2px',
 		'indentlevel'=>1,
-	);
+	];
 	
 	$divider->displaystart($divider_padding_start_args);
 	
@@ -231,7 +231,7 @@
 							// Display Field
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'RecordKey[]',
 						'class'=>'margin-top-5px margin-left-5px recordkey',
@@ -239,14 +239,14 @@
 						indentlevel=>5,
 						maxlength=>255,
 						value=>$primary_host_record['RecordKey'],
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
 							// Display Field
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						type=>'text',
 						name=>'RecordValue[]',
 						'class'=>'margin-top-5px margin-left-5px',
@@ -254,7 +254,7 @@
 						indentlevel=>5,
 						maxlength=>255,
 						value=>$primary_host_record_value['RecordValue'],
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 					
@@ -263,13 +263,13 @@
 								// Display 'Add' Button
 								// -------------------------------------------------------
 						
-						$type_args = array(
+						$type_args = [
 							'type'=>'button',
 							'id'=>'add-record-button',
 							'class'=>'float-right margin-top-5px margin-right-5px',
 							'value'=>'Add Record',
 							'indentlevel'=>5,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 					}
@@ -278,13 +278,13 @@
 								// Display 'Delete' Button
 								// -------------------------------------------------------
 						
-						$type_args = array(
+						$type_args = [
 							'type'=>'button',
 							'id'=>'delete-record-button',
 							'class'=>'float-right margin-top-5px margin-right-5px delete-record-button',
 							'value'=>'Remove',
 							'indentlevel'=>5,
-						);
+						];
 						
 						$form->DisplayFormField($type_args);
 					}
@@ -338,7 +338,7 @@
 						// Display Field
 						// -------------------------------------------------------
 				
-				$type_args = array(
+				$type_args = [
 					type=>'text',
 					name=>'RecordKey[]',
 					'class'=>'margin-top-5px margin-left-5px recordkey',
@@ -346,14 +346,14 @@
 					indentlevel=>5,
 					maxlength=>255,
 					value=>$primary_host_record['RecordKey'],
-				);
+				];
 				
 				$form->DisplayFormField($type_args);
 				
 						// Display Field
 						// -------------------------------------------------------
 				
-				$type_args = array(
+				$type_args = [
 					type=>'text',
 					name=>'RecordValue[]',
 					'class'=>'margin-top-5px margin-left-5px',
@@ -361,7 +361,7 @@
 					indentlevel=>5,
 					maxlength=>255,
 					value=>$primary_host_record['RecordValue'],
-				);
+				];
 				
 				$form->DisplayFormField($type_args);
 				
@@ -370,13 +370,13 @@
 							// Display 'Add' Button
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						'type'=>'button',
 						'id'=>'add-record-button',
 						'class'=>'float-right margin-top-5px margin-right-5px',
 						'value'=>'Add Record',
 						'indentlevel'=>5,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 				}
@@ -385,13 +385,13 @@
 							// Display 'Delete' Button
 							// -------------------------------------------------------
 					
-					$type_args = array(
+					$type_args = [
 						'type'=>'button',
 						'id'=>'delete-record-button',
 						'class'=>'float-right margin-top-5px margin-right-5px delete-record-button',
 						'value'=>'Remove',
 						'indentlevel'=>5,
-					);
+					];
 					
 					$form->DisplayFormField($type_args);
 				}
@@ -437,41 +437,41 @@
 				// Display Field
 				// -------------------------------------------------------
 		
-		$type_args = array(
+		$type_args = [
 			type=>'text',
 			name=>'RecordKey[]',
 			'class'=>'margin-top-5px margin-left-5px',
 			size=>60,
 			indentlevel=>5,
 			maxlength=>255,
-		);
+		];
 		
 		$form->DisplayFormField($type_args);
 		
 				// Display Field
 				// -------------------------------------------------------
 		
-		$type_args = array(
+		$type_args = [
 			type=>'text',
 			name=>'RecordValue[]',
 			'class'=>'margin-top-5px margin-left-5px',
 			size=>60,
 			indentlevel=>5,
 			maxlength=>255,
-		);
+		];
 		
 		$form->DisplayFormField($type_args);
 		
 				// Display 'Add' Button
 				// -------------------------------------------------------
 		
-		$type_args = array(
+		$type_args = [
 			'type'=>'button',
 			'id'=>'add-record-button',
 			'class'=>'float-right margin-top-5px margin-right-5px',
 			'value'=>'Add Record',
 			'indentlevel'=>5,
-		);
+		];
 		
 		$form->DisplayFormField($type_args);
 		
@@ -506,38 +506,38 @@
 			// Display Hidden Input
 			// -------------------------------------------------------
 	
-	$type_args = array(
+	$type_args = [
 		'type'=>'text',
 		'name'=>'RecordKey-Hidden',
 		'class'=>'margin-top-5px margin-left-5px',
 		'size'=>60,
 		'indentlevel'=>7,
 		maxlength=>255,
-	);
+	];
 	
 	$form->DisplayFormField($type_args);
 	
-	$type_args = array(
+	$type_args = [
 		'type'=>'text',
 		'name'=>'RecordValue-Hidden',
 		'class'=>'margin-top-5px margin-left-5px',
 		'size'=>60,
 		'indentlevel'=>7,
 		maxlength=>255,
-	);
+	];
 	
 	$form->DisplayFormField($type_args);
 	
 			// Display 'Delete' Button
 			// -------------------------------------------------------
 	
-	$type_args = array(
+	$type_args = [
 		'type'=>'button',
 		'id'=>'delete-record-button',
 		'class'=>'float-right margin-top-5px margin-right-5px delete-record-button',
 		'value'=>'Remove',
 		'indentlevel'=>7,
-	);
+	];
 	
 	$form->DisplayFormField($type_args);
 	

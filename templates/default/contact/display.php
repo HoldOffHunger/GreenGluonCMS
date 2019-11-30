@@ -34,11 +34,10 @@
 	
 	require('../modules/html/navigation.php');
 	$navigation_args = [
+		'globals'=>$this->globals,
 		'languageobject'=>$this->language_object,
 		'divider'=>$divider,
-		'text'=>$text,
 		'domainobject'=>$this->domain_object,
-		'callingtemplate'=>$this,
 	];
 	$navigation = new module_navigation($navigation_args);
 	
@@ -229,12 +228,17 @@
 	];
 	$text->Display($element_text_args);
 	
+	$contact_creator_value = $this->primary_host_record['Contact'];
+	if(strpos($contact_creator_value, '@') !== false) {
+		$contact_creator_value = '<a href="mailto:' . $contact_creator_value . '">' . $contact_creator_value . '</a>';
+	}
+	
 	$element_text_args = [
 		text=>
 			'<div class="padding-5px horizontal-left font-family-arial">' .
 			'<p class="margin-0px margin-top-5px"><strong>' . $site_creator_text . ' :</strong> ' . $this->primary_host_record['Creator'] . '</p>' .
 			'<p class="margin-0px margin-top-5px"><strong>' . $site_created_on_text . ' :</strong> ' . $this->primary_host_record['PublicReleaseDate'] . '</p>' .
-			'<p class="margin-0px margin-top-5px"><strong>' . $contact_creator_text . ' :</strong> ' . $this->primary_host_record['Contact'] . '</p>' .
+			'<p class="margin-0px margin-top-5px"><strong>' . $contact_creator_text . ' :</strong> ' . $contact_creator_value . '</p>' .
 			'</div>',
 		indentlevel=>5,
 	];

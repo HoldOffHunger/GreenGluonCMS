@@ -450,6 +450,7 @@
 				],
 				'list'=>$this->StatusDataArray,
 			];
+			
 			$generic_list->Display($version_list_display_args);
 			
 			$divider->displayend($divider_end_args);

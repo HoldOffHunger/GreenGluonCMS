@@ -37,7 +37,7 @@
 		$primary_color = '6495ED';
 	}
 	
-	$header_primary_args = array(
+	$header_primary_args = [
 		'indentlevel'=>1,
 		'title'=>'Login to ' . $this->domain_object->primary_domain,
 		'image'=>'master-c-icon.jpg',
@@ -51,7 +51,7 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	);
+	];
 	
 			// Display Header
 		
@@ -84,7 +84,7 @@
 		'options'=>[
 			'indentlevel'=>1,
 			'tableheaders'=>0,
-			'tableclass'=>'width-50percent horizontal-center border-2px background-color-gray13 margin-top-5px',
+			'tableclass'=>'width-50percent horizontal-center border-2px background-color-gray13 margin-top-5px font-family-tahoma',
 			'rowclass'=>'border-1px horizontal-left',
 			'cellclass'=>[
 				'border-1px vertical-top horizontal-center font-size-150percent',
@@ -114,7 +114,7 @@
 			'options'=>[
 				'indentlevel'=>1,
 				'tableheaders'=>0,
-				'tableclass'=>'width-100percent horizontal-center border-2px background-color-gray13 margin-top-5px',
+				'tableclass'=>'width-100percent horizontal-center border-2px background-color-gray13 margin-top-5px font-family-tahoma',
 				'rowclass'=>'border-1px horizontal-left',
 				'cellclass'=>[
 					'border-1px width-33percent vertical-top link-clickable cursor-pointer',

@@ -280,6 +280,7 @@
 			'Link',
 			'Event Date',
 			'Association',
+			'Definition',
 			'Save',
 		];
 		
@@ -330,6 +331,7 @@
 						size=>60,
 						indentlevel=>5,
 						maxlength=>255,
+						autofocus=>true,
 					);
 					
 					$form->DisplayFormField($type_args);
@@ -1087,6 +1089,51 @@
 					);
 					
 					$form->DisplayFormField($type_args);
+						
+							// Display Field
+							// -------------------------------------------------------
+					
+					print("<br>");
+					$element_text_args = [
+						text=>'Strip URLS : ',
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					$type_args = array(
+						type=>'checkbox',
+						name=>'textbody_StripURLs[]',
+						value=>'1',
+						size=>30,
+						indentlevel=>5,
+						maxlength=>512,
+						checked=>'CHECKED',
+					);
+					
+					$form->DisplayFormField($type_args);
+						
+							// Display Field
+							// -------------------------------------------------------
+					
+					print("<br>");
+					$element_text_args = [
+						text=>'Americanize Vocabulary : ',
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					$type_args = array(
+						type=>'checkbox',
+						name=>'textbody_AmericanizeVocabulary[]',
+						value=>'1',
+						size=>30,
+						indentlevel=>5,
+						maxlength=>512,
+						checked=>'CHECKED',
+					);
+					
+					$form->DisplayFormField($type_args);
+					print("<br>");
 					
 							// Display Field
 							// -------------------------------------------------------
@@ -2624,6 +2671,182 @@
 					
 					$clear_float_divider_start_args = [
 						'id'=>'association-list',
+						'indentlevel'=>5,
+					];
+					
+					$divider->displaystart($clear_float_divider_start_args);
+					
+					$clear_float_divider_end_args = [
+						'indentlevel'=>5,
+					];
+					
+					$divider->displayend($clear_float_divider_end_args);
+					
+					break;
+					
+				case 'Definition':
+							// Autogen?
+							// -------------------------------------------------------
+				
+					$element_text_args = [
+						text=>'Autogenerate Definitions : ',
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					$type_args = array(
+						type=>'checkbox',
+						name=>'autogenerate-definitions',
+						value=>1,
+						indentlevel=>5,
+						maxlength=>512,
+					);
+					
+					$form->DisplayFormField($type_args);
+					
+					print('<br>');
+					
+							// Display Field
+							// -------------------------------------------------------
+					
+					$element_text_args = [
+						text=>'Definition : ',
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					$type_args = [
+						type=>'text',
+						name=>'Term[]',
+						size=>20,
+						indentlevel=>5,
+						maxlength=>255,
+					];
+					
+					$form->DisplayFormField($type_args);
+					
+					$type_args = [
+						type=>'text',
+						name=>'definition_Definition[]',
+						size=>60,
+						indentlevel=>5,
+						maxlength=>255,
+					];
+					
+					$form->DisplayFormField($type_args);
+					
+							// Display 'Add' Button
+							// -------------------------------------------------------
+					
+					$type_args = array(
+						'type'=>'button',
+						'id'=>'add-definition-button',
+						'class'=>'float-right',
+						'value'=>'Add Definition',
+						'indentlevel'=>5,
+					);
+					
+					$form->DisplayFormField($type_args);
+					
+							// Clear Float
+							// -------------------------------------------------------
+					
+					$clear_float_divider_start_args = [
+						'class'=>'clear-float',
+						'indentlevel'=>5,
+					];
+					
+					$divider->displaystart($clear_float_divider_start_args);
+					
+					$clear_float_divider_end_args = [
+						'indentlevel'=>5,
+					];
+					
+					$divider->displayend($clear_float_divider_end_args);
+					
+							// Start Hidden Field
+							// -------------------------------------------------------
+					
+					$clear_float_divider_start_args = [
+						'id'=>'hidden-definition-input',
+						'class'=>'display-none',
+						'indentlevel'=>6,
+					];
+					
+					$divider->displaystart($clear_float_divider_start_args);
+					
+							// Display Hidden Input
+							// -------------------------------------------------------
+					
+					$element_text_args = [
+						text=>'Definition : ',
+						indentlevel=>5,
+					];
+					$text->Display($element_text_args);
+					
+					$type_args = array(
+						'type'=>'text',
+						'name'=>'Term-Hidden',
+						'size'=>20,
+						'indentlevel'=>7,
+						'maxlength'=>255,
+					);
+					
+					$form->DisplayFormField($type_args);
+					
+					$type_args = array(
+						'type'=>'text',
+						'name'=>'definition_Definition-Hidden',
+						'size'=>60,
+						'indentlevel'=>7,
+						'maxlength'=>255,
+					);
+					
+					$form->DisplayFormField($type_args);
+					
+							// Display 'Delete' Button
+							// -------------------------------------------------------
+					
+					$type_args = array(
+						'type'=>'button',
+						'id'=>'delete-definition-button',
+						'class'=>'float-right',
+						'value'=>'Remove',
+						'indentlevel'=>7,
+					);
+					
+					$form->DisplayFormField($type_args);
+					
+							// Clear Float
+							// -------------------------------------------------------
+					
+					$clear_float_divider_start_args = [
+						'class'=>'clear-float',
+						'indentlevel'=>7,
+					];
+					
+					$divider->displaystart($clear_float_divider_start_args);
+					
+					$clear_float_divider_end_args = [
+						'indentlevel'=>7,
+					];
+					
+					$divider->displayend($clear_float_divider_end_args);
+					
+							// Finish Hidden Field
+							// -------------------------------------------------------
+					
+					$clear_float_divider_end_args = [
+						'indentlevel'=>6,
+					];
+					
+					$divider->displayend($clear_float_divider_end_args);
+					
+							// Establish Bottom Hidden Div for JS-Showing
+							// -------------------------------------------------------
+					
+					$clear_float_divider_start_args = [
+						'id'=>'definition-list',
 						'indentlevel'=>5,
 					];
 					
