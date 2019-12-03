@@ -6,6 +6,7 @@
 			$this->SetORM();
 			$this->SetMasterRecord();
 			$this->SetRecordTree();
+			
 			if(count($this->record_list)) {
 				$this->SetEntryParentTable();
 				
@@ -21,6 +22,22 @@
 				$this->parentid = $this->master_record['id'];
 				$this->entry = $this->parent;
 			}
+			
+			$url = $this->domain_object->GetPrimaryDomain([lowercase=>0, www=>1]);
+			
+			$this->entry['eventdate'][] = [
+				'id'=>-1,
+				'Title'=>'Added to ' . $url,
+				'EventDateTime'=>$this->entry['OriginalCreationDate'],
+			];
+			
+			if($this->entry['OriginalCreationDate'] != $this->entry['LastModificationDate']) {
+				$this->entry['eventdate'][] = [
+					'id'=>-2,
+					'Title'=>'Last Updated on ' . $url,
+					'EventDateTime'=>$this->entry['LastModificationDate'],
+				];
+			}
 		}
 		
 		public function SetORM()
@@ -35,15 +52,42 @@
 			return $this->record_list = $this->orm->GetRecordTree([codelist=>$this->object_list, availabilitylimit=>1]);
 		}
 		
+		public function CompactDefinitions()
+		{
+			$definitions = $this->entry['definition'];
+			$definitions_count = count($definitions);
+			
+			if($definitions_count)
+			{
+				$definitions_hash = [];
+				
+				for($i = 0; $i < $definitions_count; $i++)
+				{
+					$definition = $definitions[$i];
+					
+					if(!$definitions_hash[$definition['Term']])
+					{
+						$definitions_hash[$definition['Term']] = [];
+					}
+					
+					$definitions_hash[$definition['Term']][] = $definition['Definition'];
+				}
+			}
+			
+			ksort($definitions_hash);
+			
+			return $this->definitions = $definitions_hash;
+		}
+		
 		public function SetTagCounts()
 		{
+			$all_tags = [];
 			$tag_counts = [];
 			
 			if($this->entry || $this->user)
 			{
 				if($this->entry['tag'] && $this->parent)
 				{
-					$tags = [];
 					$entry_tags = $this->entry['tag'];
 					$entry_tags_count = count($entry_tags);
 					
@@ -52,12 +96,9 @@
 						for($i = 0; $i < $entry_tags_count; $i++)
 						{
 							$entry_tag = $entry_tags[$i];
-							$tags[] = $entry_tag['Tag'];
+							$all_tags[] = $entry_tag['Tag'];
 						}
 					}
-					
-					$entry_tag_counts = $this->orm->GetTagCounts(['tags'=>$tags, 'entry'=>$this->parent]);
-					$tag_counts['entry'] = $entry_tag_counts;
 				}
 				
 				if($this->entry && $this->entry['association'])
@@ -75,9 +116,14 @@
 							$tags = $entry['tag'];
 							$tags_count = count($tags);
 							
+							for($k = 0; $k < $tags_count; $k++) {
+								$tag = $tags[$k];
+								$all_tags[] = $tag['Tag'];
+							}
+							
 							$entry_parents = $entry['parents'];
 							$entry_parents_count = count($entry_parents);
-								
+							
 							if($entry_parents_count)
 							{
 								$first_parent = $entry_parents[$entry_parents_count - 2];
@@ -90,44 +136,18 @@
 								if($parents[$first_parent['id']])
 								{
 									$temp_tags = $parents[$first_parent['id']]['tags'];
+									for($j = 0; $j < count($temp_tags); $j++)
+									{
+										$association_tag = $temp_tags[$j];
+										
+										$all_tags[] = $association_tag['Tag'];
+									}
 								}
-								else
-								{
-									$temp_tags = [];
-								}
-								
-								for($j = 0; $j < $tags_count; $j++)
-								{
-									$association_tag = $tags[$j];
-									
-									$temp_tags[] = $association_tag['Tag'];
-								}
-								
-								$first_parent['tags'] = $temp_tags;
-								
-								$parents[$first_parent['id']] = $first_parent;
-							}
-#							print("<PRE>");
-#							print_r($association);
-#							print("</PRE>");
-						}
-#						print("<PRE>");
-#						print_r($parents);
-#						print("</PRE>");
-						
-						if(count($parents))
-						{
-							$tag_counts['associations'] = [];
-							
-							foreach($parents as $parent_id => $parent)
-							{
-								$tags = $parent['tags'];
-								$entry_tag_counts = $this->orm->GetTagCounts(['tags'=>$tags, 'entry'=>$parent]);
-								$tag_counts['associations'][$parent['Code']] = $entry_tag_counts;
 							}
 						}
 					}
 				}
+				
 				$likes_dislikes = $this->likedislikes;
 				
 				if($likes_dislikes)
@@ -136,7 +156,6 @@
 					
 					if($likes_dislikes_count)
 					{
-						$parents = [];
 						for($i = 0; $i < $likes_dislikes_count; $i++)
 						{
 							$like_dislike = $likes_dislikes[$i];
@@ -159,34 +178,14 @@
 								if($parents[$like_dislike_first_parent['id']])
 								{
 									$temp_tags = $parents[$like_dislike_first_parent['id']]['tags'];
-								}
-								else
-								{
-									$temp_tags = [];
-								}
 								
-								for($j = 0; $j < $like_dislike_tags_count; $j++)
-								{
-									$like_dislike_tag = $like_dislike_tags[$j];
-									
-									$temp_tags[] = $like_dislike_tag['Tag'];
+									for($j = 0; $j < count($temp_tags); $j++)
+									{
+										$like_dislike_tag = $temp_tags[$j];
+										
+										$all_tags[] = $like_dislike_tag['Tag'];
+									}
 								}
-								
-								$like_dislike_first_parent['tags'] = $temp_tags;
-								
-								$parents[$like_dislike_first_parent['id']] = $like_dislike_first_parent;
-							}
-						}
-						
-						if(count($parents))
-						{
-							$tag_counts['likesdislikes'] = [];
-							
-							foreach($parents as $parent_id => $parent)
-							{
-								$tags = $parent['tags'];
-								$entry_tag_counts = $this->orm->GetTagCounts(['tags'=>$tags, 'entry'=>$parent]);
-								$tag_counts['likesdislikes'][$parent['Code']] = $entry_tag_counts;
 							}
 						}
 					}
@@ -200,7 +199,6 @@
 					
 					if($comments_count)
 					{
-						$parents = [];
 						for($i = 0; $i < $comments_count; $i++)
 						{
 							$comment = $comments[$i];
@@ -223,33 +221,14 @@
 								if($parents[$comment_first_parent['id']])
 								{
 									$temp_tags = $parents[$comment_first_parent['id']]['tags'];
-								}
-								else
-								{
-									$temp_tags = [];
-								}
 								
-								for($j = 0; $j < $comment_entry_tags_count; $j++)
-								{
-									$comment_entry_tag = $comment_entry_tags[$j];
-									
-									$temp_tags[] = $comment_entry_tag['Tag'];
+									for($j = 0; $j < count($temp_tags); $j++)
+									{
+										$comment_entry_tag = $temp_tags[$j];
+										
+										$all_tags[] = $comment_entry_tag['Tag'];
+									}
 								}
-								
-								$comment_first_parent['tags'] = $temp_tags;
-								$parents[$comment_first_parent['id']] = $comment_first_parent;
-							}
-						}
-						
-						if(count($parents))
-						{
-							$tag_counts['comments'] = [];
-							
-							foreach($parents as $parent_id => $parent)
-							{
-								$tags = $parent['tags'];
-								$entry_tag_counts = $this->orm->GetTagCounts(['tags'=>$tags, 'entry'=>$parent]);
-								$tag_counts['comments'][$parent['Code']] = $entry_tag_counts;
 							}
 						}
 					}
@@ -258,10 +237,8 @@
 				if($this->entry['associated'])
 				{
 					$parents_collection = [];
-					$parent_tags = [];
 					$associated_entries = $this->entry['associated'];
 					$associated_entries_count = count($associated_entries);
-					
 					if($associated_entries_count)
 					{
 						for($i = 0; $i < $associated_entries_count; $i++)
@@ -283,20 +260,12 @@
 									for($j = 0; $j < $associated_entry_tags_count; $j++)
 									{
 										$associated_entry_tag = $associated_entry_tags[$j];
-										$parent_tags[$first_parent['id']][] = $associated_entry_tag['Tag'];
+					//					print("BT: Eh?" . $associated_entry_tag['Tag']);
+										$all_tags[] = $associated_entry_tag['Tag'];
 									}
 								}
 							}
 						}
-					}
-					
-					$tag_counts['associated'] = [];
-					
-					foreach($parent_tags as $parent_id => $tags)
-					{
-						$entry_tag_counts = $this->orm->GetTagCounts(['tags'=>$tags, 'entry'=>['id'=>$parent_id]]);
-						$parent = $parents_collection[$parent_id];
-						$tag_counts['associated'][$parent['Code']] = $entry_tag_counts;
 					}
 				}
 				
@@ -306,8 +275,6 @@
 					{
 						$children_records = $this->children;
 						$children_record_count = count($children_records);
-						
-						$children_tags = [];
 						
 						if($children_record_count)
 						{
@@ -320,7 +287,7 @@
 								for($j = 0; $j < $child_tag_count; $j++)
 								{
 									$child_tag = $child_tags[$j];
-									$children_tags[] = $child_tag['Tag'];
+									$all_tags[] = $child_tag['Tag'];
 								}
 							}
 						}
@@ -342,7 +309,7 @@
 									for($j = 0; $j < $random_child_tag_count; $j++)
 									{
 										$random_child_tag = $random_child_tags[$j];
-										$children_tags[] = $random_child_tag['Tag'];
+										$all_tags[] = $random_child_tag['Tag'];
 									}
 								}
 							}
@@ -357,13 +324,8 @@
 							for($i = 0; $i < $tags_random_records_count; $i++)
 							{
 								$tag_random_record = $tags_random_records[$i];
-								$children_tags[] = $tag_random_record['Tag'];
+								$all_tags[] = $tag_random_record['Tag'];
 							}
-						}
-						
-						if($children_tags && count($children_tags))
-						{
-							$tag_counts['children'] = $this->orm->GetTagCounts(['tags'=>$children_tags, 'entry'=>$this->entry]);
 						}
 					}
 					else
@@ -373,8 +335,6 @@
 						
 						if($children_record_count)
 						{
-							$parents = [];
-							
 							for($i = 0; $i < $children_record_count; $i++)
 							{
 								$child = $children_records[$i];
@@ -396,33 +356,14 @@
 									if($parents[$child_first_parent['id']])
 									{
 										$temp_tags = $parents[$child_first_parent['id']]['tags'];
-									}
-									else
-									{
-										$temp_tags = [];
-									}
 									
-									for($j = 0; $j < $child_tags_count; $j++)
-									{
-										$child_tag = $child_tags[$j];
-										
-										$temp_tags[] = $child_tag['Tag'];
+										for($j = 0; $j < count($temp_tags); $j++)
+										{
+											$child_tag = $temp_tags[$j];
+											
+											$all_tags[] = $child_tag['Tag'];
+										}
 									}
-									
-									$child_first_parent['tags'] = $temp_tags;
-									$parents[$child_first_parent['id']] = $child_first_parent;
-								}
-							}
-							
-							if(count($parents))
-							{
-								$tag_counts['children'] = [];
-
-								foreach($parents as $parent_id => $parent)
-								{
-									$tags = $parent['tags'];
-									$entry_tag_counts = $this->orm->GetTagCounts(['tags'=>$tags, 'entry'=>$parent]);
-									$tag_counts['children'][$parent['Code']] = $entry_tag_counts;
 								}
 							}
 						}
@@ -435,8 +376,6 @@
 				$children_records = $this->children;
 				$children_record_count = count($children_records);
 				
-				$grand_children_tags = [];
-				
 				if($children_record_count)
 				{
 					for($i = 0; $i < $children_record_count; $i++)
@@ -448,7 +387,7 @@
 						for($j = 0; $j < $child_tag_count; $j++)
 						{
 							$child_tag = $child_tags[$j];
-							$children_tags[] = $child_tag['Tag'];
+							$all_tags[] = $child_tag['Tag'];
 						}
 						
 						$grand_children = $child_record['children'];
@@ -466,22 +405,36 @@
 								
 								foreach($grand_child_tags as $grand_child_tag)
 								{
-									$grand_children_tag_array[] = $grand_child_tag['Tag'];
+									$all_tags[] = $grand_child_tag['Tag'];
 								}
-							}
-							if(count($grand_children_tag_array))
-							{
-								$grand_children_tags[$child_record['Code']] = $this->orm->GetTagCounts(['tags'=>$grand_children_tag_array, 'entry'=>$child_record]);
 							}
 						}
 					}
 				}
+			}
+			
+			if($this->comments) {
+				$comments = $this->comments;
+				$comments_count = count($comments);
 				
-				if($grand_children_tags && count($grand_children_tags))
-				{
-					$tag_counts['grandchildren'] = $grand_children_tags;
+				if($comments_count > 0) {
+					for($i = 0; $i < $comments_count; $i++) {
+						$comment = $comments[$i];
+						$comment_tags = $comment['entry']['tag'];
+						$comment_tags_count = count($comment_tags);
+						
+						for($j = 0; $j < $comment_tags_count; $j++) {
+							$tag = $comment_tags[$j];
+							
+							$all_tags[] = $tag['Tag'];
+						}
+					}
 				}
 			}
+			
+			$all_tags = array_unique($all_tags);
+			
+			$tag_counts = $this->orm->GetTagCounts(['tags'=>$all_tags]);
 			
 			return $this->tag_counts = $tag_counts;
 		}
@@ -532,11 +485,56 @@
 				Title=>'MasterDomainRecord',
 				Subtitle=>'DomainsOfTheMaster',
 				ListTitle=>'Master,OfTheDomains',
+				ListTitleSortKey=>'Master,OfTheDomains',
 				Code=>'',
+				ChildAdjective=>'',
+				ChildNoun=>'',
+				ChildNounPlural=>'',
 			];
 			$this->parentid = 0;
 			
 			return TRUE;
+		}
+		
+		public function SetEntryRecords($args)
+		{
+			if($this->desired_action == 'browse' || $this->desired_action == 'browseByTag' || $this->desired_action == 'browseComments' || $this->desired_action == 'browseLikes')
+			{
+				$orderby = 'ListTitle,Title';
+				$start_index = $this->child_record_start_index;
+				$end_index = $this->perpage;
+			}
+			elseif($this->object_code && $this->desired_action == 'index')
+			{
+				$start_index = 1;
+				$end_index = 5;
+				$orderby = 'OriginalCreationDate DESC';
+			}
+			else
+			{
+				$orderby = 'ListTitle,Title';
+				$start_index = 0;
+				$end_index = 0;
+			}
+			
+			$where = [];
+			
+			if($this->where)
+			{
+				$where = $this->where;
+			}
+			
+			$get_record_entries_args = [
+				startindex=>$start_index,
+				endindex=>$end_index,
+				orderby=>$orderby,
+				where=>$where,
+				alltext=>$args['alltext'],
+				noassignment=>$args['noassignment'],
+				extraselect=>$this->where['extraselect'],
+			];
+			
+			return $this->entries = $this->orm->GetRecordEntries($get_record_entries_args);
 		}
 		
 		public function SetChildRecords($args)
@@ -548,7 +546,12 @@
 				$entry = $this->parent;
 			}
 			
-			if($this->desired_action == 'browse' || $this->desired_action == 'browseByTag' || $this->desired_action == 'browseComments' || $this->desired_action == 'browseLikes')
+			if(
+				$this->desired_action == 'browse' ||
+				$this->desired_action == 'browseByTag' ||
+				$this->desired_action == 'browseComments' ||
+				$this->desired_action == 'browseLikes'
+			)
 			{
 				$orderby = 'ListTitle,Title';
 				$start_index = $this->child_record_start_index;
@@ -558,6 +561,12 @@
 			{
 				$start_index = 1;
 				$end_index = 5;
+				$orderby = 'OriginalCreationDate DESC';
+			}
+			elseif($this->object_code && $this->script_name == 'about')
+			{
+				$start_index = 1;
+				$end_index = 7;
 				$orderby = 'OriginalCreationDate DESC';
 			}
 			else
@@ -600,6 +609,37 @@
 			return $this->orm->GetRecordAndChildren($args);
 		}
 		
+		public function SetAssociationRecordsForEntries($args)
+		{
+			$entries = $args['entries'];
+			$entry_count = count($entries);
+			
+			for($i = 0; $i < $entry_count; $i++)
+			{
+				$entry = $entries[$i];
+				
+				$associations = $entry['association'];
+				if($associations && is_array($associations))
+				{
+					$association_count = count($associations);
+					
+					if($association_count)
+					{
+						for($j = 0; $j < $association_count; $j++)
+						{
+							$entry['association'][$j]['entry'] = $this->GetRecordAndChildren([entry=>['id'=>$entry['association'][$j]['ChosenEntryid']]])[0];
+						#	SAVE SOME MEMORY HERE :
+						#	$entry['association'][$j]['entry']['parents'] = $this->GetEntryParents([entry=>['id'=>$entry['association'][$j]['ChosenEntryid']]])['parents'];
+						}
+					}
+				}
+				
+				$entries[$i] = $entry;
+			}
+			
+			return $entries;
+		}
+		
 		public function SetAssociationRecords()
 		{
 			$associations = $this->entry['association'];
@@ -628,6 +668,114 @@
 					{
 						$this->entry['associated'][$i]['entry'] = $this->GetRecordAndChildren([entry=>['id'=>$this->entry['associated'][$i]['Entryid']]])[0];
 						$this->entry['associated'][$i]['entry']['parents'] = $this->GetEntryParents([entry=>['id'=>$this->entry['associated'][$i]['Entryid']]])['parents'];
+					}
+				}
+			}
+			
+			return TRUE;
+		}
+		
+		public function SetSimpleChildAssociationRecords()
+		{
+			$child_count = count($this->children);
+			
+			for($i = 0; $i < $child_count; $i++)
+			{
+				$associations = $this->children[$i]['association'];
+				if($associations && is_array($associations))
+				{
+					$association_count = count($associations);
+					
+					if($association_count)
+					{
+						for($j = 0; $j < $association_count; $j++)
+						{
+				//			$this->children[$i]['association'][$j]['entry'] = $this->GetRecordAndChildren([entry=>['id'=>$this->children[$i]['association'][$j]['ChosenEntryid']]])[0];
+				
+							$entry_where = [
+								'type'=>'Entry',
+								'definition'=>[
+									'id'=>$this->children[$i]['association'][$j]['ChosenEntryid'],
+								],
+							];
+							
+							$this->children[$i]['association'][$j]['entry'] = $this->db_access_object->GetRecords($entry_where)[0];
+							$this->children[$i]['association'][$j]['entry']['parents'] = $this->GetEntryParents([entry=>['id'=>$this->children[$i]['association'][$j]['ChosenEntryid']]])['parents'];
+						}
+					}
+				}
+				
+				$associateds = $this->children[$i]['associated'];
+				if($associateds && is_array($associateds))
+				{
+					$associated_count = count($associateds);
+					
+					if($associated_count)
+					{
+						for($j = 0; $j < $associated_count; $j++)
+						{
+							// $this->GetRecordAndChildren([entry=>['id'=>$this->children[$i]['associated'][$j]['Entryid']]])[0];
+							$entry_where = [
+								'type'=>'Entry',
+								'definition'=>[
+									'id'=>$this->children[$i]['associated'][$j]['Entryid'],
+								],
+							];
+							
+							$this->children[$i]['associated'][$j]['entry'] = $this->db_access_object->GetRecords($entry_where)[0];
+							$this->children[$i]['associated'][$j]['entry']['parents'] = $this->GetEntryParents([entry=>['id'=>$this->children[$i]['associated'][$j]['Entryid']]])['parents'];
+						}
+					}
+				}
+			}
+			
+			$child_count = count($this->children_random);
+			
+			for($i = 0; $i < $child_count; $i++)
+			{
+				$associations = $this->children_random[$i]['association'];
+				if($associations && is_array($associations))
+				{
+					$association_count = count($associations);
+					
+					if($association_count)
+					{
+						for($j = 0; $j < $association_count; $j++)
+						{
+							$entry_where = [
+								'type'=>'Entry',
+								'definition'=>[
+									'id'=>$this->children_random[$i]['association'][$j]['ChosenEntryid'],
+								],
+							];
+							
+							$this->children_random[$i]['associated'][$j]['entry'] = $this->db_access_object->GetRecords($entry_where)[0];
+					//		$this->children_random[$i]['association'][$j]['entry'] = $this->GetRecordAndChildren([entry=>['id'=>$this->children_random[$i]['association'][$j]['ChosenEntryid']]])[0];
+							$this->children_random[$i]['association'][$j]['entry']['parents'] = $this->GetEntryParents([entry=>['id'=>$this->children_random[$i]['association'][$j]['ChosenEntryid']]])['parents'];
+						}
+					}
+				}
+				
+				$associateds = $this->children_random[$i]['associated'];
+				if($associateds && is_array($associateds))
+				{
+					$associated_count = count($associateds);
+					
+					if($associated_count)
+					{
+						for($j = 0; $j < $associated_count; $j++)
+						{
+							$entry_where = [
+								'type'=>'Entry',
+								'definition'=>[
+									'id'=>$this->children_random[$i]['associated'][$j]['Entryid'],
+								],
+							];
+							
+							$this->children_random[$i]['associated'][$j]['entry'] = $this->db_access_object->GetRecords($entry_where)[0];
+					//		$this->children_random[$i]['associated'][$j]['entry'] = $this->GetRecordAndChildren([entry=>['id'=>$this->children_random[$i]['associated'][$j]['Entryid']]])[0];
+							$this->children_random[$i]['associated'][$j]['entry']['parents'] = $this->GetEntryParents([entry=>['id'=>$this->children_random[$i]['associated'][$j]['Entryid']]])['parents'];
+						}
 					}
 				}
 			}
@@ -890,6 +1038,18 @@
 			}
 			
 			return $this->children_count = $this->orm->GetRecordChildrenCount([entry=>$entry, where=>$where]);
+		}
+		
+		public function SetEntryRecordCount()
+		{
+			$where = [];
+			
+			if($this->where)
+			{
+				$where = $this->where;
+			}
+			
+			return $this->entry_count = $this->orm->GetRecordEntryCount([where=>$where]);
 		}
 		
 		public function GetCommentsCount($args)
@@ -1173,11 +1333,6 @@
 				// ------------------------------------------------------------
 			
 			$this->SetRandomTagRecords();
-			
-		#	foreach($this->tags_random as $tag)
-		#	{
-		#		$exclude_ids[] = $tag['Entryid'];
-		#	}
 			
 				// Set Quote Records
 				// ------------------------------------------------------------
@@ -1541,10 +1696,17 @@
 		
 		public function ValidateOrm()
 		{
-			if(count($this->object_list) != count($this->record_list))
-			{
-				$this->errors[] = ['This is not a valid combination of record codes: ' . implode(', ', $this->object_list) . '.'];
-				return FALSE;
+#			print_r($this->record_list);
+#			print("<BR><BR>");
+#			print_r($this->object_list);
+#			print("<BR><BR>");
+#			print_r($this->entry);
+			if(count($this->object_list)) {	# is this not the main page?
+				if(count($this->object_list) != count($this->record_list))
+				{
+					$this->errors[] = ['This is not a valid combination of record codes: ' . implode(', ', $this->object_list) . '.'];
+					return FALSE;
+				}
 			}
 			
 			return TRUE;
@@ -1569,7 +1731,11 @@
 					'Title'=>$this->parent['Title'],
 					'Subtitle'=>$this->parent['Subtitle'],
 					'ListTitle'=>$this->parent['ListTitle'],
+					'ListTitleSortKey'=>$this->parent['ListTitleSortKey'],
 					'Code'=>$this->parent['Code'],
+					'ChildAdjective'=>$this->parent['ChildAdjective'],
+					'ChildNoun'=>$this->parent['ChildNoun'],
+					'ChildNounPlural'=>$this->parent['ChildNounPlural'],
 				];
 			}
 			else
@@ -1594,7 +1760,11 @@
 					'Title'=>'Untitled',
 					'Subtitle'=>'',
 					'ListTitle'=>'',
+					'ListTitleSortKey'=>'',
 					'Code'=>'',
+					'ChildAdjective'=>'',
+					'ChildNoun'=>'',
+					'ChildNounPlural'=>'',
 				];
 			}
 			
@@ -1727,14 +1897,14 @@
 					
 					if($uploaded_files['name'][$i])
 					{
-						if(isset($new_records[$i][FileName]))
+						if(isset($new_records[$i]['FileName']))
 						{
-							if(!strlen($new_records[$i][FileName]))
+							if(!strlen($new_records[$i]['FileName']))
 							{
-								$new_records[$i][FileName] = $uploaded_files['name'][$i];
+								$new_records[$i]['FileName'] = $uploaded_files['name'][$i];
 							}
 							
-							$selected_filename_pieces = explode(".", $new_records[$i][FileName]);
+							$selected_filename_pieces = explode(".", $new_records[$i]['FileName']);
 							$uploaded_filename_pieces = explode(".", $uploaded_files['name'][$i]);
 							
 							$last_selected_filename_piece = $selected_filename_pieces[count($selected_filename_pieces) - 1];
@@ -1742,8 +1912,9 @@
 							
 							if($last_selected_filename_piece != $last_uploaded_filename_piece)
 							{
-								$new_file[icon_name] = $new_records[$i][FileName] . '-icon.' . $last_uploaded_filename_piece;
-								$new_records[$i][FileName] .= '.' . $last_uploaded_filename_piece;
+								$new_file['icon_name'] = $new_records[$i]['FileName'] . '-icon.' . $last_uploaded_filename_piece;
+								$new_file['standard_name'] = $new_records[$i]['FileName'] . '-standard.' . $last_uploaded_filename_piece;
+								$new_records[$i]['FileName'] .= '.' . $last_uploaded_filename_piece;
 							}
 							else
 							{
@@ -1752,19 +1923,13 @@
 									unset($selected_filename_pieces[count($selected_filename_pieces) - 1]);
 								}
 								$selected_filename_imploded = implode(".", $selected_filename_pieces);
-								$new_file[icon_name] = $selected_filename_imploded . '-icon.' . $last_uploaded_filename_piece;
+								$new_file['icon_name'] = $selected_filename_imploded . '-icon.' . $last_uploaded_filename_piece;
+								$new_file['standard_name'] = $selected_filename_imploded . '-standard.' . $last_uploaded_filename_piece;
 							}
-						}
-						else
-						{
-							$uploaded_filename_pieces = explode(".", $uploaded_files['name'][$i]);
-							$last_uploaded_filename_piece = $uploaded_file_pieces[count($uploaded_file_pieces) - 1];
-							if(count($uploaded_filename_pieces) > 1)
-							{
-								unset($uploaded_filename_pieces[count($uploaded_filename_pieces) - 1]);
-							}
-							$uploaded_filename_imploded = implode(".", $uploaded_filename_pieces);
-							$new_file[icon_name] = $uploaded_filename_imploded . '-icon.' . $last_uploaded_filename_piece;
+						} else {
+							$alternate_filenames = $this->makeAlternateFileNames(['filename'=>$uploaded_files['name'][$i]]);
+							$new_file['icon_name'] = $alternate_filenames['icon_name'];
+							$new_file['standard_name'] = $alternate_filenames['standard_name'];
 						}
 					}
 					
@@ -1775,6 +1940,28 @@
 			}
 			
 			return $this->$variable_name = $new_records;
+		}
+		
+		public function makeAlternateFileNames($args) {
+			$filename = $args['filename'];
+			
+			$uploaded_filename_pieces = explode(".", $filename);
+			$uploaded_filename_count = count($uploaded_filename_pieces);
+			
+			$last_uploaded_filename_piece = $uploaded_filename_pieces[$uploaded_filename_count - 1];
+			
+			if($uploaded_filename_count > 1) {
+				unset($uploaded_filename_pieces[$uploaded_filename_count - 1]);
+			}
+			
+			$base_filename = implode(".", $uploaded_filename_pieces);
+			
+			$new_filenames = [];
+			
+			$new_filenames['icon_name'] = $base_filename . '-icon.' . $last_uploaded_filename_piece;
+			$new_filenames['standard_name'] = $base_filename . '-standard.' . $last_uploaded_filename_piece;
+			
+			return $new_filenames;
 		}
 		
 		public function OrderAndFillChildRecords()
@@ -1887,7 +2074,7 @@
 				
 				$comments = $this->db_access_object->GetRecords($comment_get_args);
 				
-				$this->comments = $this->SetCommentUsers([comments=>$comments]);
+				$this->comments = $this->SetRecordUsers([records=>$comments]);
 			}
 			
 			return TRUE;
@@ -1902,8 +2089,20 @@
 				$younger_siblings = $siblings['younger'];
 				$older_siblings = $siblings['older'];
 				
-				$younger_siblings = $this->GetChildrenForRecords([records=>$younger_siblings]);
-				$older_siblings = $this->GetChildrenForRecords([records=>$older_siblings]);
+			#print("<!-- hi there1 " . count($younger_siblings) . "-->");
+				if($younger_siblings && count($younger_siblings))
+				{
+			#print("<!-- hi there2 " . count($younger_siblings) . "-->");
+					$younger_siblings = $this->GetChildrenForRecords([records=>$younger_siblings]);
+					$younger_siblings = $this->SetAssociationRecordsForEntries([entries=>$younger_siblings]);
+				}
+				
+		#	print("<!-- hi there2 " . count($older_siblings) . "-->");
+				if($older_siblings && count($older_siblings))
+				{
+					$older_siblings = $this->GetChildrenForRecords([records=>$older_siblings]);
+					$older_siblings = $this->SetAssociationRecordsForEntries([entries=>$older_siblings]);
+				}
 				
 				$this->younger_siblings = $younger_siblings;
 				$this->older_siblings = $older_siblings;
@@ -1925,10 +2124,15 @@
 					'entry'=>$record,
 				];
 				
-				$record_children = $this->orm->GetRecordChildren($get_record_children_args);
-				$record_children = $this->FilterValidChildren([children=>$record_children]);
-				
-				$records[$i]['children'] = $record_children;
+				$record_children_count = $this->orm->GetRecordChildrenCount($get_record_children_args);
+				if($record_children_count <= 100) {	// stop memory overmax
+					$record_children = $this->orm->GetRecordChildren($get_record_children_args);
+					$record_children = $this->FilterValidChildren([children=>$record_children]);
+					
+					$records[$i]['children'] = $record_children;
+				} else {
+					$records[$i]['children'] = [];
+				}
 			}
 			
 			return $records;
@@ -1962,19 +2166,19 @@
 			return $this->orm->GetSiblings(['entry'=>$entry, 'parent'=>$parent]);
 		}
 		
-		public function SetCommentUsers($args)
+		public function SetRecordUsers($args)
 		{
-			$comments = $args['comments'];
+			$records = $args['records'];
 			
-			if(count($comments) < 1)
+			if(count($records) < 1)
 			{
 				return [];
 			}
 			$useridlist = [];
 			
-			foreach($comments as $comment)
+			foreach($records as $record)
 			{
-				$useridlist[$comment['Userid']] = $comment['Userid'];
+				$useridlist[$record['Userid']] = $record['Userid'];
 			}
 			
 			$userids = [];
@@ -2009,9 +2213,67 @@
 				$userlist[$user['id']] = $user;
 			}
 			
+			foreach($records as $record_key => $record_record)
+			{
+				$record_record['user'] = $userlist[$record_record['Userid']];
+				$records[$record_key] = $record_record;
+			}
+			
+			return $records;
+		}
+		
+		public function SetLimitedRecordEntries($args) {
+			$comments = $args['records'];
+			
+			if(count($comments) < 1)
+			{
+				return [];
+			}
+			
+			$entryidlist = [];
+			
+			foreach($comments as $comment)
+			{
+				$entryidlist[$comment['Entryid']] = $comment['Entryid'];
+			}
+			
+			$entryids = [];
+			
+			foreach($entryidlist as $entryid)
+			{
+				$entryids[] = $entryid;
+			}
+			
+			$entry_args = [
+				'type'=>'Entry',
+				'definition'=>[
+					'RAW'=>[
+						id=>[
+							'IN',
+							'(' . implode(',', $entryids) . ')',
+						],
+					],
+				],
+			];
+			
+			$entries = $this->db_access_object->GetRecords($entry_args);
+			
+			foreach($entries as $entry)
+			{
+				if($entry && $entry['id'])
+				{
+					unset($entry['Password']);
+					
+					$entry_parents = $this->orm->GetEntryParents([entry=>$entry]);
+					
+					$entry['parents'] = $entry_parents['parents'];
+				}
+				$entrylist[$entry['id']] = $entry;
+			}
+			
 			foreach($comments as $comment_key => $comment_record)
 			{
-				$comment_record['user'] = $userlist[$comment_record['Userid']];
+				$comment_record['entry'] = $entrylist[$comment_record['Entryid']];
 				$comments[$comment_key] = $comment_record;
 			}
 			
@@ -2269,6 +2531,7 @@
 				'availabilitydaterange',
 				'association',
 				'entrypermission',
+				'definition',
 			];
 			
 			foreach($child_record_types as $child_record_type)
@@ -2513,6 +2776,7 @@
 				'eventdate',
 				'association',
 				'entrypermission',
+				'definition',
 			];
 			
 			return $child_record_types;
@@ -2526,6 +2790,11 @@
 		public function GetEntryParents($args)
 		{
 			return $this->orm->GetEntryParents($args);
+		}
+		
+		public function GetEntriesParents($args)
+		{
+			return $this->orm->GetEntriesParents($args);
 		}
 		
 		public function SetLastAdd($args)

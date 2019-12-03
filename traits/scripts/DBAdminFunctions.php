@@ -14,6 +14,11 @@
 			$this->db_admin = new DBAdmin([dbaccessobject=>$this->db_access_object]);
 		}
 		
+		public function DBAdminDetectBlankListTitles($args)
+		{
+			return $this->db_admin->DetectBlankListTitles($args);
+		}
+		
 		public function DBAdminClonePrimaryHostDatabase($args)
 		{
 			return $this->db_admin->ClonePrimaryHostDatabase($args);
@@ -27,6 +32,14 @@
 		public function DBAdminCloneFilesToNewDatabase($args)
 		{
 			return $this->db_admin->CloneFilesToNewDatabase($args);
+		}
+		
+		public function CloneStatsToNewDatabase($args) {
+			return $this->db_admin->CloneStatsToNewDatabase($args);
+		}
+		
+		public function CloneDataToNewDatabase($args) {
+			return $this->db_admin->CloneDataToNewDatabase($args);
 		}
 		
 		public function SetPrimaryHostList()

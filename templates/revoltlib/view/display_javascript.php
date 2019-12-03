@@ -6,3 +6,4 @@ google-comments.js
 like-dislike.js
 responsivevoice.js
 text-audio.js
+format-info.js

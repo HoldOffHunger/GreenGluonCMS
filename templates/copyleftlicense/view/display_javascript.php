@@ -7,3 +7,4 @@ text-audio.js
 select-input.js
 google-comments.js
 like-dislike.js
+format-info.js

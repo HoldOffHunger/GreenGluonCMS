@@ -1780,89 +1780,89 @@
 			
 			$divider->displayend($clear_float_divider_end_args);
 			
-						// Audio Player
+						// All Formats
 					
 					// -------------------------------------------------------------
 			
 			$formats = [
 				[
 					text=>'Mobile<br>Version',
-					image=>'mobile-icon.jpg',
+					type=>'mobile',
 					url=>'view.php?mobilefriendly=1',
 				],
 				[
 					text=>'PDF<br>File',
-					image=>'pdf-file-icon.jpg',
+					type=>'pdf',
 					url=>'view.pdf',
 				],
 				[
 					text=>'Printer<br>Friendly',
-					image=>'printer-friendly-icon.jpg',
+					type=>'printer-friendly',
 					url=>'view.php?printerfriendly=1',
 				],
 				[
 					text=>'Plaintext<br>File',
-					image=>'plaintext-format-icon.jpg',
+					type=>'plaintext',
 					url=>'view.txt',
 				],
 				[
 					text=>'Wrapped<br>Plaintext',
-					image=>'wrapped-plaintext-format-icon.jpg',
+					type=>'wrapped-plaintext',
 					url=>'view.txt?wrapped=1',
 				],
 				[
 					text=>'Inverted<br>Colors',
-					image=>'colors-inverted-icon.jpg',
+					type=>'inverted-colors',
 					url=>'view.php?invertedcolors=1',
 				],
 				[
 					text=>'RTF<br>File',
-					image=>'rtf-file-icon.jpg',
+					type=>'rtf',
 					url=>'view.rtf',
 				],
 				[
 					text=>'Epub<br>File',
-					image=>'epub-file-icon.jpg',
+					type=>'epub',
 					url=>'view.epub',
 				],
 				[
 					text=>'DAISY<br>Format',
-					image=>'daisy-format-icon.jpg',
+					type=>'daisy',
 					url=>'view.daisy',
 				],
 				[
 					text=>'SGML<br>Format',
-					image=>'sgml-format-icon.jpg',
+					type=>'sgml',
 					url=>'view.sgml',
 				],
 				[
 					text=>'JSON<br>Format',
-					image=>'json-format-icon.jpg',
+					type=>'json',
 					url=>'view.json',
 				],
 				[
 					text=>'XML<br>Format',
-					image=>'xml-format-icon.jpg',
+					type=>'xml',
 					url=>'view.xml',
 				],
 				[
 					text=>'CSV<br>Format',
-					image=>'csv-format-icon.jpg',
+					type=>'csv',
 					url=>'view.csv',
 				],
 				[
 					text=>'Latex<br>Format',
-					image=>'latex-format-icon.jpg',
+					type=>'latex',
 					url=>'view.tex',
 				],
 				[
 					text=>'OPDS<br>Format',
-					image=>'opds-format-icon.jpg',
+					type=>'opds',
 					url=>'view.opds',
 				],
 				[
 					text=>'RDF<br>Format',
-					image=>'rdf-format-icon.jpg',
+					type=>'rdf',
 					url=>'view.rdf',
 				],
 			];
@@ -1882,32 +1882,24 @@
 			{
 				$format = $formats[$i];
 				
-				print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-				print('<div class="margin-5px font-family-arial">');
+				print('<div class="margin-left-5px float-left ' . $format['type'] . '-format-icon" title="">');
 				
 				if(!$this->mobile_friendly)
 				{
-					print('<div class="margin-2px">');
 					print('<a href="');
 					print($format['url']);
 					print('">');
-					print('<img src="');
+					
+					print('<img width="25" src="');
 					print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
-					print('/image/');
-					print($format['image']);
+					print('/image/formats/');
+					print($format['type']);
+					print('-icon.jpg');
 					print('">');
+					
 					print('</a>');
-					print('</div>');
 				}
 				
-				print('<p class="margin-0px font-family-arial font-size-75percent">');
-				print('<a href="');
-				print($format['url']);
-				print('">');
-				print($format['text']);
-				print('</a>');
-				print('</p>');
-				print('</div>');
 				print('</div>');
 			}
 				

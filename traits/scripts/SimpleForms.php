@@ -206,7 +206,7 @@
 			$pieces = [];
 			
 			$current_length = 0;
-			$max_length = 60;
+			$max_length = 45;
 			
 			$values = [
 				$this->entry['Title'],
@@ -228,6 +228,7 @@
 				{
 					$new_value = $value;
 					$new_value = preg_replace('/[^\p{L}\p{N}\s]/u', '', $new_value);
+					
 					$new_value_pieces = preg_split('/\s+/', $new_value);
 					
 					foreach($new_value_pieces as $new_value_piece)
