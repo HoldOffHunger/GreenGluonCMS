@@ -1,0 +1,23 @@
+#image-div {
+	float: left;
+	margin:2 0px;
+	background-color: #000000;
+	border:solid 2px #AAAAAA;
+}
+
+#image {
+	margin: 20px;
+}
+
+.letter-text {
+	font-family: helvetica;
+	font-weight: bold;
+}
+
+.list-text {
+	font-family: helvetica;
+}
+
+.hidden {
+	display: none;
+}

@@ -92,7 +92,8 @@ $(document).ready(function(event){
 		
 		updateLanguage();
 		
+		var utterance = new SpeechSynthesisUtterance();
 		utterance.text = phrase;
-		window.speechSynthesis.speak(utterance)
+		window.speechSynthesis.speak(utterance);
 	});
 });

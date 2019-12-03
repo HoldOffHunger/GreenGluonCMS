@@ -29,7 +29,7 @@ $(document).ready(function(event){
 			}
 		}
 		
-		if(word != lastsearchterm)		// Don't search the same thing twice in a row.
+		if(word != lastsearchterm || $('.gs-image :visible').length == 0)	// Don't search the same thing twice in a row.  Unless there's nothing to show currently.
 		{
 			showSearch(searchterm);
 		}

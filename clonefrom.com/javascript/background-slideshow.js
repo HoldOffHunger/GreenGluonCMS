@@ -1,4 +1,5 @@
 $(document).ready(function(event){
+		// Refresh all panels
 	var images = {};
 	var texts = {};
 	var interval = 10000;		// 10 seconds

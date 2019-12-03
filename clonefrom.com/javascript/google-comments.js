@@ -1,8 +1,9 @@
+	var id_token;
 
 	function onSignIn(googleUser) {
 		var profile = googleUser.getBasicProfile();
 		console.log('Hello, ' + profile.getEmail() + '.  We\'ve been waiting for you.');
-		var id_token = googleUser.getAuthResponse().id_token;
+		id_token = googleUser.getAuthResponse().id_token;
 		
 		if($('#logout').val())
 		{

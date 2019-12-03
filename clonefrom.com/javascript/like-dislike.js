@@ -11,13 +11,9 @@ $(document).ready(function(event){
 		var liked = 0;
 		var disliked = 0;
 		var profile;
-		var id_token;
-		
-		function onSignIn(googleUser) {
-			id_token = encodeURIComponent(googleUser.getAuthResponse().id_token);
-		}
 		
 		$('#thumbs-up-button-container').click(function(e){
+			console.log("BT: VOTE!" + id_token + "|");
 			if(liked) {
 				undoLike();
 				
