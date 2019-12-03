@@ -1,4 +1,39 @@
 <?php
+/*	
+		#	RULES TO IMPLEMENT
+		
+	Neither Force Nor Absolute Sovereignty => "definition"
+	Force "Not definition", Absolute Sovereignty "Not definition"
+	https://www.revoltlib.com/people/gandhi/view.php?action=definitions
+
+	Men In Whom The Sentiment Of Equality => 'born" (definition)
+	https://www.revoltlib.com/anarchism/god-and-the-state/view.php?action=definitions
+	
+	Whom
+	https://www.revoltlib.com/anarchism/integral-education-ii/view.php?action=definitions
+	
+	Passions Which Now Absorb Me
+	https://www.revoltlib.com/anarchism/letter-from-bakunin-to-elisee-reclus,-feb-15,-1875/view.php?action=definitions
+	
+	Evils That The Worker [is] Subjected to by the division of labor are much easier to determine: forced to work for others because he is born to poverty and misery, deprived of all rational upbringing and 
+	https://www.revoltlib.com/anarchism/revolutionary-catechism/view.php?action=definitions
+	
+	Slavery Will Last Until Capitalism [is] Overthrown by the collective action of the workers. 
+	Slavery : Will Last Until Capitalism is Overthrown by the collective action of the workers. 
+	https://www.revoltlib.com/anarchism/revolutionary-catechism/view.php?action=definitions
+	
+	
+	Making You Believe That Capitalism [is] All right and by having you support the existing system with its government and 'law and order. 
+	https://www.revoltlib.com/anarchism/now-and-after/view.php?action=definitions
+	
+	To Show Us How Capital [is] Formed, how it accumulates through interest, how interest enters into the price of products, how all laborers are themselves guilty of the sin of usury: we have long known all these things, just as we are convinced of the personal honesty of annuitants and proprietors. 
+	
+	https://www.revoltlib.com/anarchism/the-class-war/view.php#glossary
+	"difference, but the injustice is not premeditated. " --> not seeing "Injustice: Not premeditated."
+
+		# NEXT TO CHECK : Prison Memoirs of an Anarchist
+
+*/
 	
 	class Definition
 	{
@@ -61,31 +96,34 @@
 				
 				if($definition_results)
 				{
-					$word = $definition_results['word'];
-					$definition = $definition_results['definition'];
-					
-					if(!$definitions[$word])
-					{
-						$definitions[$word] = [];
-						$definitions[$word][] = $definition;
-					}
-					else
-					{
-						$found = 0;
-						$definitions_count = count($definitions[$word]);
-						for($j = 0; $j < $definitions_count; $j++)
+					foreach($definition_results as $definition_result) {
+						$word = $definition_result['word'];
+						$definition = $definition_result['definition'];
+						if(!$definitions[$word])
 						{
-							$previous_definition = $definitions[$word][$j];
-							if($previous_definition == $definition)
-							{
-								$found = 1;
-								$j = $definitions_count;
-							}
-						}
-						
-						if(!$found)
-						{
+							$definitions[$word] = [];
 							$definitions[$word][] = $definition;
+						#	print("BT: DEF" . $definition);
+						}
+						else
+						{
+							$found = 0;
+							$definitions_count = count($definitions[$word]);
+							for($j = 0; $j < $definitions_count; $j++)
+							{
+								$previous_definition = $definitions[$word][$j];
+								if($previous_definition == $definition)
+								{
+									$found = 1;
+									$j = $definitions_count;
+								}
+							}
+							
+							if(!$found)
+							{
+								$definitions[$word][] = $definition;
+							}
+						#	print("BT: !DEF" . $definition);
 						}
 					}
 				}
@@ -98,7 +136,9 @@
 		{
 			$text = $args['text'];
 			
-			$definition_separators = $this->DefinitionSeparators();		# "was" ?
+			$all_definition_results = [];
+			
+			$definition_separators = $this->DefinitionSeparators();
 			$definition_separator_count = count($definition_separators);
 			
 			for($i = 0; $i < $definition_separator_count; $i++)
@@ -107,51 +147,69 @@
 				$text_pieces = explode(' ' . $definition_separator . ' ', $text);
 				$text_pieces_count = count($text_pieces);
 				
-				$definition_results = FALSE;
-				
 				if($text_pieces_count > 1)
 				{	
-					$definition_results = $this->FindDefinitionInPlace(['place'=>0, 'textpieces'=>$text_pieces, 'word'=>$word, 'definition'=>$definition, 'definitionseparator'=>$definition_separator]);
+					$new_result = $this->FindDefinitionInPlace(['place'=>0, 'textpieces'=>$text_pieces, 'definitionseparator'=>$definition_separator]);
+					
+					if($new_result) {
+						$all_definition_results[] = $new_result;
+					}
 				}
 				
 				if(!$definition_results && $text_pieces_count > 2)
 				{
-					$definition_results = $this->FindDefinitionInPlace(['place'=>1, 'textpieces'=>$text_pieces, 'word'=>$word, 'definition'=>$definition, 'definitionseparator'=>$definition_separator]);
+					$new_result = $this->FindDefinitionInPlace(['place'=>1, 'textpieces'=>$text_pieces, 'definitionseparator'=>$definition_separator]);
+					
+					if($new_result) {
+						$all_definition_results[] = $new_result;
+					}
 				}
 				
 				if(!$definition_results && $text_pieces_count > 3)
 				{
-					$definition_results = $this->FindDefinitionInPlace(['place'=>2, 'textpieces'=>$text_pieces, 'word'=>$word, 'definition'=>$definition, 'definitionseparator'=>$definition_separator]);
+					$new_result = $this->FindDefinitionInPlace(['place'=>2, 'textpieces'=>$text_pieces, 'definitionseparator'=>$definition_separator]);
+					
+					if($new_result) {
+						$all_definition_results[] = $new_result;
+					}
 				}
 				
 				if(!$definition_results && $text_pieces_count > 4)
 				{
-					$definition_results = $this->FindDefinitionInPlace(['place'=>3, 'textpieces'=>$text_pieces, 'word'=>$word, 'definition'=>$definition, 'definitionseparator'=>$definition_separator]);
+					$new_result = $this->FindDefinitionInPlace(['place'=>3, 'textpieces'=>$text_pieces, 'definitionseparator'=>$definition_separator]);
+					
+					if($new_result) {
+						$all_definition_results[] = $new_result;
+					}
 				}
 				
 				if(!$definition_results && $text_pieces_count > 5)
 				{
-					$definition_results = $this->FindDefinitionInPlace(['place'=>4, 'textpieces'=>$text_pieces, 'word'=>$word, 'definition'=>$definition, 'definitionseparator'=>$definition_separator]);
+					$new_result = $this->FindDefinitionInPlace(['place'=>4, 'textpieces'=>$text_pieces, 'definitionseparator'=>$definition_separator]);
+					
+					if($new_result) {
+						$all_definition_results[] = $new_result;
+					}
 				}
 			}
 			
-			return $definition_results;
+			return $all_definition_results;
 		}
 		
 		public function FindDefinitionInPlace($args)
 		{
-			$word = $args['word'];
-			$definition = $args['definition'];
 			$place = $args['place'];
 			$text_pieces = $args['textpieces'];
 			$definition_separator = $args['definitionseparator'];
 			
 			$word = $text_pieces[$place];
-			
+		#	print("BT: " . $word . "<BR><BR>");
+		
 			if($place != 0)
 			{
 				$word = $this->GetDefinedWordFromMidSentence(['sentencefragment'=>$word]);
 			}
+		#	print("BT: Now?" . $word . "<BR><BR>");
 			
 			$word = $this->textcleanup->UnescapeCommonFalsePositiveSentenceEndsSingular(['line'=>strtolower($this->textcleanup->PrepareSentence(['sentence'=>$word]))]);
 			
@@ -163,14 +221,12 @@
 			$new_definition = implode(' ' . $definition_separator . ' ', $text_pieces);
 			
 			$definition = $this->textcleanup->PrepareSentence(['sentence'=>$new_definition]);
-			
 			$validation_results = $this->ValidateDefinition(['word'=>$word, 'definition'=>$definition]);
-			
+		#	print("BT: Validate???" . $word . "|...|" . $definition . "|" . $validation_results . "|<BR><BR>");
 			if($validation_results)
 			{
 				$valid_definition = $validation_results['definition'];
 				$valid_word = $validation_results['word'];
-				
 				$reformat_definition_and_defined_word_results = $this->ReformatDefinitionAndDefinedWord(['word'=>$valid_word, 'definition'=>$valid_definition, 'definitionseparator'=>$definition_separator]);
 				
 				$valid_definition = $reformat_definition_and_defined_word_results['definition'];
@@ -179,9 +235,10 @@
 				$valid_definition = $this->ReformatDefinition(['definition'=>$valid_definition, 'word'=>$valid_word]);
 				$valid_word = $this->ReformatDefinedWord(['word'=>$valid_word]);
 				
+				#print("BT: VALID!" . $valid_word . "|...|" . $valid_definition . "|<BR><BR>");
 				return [
-					'word'=>$valid_word,
-					'definition'=>$valid_definition,
+					'word'=>trim($valid_word),
+					'definition'=>trim($valid_definition),
 				];
 			}
 			
@@ -416,16 +473,22 @@
 			$definition = $this->textcleanup->CleansePhrase(['phrase'=>$args['definition']]);
 			$definition_pieces_to_compare = $this->textcleanup->BuildWords(['sentence'=>$definition]);
 			
-			$cancel_first_words = $this->CanceledWordsForDefinitions();
-			$cancel_first_words_count = count($cancel_first_words);
-			
-			for($i = 0; $i < $cancel_first_words_count; $i++)
+			$cancel_first_words = $this->CanceledWordsForDefinitionsHash();
+			if($cancel_first_words[$definition_pieces_to_compare[0]])
 			{
-				$cancel_first_word = $cancel_first_words[$i];
-				if($cancel_first_word == $definition_pieces_to_compare[0])
-				{
-					return FALSE;
-				}
+				return FALSE;
+			}
+			
+			return TRUE;
+		}
+		
+		public function GetFirstRejectedWordsResults($args)
+		{
+			$word = $args['word'];
+			
+			$reject_first_words = $this->RejectedWordsForDefinedWordsHash();
+			if($reject_first_words[$word]) {
+				return FALSE;
 			}
 			
 			return TRUE;
@@ -439,16 +502,9 @@
 			$word_pieces = explode(' ', $word);
 			$word_piece_count = count($word_pieces);
 			
-			$cancel_first_words = $this->CanceledWordsForDefinedWords();
-			$cancel_first_words_count = count($cancel_first_words);
-			
-			for($i = 0; $i < $cancel_first_words_count; $i++)
-			{
-				$cancel_first_word = $cancel_first_words[$i];
-				if($cancel_first_word == $word_pieces_to_compare[0])
-				{
-					return FALSE;
-				}
+			$cancel_first_words = $this->CanceledWordsForDefinedWordsHash();
+			if($cancel_first_words[$word_pieces_to_compare[0]]) {
+				return FALSE;
 			}
 			
 			return TRUE;
@@ -798,6 +854,7 @@
 			
 			if(
 				!$this->GetCancelDefinitionsResults(['definition'=>$definition]) ||
+				!$this->GetFirstRejectedWordsResults(['word'=>$word]) ||
 				!$this->GetFirstCancelWordsResults(['word'=>$word]) ||
 				!$this->GetLastCancelWordsResults(['word'=>$word]) ||
 				!$this->GetLastCancelWordsPhrasesResults(['word'=>$word]) ||
@@ -911,7 +968,14 @@
 			$definition = $args['definition'];
 			$word = $args['word'];
 			
-			return ucfirst($definition) . '.';
+			$concluding_puncuation = '';
+			$last_char = mb_substr($definition, -1, 1);
+			
+			if($last_char != '?' && $last_char != '!' && $last_char != '.') {
+				$concluding_puncuation = '.';
+			}
+			
+			return ucfirst($definition) . $concluding_puncuation;
 		}
 		
 						// Sort Functions
@@ -922,6 +986,86 @@
 			$definitions = $args['definitions'];
 			uksort($definitions, 'strnatcasecmp');
 			return $definitions;
+		}
+		
+						// English Grammar Hash Optimizers
+						// ------------------------------------------------------------------------
+		
+		public function DefinitionSeparatorsHash() {
+			if($this->defined_separators) {
+				return $this->defined_separators;
+			}
+			$defined_separators = $this->DefinitionSeparators();
+			$defined_separator_count = count($defined_separators);
+			
+			$defined_separators_hash = [];
+			
+			for($i = 0; $i < $defined_separator_count; $i++) {
+				$defined_separator = $defined_separators[$i];
+				$defined_separators_hash[$defined_separator] = TRUE;
+			}
+			
+			$this->defined_separators = $defined_separators_hash;
+			
+			return $defined_separators_hash;
+		}
+		
+		public function RejectedWordsForDefinedWordsHash() {
+			if($this->rejected_words_for_defined_words) {
+				return $this->rejected_words_for_defined_words;
+			}
+			$rejected_words = $this->RejectedWordsForDefinedWords();
+			$rejected_words_count = count($rejected_words);
+			
+			$rejected_words_hash = [];
+			
+			for($i = 0; $i < $rejected_words_count; $i++) {
+				$rejected_word = $rejected_words[$i];
+				$rejected_words_hash[$rejected_word] = TRUE;
+			}
+			
+			$this->rejected_words_for_defined_words = $rejected_words_hash;
+			
+			return $rejected_words_hash;
+		}
+		
+		public function CanceledWordsForDefinedWordsHash()
+		{
+			if($this->canceled_words_for_defined_words) {
+				return $this->canceled_words_for_defined_words;
+			}
+			$canceled_words = $this->CanceledWordsForDefinedWords();
+			$canceled_words_count = count($canceled_words);
+			
+			$canceled_words_hash = [];
+			
+			for($i = 0; $i < $canceled_words_count; $i++) {
+				$canceled_word = $canceled_words[$i];
+				$canceled_words_hash[$canceled_word] = TRUE;
+			}
+			
+			$this->canceled_words_for_defined_words = $canceled_words_hash;
+			
+			return $canceled_words_hash;
+		}
+		
+		public function CanceledWordsForDefinitionsHash() {
+			if($this->canceled_words_for_definitions) {
+				return $this->canceled_words_for_definitions;
+			}
+			$canceled_words = $this->CanceledWordsForDefinitions();
+			$canceled_words_count = count($canceled_words);
+			
+			$canceled_words_hash = [];
+			
+			for($i = 0; $i < $canceled_words_count; $i++) {
+				$canceled_word = $canceled_words[$i];
+				$canceled_words_hash[$canceled_word] = TRUE;
+			}
+			
+			$this->canceled_words_for_definitions = $canceled_words_hash;
+			
+			return $canceled_words_hash;
 		}
 		
 						// English Grammar (Word Lists)
@@ -936,6 +1080,11 @@
 			return [
 				'are',
 				'is',
+				':',
+			//	'(',
+			//	'was',
+			//	'should be',
+			//	'ought to be',
 			];
 		}
 		
@@ -951,6 +1100,8 @@
 				'i discover that',
 				'i learn that',
 				'i learned that',
+				'mean that',
+				'means that',
 				'said',
 				'say that',
 				'says that',
@@ -971,6 +1122,17 @@
 			];
 		}
 		
+				# Invalid Defined Words Logic
+				# ------------------------
+		
+			# InvalidWordsForDefinitions() : Words to reject if they are the defined word.
+		public function RejectedWordsForDefinedWords()
+		{
+			return [
+	#			'both',
+			];
+		}
+		
 				# Invalid Definition Logic
 				# ------------------------
 		
@@ -978,8 +1140,10 @@
 		public function InvalidWordsForDefinitions()
 		{
 			return [
+				'and',
 				'be',
 				'that',
+				'those',
 			];
 		}
 		

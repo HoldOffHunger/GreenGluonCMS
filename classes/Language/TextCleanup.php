@@ -106,7 +106,7 @@
 				urldecode("%0D") .
 				urldecode("%0A");
 				
-			return $escape_sequences . ';';
+			return $escape_sequences;
 		}
 		
 		public function GetFullEscapeSequences()
@@ -128,7 +128,7 @@
 				urldecode("%0D") .
 				urldecode("%0A");
 				
-			return $escape_sequences . ';';
+			return $escape_sequences;
 		}
 		
 		public function EscapeCommonFalsePositiveSentenceEnds($args)

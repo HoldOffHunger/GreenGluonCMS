@@ -6,9 +6,9 @@
 		
 		public function __construct($args)
 		{
-			$this->hostname = 'your host';
-			$this->username = 'your username';
-			$this->password = 'your password';
+			$this->hostname = 'mysql.earthfluent.com';
+			$this->username = 'ouruprising';
+			$this->password = 'OE88dd8dd82d';
 			$this->database = 'alldictionaries';
 		}
 		
