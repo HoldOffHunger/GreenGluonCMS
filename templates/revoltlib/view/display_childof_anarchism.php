@@ -2289,144 +2289,136 @@
 					
 				print('<center>');
 				print('<div class="horizontal-center width-85percent">');
-	
-							// All Formats
-						
-						// -------------------------------------------------------------
-				
-				$formats = [
-					[
-						text=>'Mobile<br>Version',
-						image=>'mobile-icon.jpg',
-						url=>'view.php?mobilefriendly=1',
-					],
-					[
-						text=>'PDF<br>File',
-						image=>'pdf-file-icon.jpg',
-						url=>'view.pdf',
-					],
-					[
-						text=>'Printer<br>Friendly',
-						image=>'printer-friendly-icon.jpg',
-						url=>'view.php?printerfriendly=1',
-					],
-					[
-						text=>'Plaintext<br>File',
-						image=>'plaintext-format-icon.jpg',
-						url=>'view.txt',
-					],
-					[
-						text=>'Wrapped<br>Plaintext',
-						image=>'wrapped-plaintext-format-icon.jpg',
-						url=>'view.txt?wrapped=1',
-					],
-					[
-						text=>'Inverted<br>Colors',
-						image=>'colors-inverted-icon.jpg',
-						url=>'view.php?invertedcolors=1',
-					],
-					[
-						text=>'RTF<br>File',
-						image=>'rtf-file-icon.jpg',
-						url=>'view.rtf',
-					],
-					[
-						text=>'Epub<br>File',
-						image=>'epub-file-icon.jpg',
-						url=>'view.epub',
-					],
-					[
-						text=>'DAISY<br>Format',
-						image=>'daisy-format-icon.jpg',
-						url=>'view.daisy',
-					],
-					[
-						text=>'SGML<br>Format',
-						image=>'sgml-format-icon.jpg',
-						url=>'view.sgml',
-					],
-					[
-						text=>'JSON<br>Format',
-						image=>'json-format-icon.jpg',
-						url=>'view.json',
-					],
-					[
-						text=>'XML<br>Format',
-						image=>'xml-format-icon.jpg',
-						url=>'view.xml',
-					],
-					[
-						text=>'CSV<br>Format',
-						image=>'csv-format-icon.jpg',
-						url=>'view.csv',
-					],
-					[
-						text=>'Latex<br>Format',
-						image=>'latex-format-icon.jpg',
-						url=>'view.tex',
-					],
-					[
-						text=>'OPDS<br>Format',
-						image=>'opds-format-icon.jpg',
-						url=>'view.opds',
-					],
-					[
-						text=>'RDF<br>Format',
-						image=>'rdf-format-icon.jpg',
-						url=>'view.rdf',
-					],
+			
+						// All Formats
+					
+					// -------------------------------------------------------------
+			
+			$formats = [
+				[
+					text=>'Mobile<br>Version',
+					type=>'mobile',
+					url=>'view.php?mobilefriendly=1',
+				],
+				[
+					text=>'PDF<br>File',
+					type=>'pdf',
+					url=>'view.pdf',
+				],
+				[
+					text=>'Printer<br>Friendly',
+					type=>'printer-friendly',
+					url=>'view.php?printerfriendly=1',
+				],
+				[
+					text=>'Plaintext<br>File',
+					type=>'plaintext',
+					url=>'view.txt',
+				],
+				[
+					text=>'Wrapped<br>Plaintext',
+					type=>'wrapped-plaintext',
+					url=>'view.txt?wrapped=1',
+				],
+				[
+					text=>'Inverted<br>Colors',
+					type=>'inverted-colors',
+					url=>'view.php?invertedcolors=1',
+				],
+				[
+					text=>'RTF<br>File',
+					type=>'rtf',
+					url=>'view.rtf',
+				],
+				[
+					text=>'Epub<br>File',
+					type=>'epub',
+					url=>'view.epub',
+				],
+				[
+					text=>'DAISY<br>Format',
+					type=>'daisy',
+					url=>'view.daisy',
+				],
+				[
+					text=>'SGML<br>Format',
+					type=>'sgml',
+					url=>'view.sgml',
+				],
+				[
+					text=>'JSON<br>Format',
+					type=>'json',
+					url=>'view.json',
+				],
+				[
+					text=>'XML<br>Format',
+					type=>'xml',
+					url=>'view.xml',
+				],
+				[
+					text=>'CSV<br>Format',
+					type=>'csv',
+					url=>'view.csv',
+				],
+				[
+					text=>'Latex<br>Format',
+					type=>'latex',
+					url=>'view.tex',
+				],
+				[
+					text=>'OPDS<br>Format',
+					type=>'opds',
+					url=>'view.opds',
+				],
+				[
+					text=>'RDF<br>Format',
+					type=>'rdf',
+					url=>'view.rdf',
+				],
+			];
+			
+			if($this->mobile_friendly)
+			{
+				$formats[0] = [
+					text=>'Standard<br><nobr>PC Format</nobr>',
+					image=>'',
+					url=>'view.php',
 				];
+			}
+			
+			$formats_count = count($formats);
+			
+			for($i = 0; $i < $formats_count; $i++)
+			{
+				$format = $formats[$i];
 				
-				if($this->mobile_friendly)
+				print('<div class="margin-left-5px float-left ' . $format['type'] . '-format-icon" title="">');
+				
+				if(!$this->mobile_friendly)
 				{
-					$formats[0] = [
-						text=>'Standard<br><nobr>PC Format</nobr>',
-						image=>'',
-						url=>'view.php',
-					];
-				}
-				
-				$formats_count = count($formats);
-				
-				for($i = 0; $i < $formats_count; $i++)
-				{
-					$format = $formats[$i];
-					
-					print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-					print('<div class="margin-5px font-family-arial">');
-					
-					if(!$this->mobile_friendly)
-					{
-						print('<div class="margin-2px">');
-						print('<a href="');
-						print($format['url']);
-						print('">');
-						print('<img src="');
-						print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
-						print('/image/');
-						print($format['image']);
-						print('">');
-						print('</a>');
-						print('</div>');
-					}
-					
-					print('<p class="margin-0px font-family-arial font-size-75percent">');
 					print('<a href="');
 					print($format['url']);
 					print('">');
-					print($format['text']);
-					print('</a>');
-					print('</p>');
-					print('</div>');
-					print('</div>');
-				}
 					
-							// Options Header : Finish
-						
-						// -------------------------------------------------------------
+					print('<img width="25" src="');
+					print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
+					print('/image/formats/');
+					print($format['type']);
+					print('-icon.jpg');
+					print('">');
+					
+					print('</a>');
+				}
 				
 				print('</div>');
-				print('</center>');
+			}
+				
+						// Options Header : Finish
+					
+					// -------------------------------------------------------------
+			
+			print('</div>');
+			print('</center>');
 
 						// Finish Textbody Header
 					

@@ -26,35 +26,84 @@
 				// ------------------------------------------------------------
 		
 		public function Display() {
-			ini_set('memory_limit','400M');
+			ini_set('memory_limit', '400M');
 			$this->SetPrimaryHostRecords();
-			
 			$this->SetDBAdmin();
 			
-			$primary_hosts = $this->db_admin->ViewAllPrimaryHosts();
-			$primary_hosts_count = count($primary_hosts);
-			
-			$this->primary_hosts = $primary_hosts;
-			$this->primary_hosts_count = $primary_hosts_count;
-			
-			$comments = [];
-			$suggestions = [];
-			$errors = [];
-			
 			$select_sql = 'SELECT * FROM ';
-			$order_sql = 'ORDER BY OriginalCreationDate DESC ';
-			
-			$limit = (int) $this->Param('limit');
-			
-			if($limit > 0 && $limit < 1001) {
-				$order_sql .= 'LIMIT ' . $limit;
-			}
+			$order_sql = $this->getOrderBySQL();
 			
 			$comment_sql = $select_sql . 'Comment WHERE Approved = 0 AND Rejected = 0 ' . $order_sql;
 			$suggestion_sql = $select_sql . 'Suggestion WHERE Approved = 0 AND Rejected = 0 ' . $order_sql;
 			$error_sql = $select_sql . 'InternalServerError WHERE Resolved = 0 ' . $order_sql;
+			$issue_sql = $select_sql . 'InternalServerIssue WHERE Resolved = 0 ' . $order_sql;
 			
+			$primary_hosts = $this->getPrimaryHosts();
+			$primary_hosts_count = count($primary_hosts);
+			
+			$comments = [];
+			$suggestions = [];
+			$errors = [];
+			$issues = [];
+			
+			for($i = 0; $i < $primary_hosts_count; $i++) {
+				$primary_host = $primary_hosts[$i];
+				
+				$client_db = $this->getPrimaryHostDB(['primaryhost'=>$primary_host]);
+				
+				$comments[$primary_host] = $client_db->RunQuery([
+					'sql'=>$comment_sql,
+				]);
+				
+				$suggestions[$primary_host] = $client_db->RunQuery([
+					'sql'=>$suggestion_sql,
+				]);
+				
+				$errors[$primary_host] = $client_db->RunQuery([
+					'sql'=>$error_sql,
+				]);
+				
+				$issues[$primary_host] = $client_db->RunQuery([
+					'sql'=>$issue_sql,
+				]);
+			}
+			
+			$this->primary_hosts = $primary_hosts;
+			$this->primary_hosts_count = $primary_hosts_count;
+			
+			$this->comments = $comments;
+			$this->suggestions = $suggestions;
+			$this->errors = $errors;
+			$this->issues = $issues;
+			
+			return TRUE;
+		}
+		
+		public function getPrimaryHostDB($args) {
+			$primary_host = $args['primaryhost'];
+			
+			$primary_host_pieces = explode('.', $primary_host);
+			$primary_host_usable = $primary_host_pieces[0];
+			
+			$client_db_args = [
+				'cleanser'=>$this->cleanser_object,
+				'time'=>$this->time,
+				'domain'=>$this->domain_object,
+				'database'=>$primary_host_usable,
+				'globals'=>$this->globals,
+			];
+			
+			$client_db = new DBAccess($client_db_args);
+			$client_db->DBStart();
+			
+			return $client_db;
+		}
+		
+		public function getPrimaryHosts() {
 			$selected_primary_host = $this->Param('host');
+			
+			$primary_hosts = $this->db_admin->ViewAllPrimaryHosts();
+			$primary_hosts_count = count($primary_hosts);
 			
 			for($i = 0; $i < $primary_hosts_count; $i++) {
 				$primary_host = $primary_hosts[$i];
@@ -69,46 +118,19 @@
 				}
 			}
 			
-			#print_r($primary_hosts);
+			return $primary_hosts;
+		}
+		
+		public function getOrderBySQL() {
+			$order_sql = 'ORDER BY OriginalCreationDate DESC ';
 			
-			$primary_hosts_count = count($primary_hosts);
+			$limit = (int) $this->Param('limit');
 			
-			for($i = 0; $i < $primary_hosts_count; $i++) {
-				$primary_host = $primary_hosts[$i];
-				
-				$primary_host_pieces = explode('.', $primary_host);
-				$primary_host_usable = $primary_host_pieces[0];
-				
-				$client_db_args = [
-					cleanser=>$this->cleanser_object,
-					time=>$this->time,
-					domain=>$this->domain_object,
-					database=>$primary_host_usable,
-				];
-				
-			//	print("BT: CONNECT to...|" . $primary_host_usable . "|");
-				
-				$client_db = new DBAccess($client_db_args);
-				$client_db->DBStart();
-				
-				$comments[$primary_host] = $client_db->RunQuery([
-					'sql'=>$comment_sql,
-				]);
-				
-				$suggestions[$primary_host] = $client_db->RunQuery([
-					'sql'=>$suggestion_sql,
-				]);
-				
-				$errors[$primary_host] = $client_db->RunQuery([
-					'sql'=>$error_sql,
-				]);
+			if($limit > 0 && $limit < 1001) {
+				$order_sql .= 'LIMIT ' . $limit;
 			}
 			
-			$this->comments = $comments;
-			$this->suggestions = $suggestions;
-			$this->errors = $errors;
-			
-			return TRUE;
+			return $order_sql;
 		}
 		
 				// Type Handlers

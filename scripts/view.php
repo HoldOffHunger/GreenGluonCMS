@@ -412,6 +412,12 @@
 		public function formatImageText($args) {
 			$text = $args['text'];
 			$images = $args['images'];
+			
+			if ($this->script_format_lower == 'pdf') {
+				$text = preg_replace('/Image::(\d+)/', '', $text); 
+				return $text;
+			}
+			
 			$dom = preg_split('/Image::(\d+)/', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 			$dom_length = count($dom);
 			

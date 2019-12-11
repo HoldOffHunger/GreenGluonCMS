@@ -520,8 +520,23 @@
 				'/image/privacy/',
 				'/image/social-media/',
 				'/image/terms/',
+				
 				'/image/thumbs-up-right.jpg',		# TODO: improve this, move images to own dir
 				'/image/thumbs-down-right.jpg',
+				
+				'/*.pdf$',
+				'/*.txt$',
+				'/*.txt?wrapped=1$',
+				'/*.rtf$',
+				'/*.epub$',
+				'/*.daisy$',
+				'/*.sgml$',
+				'/*.json$',
+				'/*.xml$',
+				'/*.csv$',
+				'/*.latex$',
+				'/*.opds$',
+				'/*.rdf$',
 			];
 		}
 		
