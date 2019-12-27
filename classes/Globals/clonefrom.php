@@ -31,14 +31,14 @@
 		
 		public function DBInfo() {
 			return [
-				'username'=>'ouruprising',
-				'password'=>'OE88dd8dd82d',
-				'hostname'=>'mysql.ouruprising.com',
+				'username'=>'insert-username-here',
+				'password'=>'insert-password-here',
+				'hostname'=>'mysql.website.com',
 			];
 		}
 		
 		public function NewRandomPasswordSeed() {
-			return 'do you believe in magic?  any young girl would!11123';
+			return 'oeuidoeydf5a3p3u3';
 		}
 		
 		public function SetAPIData() {
