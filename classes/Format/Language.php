@@ -88,18 +88,18 @@
 		public function GetOnlyCountryCodeList()
 		{
 			return [
-				'de',
-				'en',
-				'es',
-				'fr',
-				'ja',
-				'it',
-				'nl',
-				'pl',
-				'pt',
-				'ru',
-				'tr',
-				'zh',
+				'de',		// German
+				'en',		// English
+				'es',		// Spanish
+				'fr',		// French
+				'ja',		// Japanese
+				'it',		// Italian
+				'nl',		// Dutch
+				'pl',		// Polish
+				'pt',		// Portuguese
+				'ru',		// Russian
+				'tr',		// Turkish
+				'zh',		// Chinese
 			];
 		}
 		
@@ -288,28 +288,6 @@
 		
 		public function GetListOfLanguageCodes()
 		{
-			switch($this->domain->host)
-			{
-				case 'earthfluent':
-						# English, Spanish, French, Italian, German, Japanese, Chinese, Hindi, Indonesian, Dutch, Polish, Portuguese, Russian, or Korean!
-					return [
-						'en'=>'English',
-						'es'=>'Spanish',
-						'fr'=>'French',
-						'it'=>'Italian',
-						'de'=>'German',
-						'ja'=>'Japanese',
-						'ko'=>'Korean',
-						'zh'=>'Chinese',
-						'hi'=>'Hindi',
-						'id'=>'Indonesian',
-						'nl'=>'Dutch',
-						'pl'=>'Polish',
-						'pt'=>'Portuguese',
-						'ru'=>'Russian',
-					];
-			}
-			
 			return [
 				'de'=>'German',
 				'en'=>'English',

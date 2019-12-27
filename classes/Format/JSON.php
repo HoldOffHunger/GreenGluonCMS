@@ -115,6 +115,7 @@
 			{
 				return FALSE;
 			}
+			$this->script->DisplayTemplates();
 			
 			$this->SetJSONHeadersForHTTP();
 			

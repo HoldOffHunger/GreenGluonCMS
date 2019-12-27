@@ -1,17 +1,18 @@
 <?php
 
 	trait DBAdminFunctions {
-		public function ViewMySQLInformationSchemaBase($args)
-		{
+		public function ViewMySQLInformationSchemaBase($args) {
 			$this->SetDBAdmin();
-			$information_schema_function_name = 'GetMySQL' . $args[field];
+			$information_schema_function_name = 'GetMySQL' . $args['field'];
 			return $this->StatusDataArray = $this->db_admin->$information_schema_function_name();
 		}
 		
-		public function SetDBAdmin()
-		{
+		public function SetDBAdmin() {
 			require('../classes/Database/DBAdmin.php');
-			$this->db_admin = new DBAdmin([dbaccessobject=>$this->db_access_object]);
+			$this->db_admin = new DBAdmin([
+				'dbaccessobject'=>$this->db_access_object,
+				'globals'=>$this->globals,
+			]);
 		}
 		
 		public function DBAdminDetectBlankListTitles($args)

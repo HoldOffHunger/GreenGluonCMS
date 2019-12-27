@@ -105,7 +105,9 @@
 			header('Content-Type: text/plain; charset=utf-8');
 			header('Accept-Charset: UTF-8, ISO-8859-1');
 			
-			$this->script->Display();
+			$desired_action = $this->desired_action;
+			$display_results = $this->script->$desired_action();
+			
 			$this->script->DisplayTemplates();
 			
 			return TRUE;

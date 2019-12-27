@@ -1,7 +1,6 @@
 <?php
 
-	class PDF
-	{
+	class PDF {
 		public $desired_script;
 		public $desired_action;
 		public $desired_function;
@@ -32,8 +31,7 @@
 		public $clientsideincludes_object;
 		public $navigation_object;
 		
-		public function __construct($args)
-		{
+		public function __construct($args) {
 			$this->script_location = $args[scriptlocation];
 			
 			$this->authentication_object = $args[authentication];
@@ -93,19 +91,15 @@
 			$this->script = new $this->script_classname($constructor_args);
 		}
 		
-		public function CanAccess()
-		{
+		public function CanAccess() {
 			return ($this->script && $this->script->IsAccessible());
 		}
 		
 			// Construct ~ Requires
 			// -----------------------------------------------
 		
-		public function Construct_Requires()
-		{
-			require('../app/fpdf/fpdf.php');
-			require('../app/tfpdf/tfpdf.php');
-			require('../app/fpdf-write-html/fpdf-write-html.php');
+		public function Construct_Requires() {
+			require('../app/php-html-to-pdf/php-html-to-pdf.php');
 			
 			require('../scripts/Format/' . $this->script_format . '/basicscript.php');
 			require('../classes/Format/Formats.php');
@@ -114,8 +108,7 @@
 			// Display PDF
 			// -----------------------------------------------
 		
-		public function Display()
-		{
+		public function Display() {
 			if(!$this->PrepareScriptForPDFConversion())
 			{
 				return FALSE;
@@ -142,9 +135,7 @@
 			{
 				$old_pdf_input = file_get_contents($source_file_location);
 			}
-			
-			if(!is_file($pdf_file_location) || $old_pdf_input != $pdf_input)
-			{
+			if($_GET['forceregen'] || !is_file($pdf_file_location) || $old_pdf_input != $pdf_input) {
 				$pdf_object = $this->SetPDFObject();
 				
 				$this->WriteHTMLToPDF();
@@ -159,113 +150,64 @@
 			return readfile($pdf_file_location);
 		}
 		
-		public function SetPDFHeadersForHTTP()
-		{
-			header("Content-type: application/pdf");
+		public function SetPDFHeadersForHTTP() {
+			header('Content-type: application/pdf');
 			header('Content-Disposition:inline;filename=' . urlencode($this->pdf_display_filename) . '.pdf');
-		}
-		
-		public function WriteHTMLToPDF()
-		{
-			$pdf_input = $this->pdf_input;
-			$pdf_input_lines = explode("\n", $pdf_input);
-			$pdf_input_line_count = count($pdf_input_lines);
 			
-			for($i = 0; $i < $pdf_input_line_count; $i++)
-			{
-				$pdf_input_line = trim($pdf_input_lines[$i]);
-				
-				$this->pdf_object->SetLeftMargin(10);
-				$this->pdf_object->SetRightMargin(10);
-				
-				if(preg_match('/<h1>/', $pdf_input_line))
-				{
-					$this->pdf_object->SetFont('dejavu b', '', 40);
-					$line_height = 40;
-				}
-				elseif(preg_match('/<h2>/', $pdf_input_line))
-				{
-					$this->pdf_object->SetFont('dejavu', '', 30);
-					$line_height = 30;
-				}
-				elseif(preg_match('/<h3>/', $pdf_input_line))
-				{
-					$this->pdf_object->SetFont('dejavu', '', 25);
-					$line_height = 25;
-				}
-				elseif(preg_match('/<h4>/', $pdf_input_line))
-				{
-					$this->pdf_object->SetFont('dejavu', '', 20);
-					$line_height = 20;
-				}
-				elseif(preg_match('/<h5>/', $pdf_input_line))
-				{
-					$this->pdf_object->SetFont('dejavu', '', 18);
-					$line_height = 18;
-				}
-				elseif(preg_match('/<h6>/', $pdf_input_line))
-				{
-					$this->pdf_object->SetFont('dejavu', '', 16);
-					$line_height = 16;
-				}
-				elseif(preg_match('/<blockquote>/', $pdf_input_line))
-				{
-					$this->pdf_object->SetFont('dejavu', '', 16);
-					$this->pdf_object->SetLeftMargin(30);
-					$this->pdf_object->SetRightMargin(30);
-				}
-				else
-				{
-					$this->pdf_object->SetFont('dejavu', '', 14);
-					$line_height = 14;
-				}
-				
-				if($pdf_input_line)
-				{
-					if($i != 0)
-					{
-						$this->pdf_object->Ln($line_height / 1.25);
-					}
-									
-					$this->pdf_object->WriteHTML($pdf_input_line, $line_height / 2.5);
-				}
-			}
+			return TRUE;
 		}
 		
-		public function PrepareScriptForPDFConversion()
-		{
+		public function WriteHTMLToPDF() {
+			$pdf_input = $this->pdf_input;
+			
+			$this->pdf_object->WriteHTML([
+				'html'=>$pdf_input,
+				'language'=>$this->language->GetLanguageCode(),
+			]);
+			
+			return TRUE;
+		}
+		
+		public function PrepareScriptForPDFConversion() {
 			$desired_action = $this->desired_action;
 			$display_results = $this->script->$desired_action();
 			
-			if(!$display_results)
-			{
+			if(!$display_results) {
 				return FALSE;
 			}
 			
 			return TRUE;
 		}
 		
-		public function SetHTMLForPDFConversion()
-		{
+		public function SetHTMLForPDFConversion() {
 			$this->script->DisplayTemplates();
 			
-			return $this->pdf_input = $this->script->html_for_pdf;
+			return $this->pdf_input = html_entity_decode($this->script->html_for_pdf);
 		}
 		
-		public function SetPDFFileName()
-		{
+		public function SetPDFFileName() {
 			$pdf_filename = $this->script->entry['id'];
 			
-			if($this->script->entry['textbody'])
-			{
-				$textbody_count = count($this->script->entry['textbody']);
-				
-				if($textbody_count)
+			if($this->desired_action == 'exportuser') {
+				$pdf_filename = 'user-' . $this->script->user['id'];
+			} elseif($this->script_classname == 'privacy') {
+				$language_code = $this->language->GetLanguageCode();
+				$pdf_filename = 'privacy-policy_' . $language_code;
+			} elseif($this->script_classname == 'terms') {
+				$language_code = $this->language->GetLanguageCode();
+				$pdf_filename = 'terms-and-conditions_' . $language_code;
+			} else {
+				if($this->script->entry['textbody'])
 				{
-					$textbody_for_use = $this->script->entry['textbody'][0];
-					if($textbody_for_use && $textbody_for_use['id'])
+					$textbody_count = count($this->script->entry['textbody']);
+					
+					if($textbody_count)
 					{
-						$pdf_filename .= '_' . $textbody_for_use['id'];
+						$textbody_for_use = $this->script->entry['textbody'][0];
+						if($textbody_for_use && $textbody_for_use['id'])
+						{
+							$pdf_filename .= '_' . $textbody_for_use['id'];
+						}
 					}
 				}
 			}
@@ -273,82 +215,55 @@
 			return $this->pdf_filename = $pdf_filename;
 		}
 		
-		public function SetPDFDisplayFileName()
-		{
+		public function SetPDFDisplayFileName() {
 			$pdf_display_filename = '';
 			
-			if($this->script->entry && $this->script->entry['Code'])
-			{
+			if($this->script->entry && $this->script->entry['Code']) {
 				$pdf_display_filename = $this->script->entry['Code'];
-			}
-			else
-			{
-				$pdf_display_filename = 'portable-file';
+			} else {
+				if($this->desired_action == 'exportuser') {
+					$pdf_display_filename = 'user-export';
+				} elseif($this->script_classname == 'privacy') {
+					$language_code = $this->language->GetLanguageCode();
+					$pdf_display_filename = 'privacy-policy_' . $language_code;
+				} elseif($this->script_classname == 'terms') {
+					$language_code = $this->language->GetLanguageCode();
+					$pdf_display_filename = 'terms-and-conditions_' . $language_code;
+				} else {
+					$pdf_display_filename = 'portable-file';
+				}
 			}
 			
 			return $this->pdf_display_filename = $pdf_display_filename;
 		}
 		
-		public function SetSourceFileLocation()
-		{
+		public function SetSourceFileLocation() {
 			$source_file_location = '../data/pdf/' . $this->domain_object->host . '/' . $this->pdf_filename . '.html';
 			
 			return $this->source_file_location = $source_file_location;
 		}
 		
-		public function SetPDFFileLocation()
-		{
+		public function SetPDFFileLocation() {
 			$pdf_file_location = '../data/pdf/' . $this->domain_object->host . '/' . $this->pdf_filename . '.pdf';
 			
 			return $this->pdf_file_location = $pdf_file_location;
 		}
 		
-		public function SetPDFObject()
-		{
-			$pdf_object = new PDF_HTML();
+		public function SetPDFObject() {
+			$meta_data = $this->SetPDFObject_MetaData();
+			$pdf_object = new HTMLtoPDF($meta_data);
 			$this->pdf_object = $pdf_object;
-			
-			$pdf_object = $this->SetPDFObject_MetaData();
-			
-			$pdf_object->AddPage();
-			$pdf_object->SetTopMargin(10);
-			$pdf_object->AddFont('DejaVu','','DejaVuSansCondensed.ttf',true);
-			$pdf_object->AddFont('DejaVu','Bold','DejaVuSans-Bold.ttf',true);
-			$pdf_object->AddFont('DejaVu','Italic','DejaVuSans-Oblique.ttf',true);
 			
 			return $this->pdf_object = $pdf_object;
 		}
 		
-		public function SetPDFObject_MetaData()
-		{
+		public function SetPDFObject_MetaData() {
 			$this->script->SetDocumentAttributes();
 			$pdf_data = $this->script->pdf_data;
 			
-			$pdf_object = $this->pdf_object;
+			$pdf_data['Creator'] = $this->version_object->GetSoftwareName() . ', v. ' . $this->version_object->GetSoftwareVersion();
 			
-			if($pdf_data['Title'])
-			{
-				$pdf_object->SetTitle($pdf_data['Title'], TRUE);
-			}
-			
-			if($pdf_data['Author'])
-			{
-				$pdf_object->SetAuthor($pdf_data['Author'], TRUE);
-			}
-			
-			if($pdf_data['Subject'])
-			{
-				$pdf_object->SetAuthor($pdf_data['Subject'], TRUE);
-			}
-			
-			if($pdf_data['Keywords'])
-			{
-				$pdf_object->SetAuthor($pdf_data['Keywords'], TRUE);
-			}
-			
-			$pdf_object->SetCreator($this->version_object->GetSoftwareName() . ', v. ' . $this->version_object->GetSoftwareVersion(), TRUE);
-			
-			return $pdf_object;
+			return $pdf_data;
 		}
 	}
 	

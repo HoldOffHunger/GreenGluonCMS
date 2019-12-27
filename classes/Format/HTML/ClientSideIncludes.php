@@ -40,6 +40,9 @@
 					require('../format/html/basics/spacing/return.html');
 					require('../format/html/head/' . $include_type . '_header.php');
 					require('../format/html/basics/spacing/return.html');
+					
+					$this->displayDefaultIncludes(['includetype'=>$include_type]);
+					
 					foreach ($include_files as $include_file)
 					{
 						$include_file = trim($include_file);
@@ -184,6 +187,8 @@
 					require('../format/html/head/' . $include_type . '_header.php');
 					require('../format/html/basics/spacing/return.html');
 					
+					$this->displayDefaultIncludes(['includetype'=>$include_type]);
+					
 					$primary_domain_args = array(
 						'secure'=>$this->secure_script,
 						'www'=>1,
@@ -219,7 +224,23 @@
 			require('../format/html/basics/spacing/return.html');
 			require('../format/html/head/' . $type . '_header.php');
 			$this->DisplayDoubleReturns();
-			require($unavailable_location);
+			$this->displayDefaultIncludes(['includetype'=>$type]);
+		#	require($unavailable_location);
+		}
+		
+		public function DisplayDefaultIncludes($args)
+		{
+			$include_type = $args['includetype'];
+			
+			if($include_type == 'css') {
+				print("\n\t" . '<link type="text/css" rel="stylesheet" href="' . $this->domain_object->GetPrimaryDomain(['www'=>TRUE, 'lowercased'=>TRUE]) .	'/css/jquery-ui.min.css"></script>');
+				print("\n\t" . '<link type="text/css" rel="stylesheet" href="' . $this->domain_object->GetPrimaryDomain(['www'=>TRUE, 'lowercased'=>TRUE]) .	'/css/jquery-ui.structure.min.css"></script>');
+				print("\n\t" . '<link type="text/css" rel="stylesheet" href="' . $this->domain_object->GetPrimaryDomain(['www'=>TRUE, 'lowercased'=>TRUE]) .	'/css/jquery-ui.theme.min.css"></script>');
+			} elseif($include_type == 'javascript') {
+				print("\n\t" . '<script src="' . $this->domain_object->GetPrimaryDomain(['www'=>TRUE, 'lowercased'=>TRUE]) .	'/javascript/jquery.min.js"></script>');
+				print("\n\t" . '<script src="' . $this->domain_object->GetPrimaryDomain(['www'=>TRUE, 'lowercased'=>TRUE]) .	'/javascript/jquery-ui.min.js"></script>');
+				print("\n\t" . '<script src="' . $this->domain_object->GetPrimaryDomain(['www'=>TRUE, 'lowercased'=>TRUE]) .	'/javascript/tooltip.js"></script>');
+			}
 		}
 		
 			// HTML Spacing

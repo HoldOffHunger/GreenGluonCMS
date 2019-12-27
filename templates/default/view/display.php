@@ -73,130 +73,79 @@
 		
 		// -------------------------------------------------------------
 	
-	if($this->authentication_object->user_session['UserAdmin.id'])
-	{
-		print('<div class="horizontal-center width-95percent margin-top-5px border-2px">');
-				// "Controls" Header
-			
-			// -------------------------------------------------------------
-			
-		print('<center>');
-		print('<div class="horizontal-center width-90percent">');
-		print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-		print('<h2 class="horizontal-left margin-5px font-family-arial">');
-		print('Controls for Entry ' . $this->entry['id']);
-		print('</h2>');
-		print('</div>');
-		print('</div>');
-		print('</center>');
-		
-				// Finish Admin Controls
-			
-			// -------------------------------------------------------------
-								
-		$clear_float_divider_start_args = [
-			'class'=>'clear-float',
-			'indentlevel'=>5,
-		];
-		
-		$divider->displaystart($clear_float_divider_start_args);
-		
-		$clear_float_divider_end_args = [
-			'indentlevel'=>5,
-		];
-		
-		$divider->displayend($clear_float_divider_end_args);
-		
-				// "Add" / "Edit" Option
-			
-			// -------------------------------------------------------------
-		
-		print('<div class="horizontal-center width-95percent margin-top-5px">');
-		
-		print('<div class="float-left margin-5px border-2px background-color-gray13">');
-		print('<p class="font-family-arial margin-5px">');
-		print('<a href="modify.php?action=Edit">EDIT</a>');
-		print('</p>');
-		print('</div>');
-		
-		print('<div class="float-left margin-5px border-2px background-color-gray13">');
-		print('<p class="font-family-arial margin-5px">');
-		print('<a href="modify.php?action=Add">ADD</a>');
-		print('</p>');
-		print('</div>');
-		
-		print('<div class="float-left margin-5px border-2px background-color-gray13">');
-		print('<p class="font-family-arial margin-5px">');
-		print('<a href="transfer.php">TRANSFER</a>');
-		print('</p>');
-		print('</div>');
-		
-		print('</div>');
-	
-				// Section
-			
-			// -------------------------------------------------------------
-								
-		$clear_float_divider_start_args = [
-			'class'=>'clear-float',
-			'indentlevel'=>5,
-		];
-		
-		$divider->displaystart($clear_float_divider_start_args);
-		
-		$clear_float_divider_end_args = [
-			'indentlevel'=>5,
-		];
-		
-		$divider->displayend($clear_float_divider_end_args);
-		
-				// "View" / "Index" Option
-			
-			// -------------------------------------------------------------
-		
-		print('<div class="horizontal-center width-95percent margin-top-5px">');
-		
-		print('<div class="float-left margin-5px border-2px background-color-gray13">');
-		print('<p class="font-family-arial margin-5px">');
-		print('<a href="view.php">VIEW</a>');
-		print('</p>');
-		print('</div>');
-		
-		print('<div class="float-left margin-5px border-2px background-color-gray13">');
-		print('<p class="font-family-arial margin-5px">');
-		print('<a href="view.php?action=index">INDEX</a>');
-		print('</p>');
-		print('</div>');
-		
-		print('</div>');
-		
-				// Finish Admin Controls
-			
-			// -------------------------------------------------------------
-								
-		$clear_float_divider_start_args = [
-			'class'=>'clear-float',
-			'indentlevel'=>5,
-		];
-		
-		$divider->displaystart($clear_float_divider_start_args);
-		
-		$clear_float_divider_end_args = [
-			'indentlevel'=>5,
-		];
-		
-		$divider->displayend($clear_float_divider_end_args);
-		
-		print('</div>');
+	if($this->authentication_object->user_session['UserAdmin.id']) {
+		require('../modules/html/entry-controls.php');
+		$entry_controls = new module_entrycontrols;
+		$entry_controls->Display();
 	}
 	
 			// View Selected Record List
 		
 		// -------------------------------------------------------------
 	
-	print('<BR><BR><PRE>');
-	print('Green Gluon CMS installed and running properly.');
+	print('<PRE>');
+	print('Green Gluon CMS installed and running properly : <a href="login.php">Login</a>.');
 	print('</PRE>');
+	
+	print('<center>');
+	print('<table style="border:1px solid black;width:1000px;">');
+	
+	foreach($this->entry as $field => $value) {
+		print('<tr>');
+		print('<td style="border:1px solid black;" width="1">' . $field . '</td>');
+		
+		print('<td style="border:1px solid black;">');
+		if(is_array($value)) {
+			if($value['id']) {
+				print('<table style="border:1px solid black; margin-top:1px;">');
+				foreach($value as $valuefield => $valuevalue) {
+					print('<tr>');
+					
+					print('<td style="border:1px solid black;">');
+					print($valuefield);
+					print('</td>');
+					
+					print('<td style="border:1px solid black;">');
+					print($valuevalue);
+					print('</td>');
+					
+					print('</tr>');
+				}
+				print('</table>');
+			} else {
+				foreach($value as $index => $record) {
+					$number = $index + 1;
+					print('# ');
+					print($number);
+					print('<BR><BR>');
+					
+					print('<table style="border:1px solid black;">');
+					foreach($record as $valuefield => $valuevalue) {
+						print('<tr>');
+						
+						print('<td style="border:1px solid black;">');
+						print($valuefield);
+						print('</td>');
+						
+						print('<td style="border:1px solid black;">');
+						print($valuevalue);
+						print('</td>');
+						
+						print('</tr>');
+					}
+					print('</table>');
+				}
+			}
+		} else {
+			print($value);
+		}
+		print('</td>');
+		print('</tr>');
+	}
+	
+	print('</table>');
+	print('</center>');
+	
 	/*
 	if($this->authentication_object->user_session['UserAdmin.id'])
 	{

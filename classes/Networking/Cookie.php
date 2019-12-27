@@ -77,7 +77,7 @@
 		
 		public function SecureCookieExpirationTime()
 		{
-			return $this->time->time + (2* 60 * 60);
+			return $this->time->time + (4* 60 * 60);
 		}
 		
 		public function InsecureCookieExpirationTime()

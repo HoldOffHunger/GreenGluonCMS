@@ -1,8 +1,7 @@
 <?php
 
 	trait SimpleORM {
-		public function SetOrmBasics()
-		{
+		public function SetOrmBasics() {
 			$this->SetORM();
 			$this->SetMasterRecord();
 			$this->SetRecordTree();
@@ -25,18 +24,20 @@
 			
 			$url = $this->domain_object->GetPrimaryDomain([lowercase=>0, www=>1]);
 			
-			$this->entry['eventdate'][] = [
-				'id'=>-1,
-				'Title'=>'Added to ' . $url,
-				'EventDateTime'=>$this->entry['OriginalCreationDate'],
-			];
-			
-			if($this->entry['OriginalCreationDate'] != $this->entry['LastModificationDate']) {
+			if($this->entry && $this->entry['OriginalCreationDate']) {
 				$this->entry['eventdate'][] = [
-					'id'=>-2,
-					'Title'=>'Last Updated on ' . $url,
-					'EventDateTime'=>$this->entry['LastModificationDate'],
+					'id'=>-1,
+					'Title'=>'Added to ' . $url,
+					'EventDateTime'=>$this->entry['OriginalCreationDate'],
 				];
+				
+				if($this->entry['OriginalCreationDate'] != $this->entry['LastModificationDate']) {
+					$this->entry['eventdate'][] = [
+						'id'=>-2,
+						'Title'=>'Last Updated on ' . $url,
+						'EventDateTime'=>$this->entry['LastModificationDate'],
+					];
+				}
 			}
 		}
 		

@@ -119,6 +119,7 @@
 			{
 				return FALSE;
 			}
+			$this->script->DisplayTemplates();
 			$this->SetRDFFileName();
 			$this->SetRDFDisplayFileName();
 			
@@ -352,6 +353,31 @@
 				$rdf_body .= '  </entry:link>' . "\n\n";
 			}
 			
+			$valid_record_fields = [
+				'privacypolicy'=>TRUE,
+				'termsofservice'=>TRUE,
+				'userdata'=>TRUE,
+				'comments'=>TRUE,
+				'likesdislikes'=>TRUE,
+			];
+			
+			$record_fields = array_keys($this->script->record_to_use);
+			$record_fields_count = count($record_fields);
+			
+			for($i = 0; $i < $record_fields_count; $i++) {
+				$record_field = $record_fields[$i];
+				
+				if($valid_record_fields[$record_field]) {
+					$rdf_body .= '  <entry:' . $record_field . '>' . "\n";
+					$rdf_body .= '  <entry:' . $record_field . ':value>';
+					
+					$rdf_body .= $this->script->record_to_use[$record_field];
+					
+					$rdf_body .= '<entry:' . $record_field . ':/value>' . "\n";
+					$rdf_body .= '  </entry' . $record_field . '>' . "\n\n";
+				}
+			}
+			
 			$rdf_body .= '</rdf:Description>' . "\n\n";
 			
 			$rdf_footer = '</rdf:RDF>' . "\n";
@@ -443,16 +469,24 @@
 		{
 			$rdf_filename = $this->script->record_to_use['id'];
 			
-			if($this->script->record_to_use['textbody'])
-			{
-				$textbody_count = count($this->script->record_to_use['textbody']);
-				
-				if($textbody_count)
+			if($this->desired_action == 'exportuser') {
+				$rdf_filename = 'user-' . $this->script->user['id'];
+			} elseif($this->script_name == 'privacy') {
+				$rdf_filename = 'privacy-policy';
+			} elseif($this->script_name == 'terms') {
+				$rdf_filename = 'terms-of-service';
+			} else {
+				if($this->script->record_to_use['textbody'])
 				{
-					$textbody_for_use = $this->script->record_to_use['textbody'][0];
-					if($textbody_for_use && $textbody_for_use['id'])
+					$textbody_count = count($this->script->record_to_use['textbody']);
+					
+					if($textbody_count)
 					{
-						$rdf_filename .= '_' . $textbody_for_use['id'];
+						$textbody_for_use = $this->script->record_to_use['textbody'][0];
+						if($textbody_for_use && $textbody_for_use['id'])
+						{
+							$rdf_filename .= '_' . $textbody_for_use['id'];
+						}
 					}
 				}
 			}

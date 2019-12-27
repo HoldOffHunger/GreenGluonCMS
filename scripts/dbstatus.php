@@ -11,8 +11,7 @@
 	require('../traits/scripts/SimpleORM.php');
 	require('../traits/scripts/SimpleORMSiteMap.php');
 
-	class dbstatus extends basicscript
-	{
+	class dbstatus extends basicscript {
 					// Class Information
 					// --------------------------------------------------------------
 					
@@ -125,7 +124,7 @@
 		{
 			$this->SetDBAdmin();
 			$get_files_args = [
-				arrayofstrings=>$this->db_admin->GetTableNames(),
+				'arrayofstrings'=>$this->db_admin->GetTableNames(),
 			];
 			
 			$this->StatusDataArray = $this->NumberArrayOfStrings($get_files_args);
@@ -725,29 +724,32 @@
 			return TRUE;
 		}
 		
-		public function ClonePrimaryHostDatabase()
-		{
+		public function ClonePrimaryHostDatabase() {
 			$this->SetDBAdmin();
 			
 			$new_host_to_clone = $this->Param('newhost');
 			
-			if(strlen($new_host_to_clone))
-			{
+			if(strlen($new_host_to_clone)) {
+			//	print("BT: CLONE!" . $new_host_to_clone);
 				$this->new_host_to_clone = $new_host_to_clone;
 				
 				$clone_from = $this->Param('clonefrom');
 				
-				if($clone_from)
-				{
+				if($clone_from) {
 					$this->clone_from = $clone_from;
 				}
 				
 				$clone_primary_host_database_args = [
-					host=>$new_host_to_clone,
-					clonefrom=>$clone_from,
+					'host'=>$new_host_to_clone,
+					'clonefrom'=>$clone_from,
+					'globals'=>$this->globals,
 				];
 				
+			//	PRINT("BT: DO IT!" . $clone_from);
+		//		print_r($this->globals);
+				
 				$db_admin_cloning_results = $this->DBAdminClonePrimaryHostDatabase($clone_primary_host_database_args);
+			//	print("BT DONE");
 				
 				$this->clone_success = $db_admin_cloning_results['cloneresults'];
 				$this->create_tables = $db_admin_cloning_results['tablesql'];
@@ -760,7 +762,8 @@
 					if(strlen($insert_master_admin_account))
 					{
 						$this->insert_master_admin_account = TRUE;
-						
+						print("DFO TI ILAST!<BR><BR>");
+						print_r($clone_primary_host_database_args);
 						$insert_master_admin_account_results = $this->DBAdminCloneAdminAccountsToNewDatabase($clone_primary_host_database_args);
 						
 						if($insert_master_admin_account_results['cloneresults'])
@@ -2221,6 +2224,94 @@
 			array_unshift($this->broken_records, $entry_fields);
 			
 			return TRUE;
+		}
+		
+		public function DetectBadText() {
+			$type = $this->Param('type');
+			
+			require('../classes/Language/EnglishMisspellings.php');
+			$this->misspellings = new EnglishMisspellings();
+			
+			$this->misspellingscount = count($this->misspellings->misspellings);
+			$this->maxmin = $this->getMinMaxForField(['table'=>'Entry', 'field'=>'id']);
+			
+			if($type) {
+				print("BT: TYPE!" . $type . '<BR><BR>');
+				
+				$correction_start_id = $this->Param('correction-id-start');
+				$correction_end_id = $this->Param('correction-id-last');
+				$entry_start_id = $this->Param('entry-id-start');
+				$entry_end_id = $this->Param('entry-id-last');
+				
+				$type_pieces = split('_', $type);
+				
+				$record_type = $type_pieces[0];
+				$record_field = $type_pieces[1];
+				print("BT: RECORD!" . $record_type);
+				
+	//			$misspellings = $this->misspellings->misspellings;
+				
+				print("BT: SPELLINGS!");
+				PRINT("death!");
+				print_r($this->misspellings);
+				#die("fuckit");
+				print('<BR><BR>');
+				
+				print_r($misspellings);
+				if($record_type == 'TextBody') {
+					$sql = 'SELECT Entry.id, Entry.Title, TextBody.id as TextBody_id, TextBody.Source as TextBody_Source, ';
+					$sql .= 'MATCH (TextBody.Text) ';
+					$sql .= 'AGAINST (\'vegetarian\' IN NATURAL LANGUAGE MODE) AS score';
+					$sql .= 'FROM TextBody ';
+					$sql .= 'JOIN Entry ON Entry.id = TextBody.Entryid ';
+					$sql .= 'HAVING score > 0 ';
+					$sql .= 'ORDER BY score DESC ';
+					print("BT: TEXTBODY - DETECT BAD TYPE! <BR><BR>");
+					print('SQL:' . $sql . '<BR><BR>');
+					
+					print_r($this->misspellings);
+				} else {
+				}
+			}
+			
+			return TRUE;
+		}
+		
+		public function getMinMaxForField($args) {
+			$field = $args['field'];
+			$table = $args['table'];
+			
+			$sql = 'SELECT MAX(' . $field . ') max, MIN(' . $field . ') min ';
+			$sql .= 'FROM ' . $table;
+			
+			$max_min = $this->db_access_object->RunQuery([
+				'sql'=>$sql,
+			])[0];
+			
+			return $max_min;
+		}
+		
+		public function SetORMSearch() {
+			require('../classes/Database/ORMSearch.php');
+			
+			return $this->orm_search = new ORMSearch([dbaccessobject=>$this->db_access_object]);
+		}
+		
+		public function PerformSearch($args) {
+			return $this->search_results = $this->orm_search->Search([
+				searchterms=>$args['search_terms'],
+			]);
+		}
+		
+		public function SetEntryScoreList() {
+			$entry_scores = [];
+			
+			foreach($this->search_results as $search_result)
+			{
+				$entry_scores[$search_result['TextBody_Entryid']] = $search_result['score'];
+			}
+			
+			return $this->entry_scores = $entry_scores;
 		}
 		
 						// INFORMATION_SCHEMA Functions

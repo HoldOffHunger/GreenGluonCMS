@@ -1,5 +1,5 @@
 <?php
-	
+
 			// Define Standard Class Folder
 			// -----------------------------------------------------------------
 	
@@ -38,6 +38,7 @@
 				// -----------------------------------------------------------------
 		
 		'Error/ErrorLogging',
+		'Error/IssueLogging',
 		
 				// Format
 				// -----------------------------------------------------------------
@@ -79,6 +80,7 @@
 			// Call Standard Classes
 			// -----------------------------------------------------------------
 	
+
 	foreach($standard_classes as $class)
 	{
 		require($folder_location_prefix . $class . '.php');

@@ -65,7 +65,10 @@
 						{
 							$this->DisplayIndent([indentlevel=>$indent_level]);
 						}
-						print('</' . $list_key . '>');
+						
+						$list_key_usable = explode(' ', $list_key)[0];
+						
+						print('</' . $list_key_usable . '>');
 						
 						if($human_readable)
 						{

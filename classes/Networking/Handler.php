@@ -23,8 +23,7 @@
 		public $script_format;
 		public $script_location;
 		
-		public function __construct()
-		{
+		public function __construct() {
 			$this->Construct_SetErrorLogging();
 			$this->Construct_SetDevelopmentVersion();
 			$this->Construct_Cleanser();
@@ -33,6 +32,7 @@
 			$this->Construct_Cookie();
 			$this->Construct_Query();
 			$this->Construct_Language();
+			$this->Construct_Globals();
 			$this->Construct_DBAccess();
 			$this->Construct_Dictionaries();
 			$this->Construct_Action();
@@ -49,30 +49,28 @@
 			}
 		}
 		
-		public function __destruct()
-		{
+		public function __destruct() {
 			return $this->db_access->DBEnd();
 		}
 		
-		public function Construct_SetErrorLogging()
-		{
+		public function Construct_SetErrorLogging() {
 			$this->error_logging = new ErrorLogging([handler=>$this]);
-			$this->error_logging->InitiateLogging();
+			$this->issue_logging = new IssueLogging([handler=>$this]);
+			return TRUE;
 		}
 		
-		public function Construct_SetDevelopmentVersion()
-		{
+		public function Construct_SetDevelopmentVersion() {
 			return $this->version_object = new Version();
 		}
 		
-		public function Construct_PresetAuthentication()
-		{
+		public function Construct_PresetAuthentication() {
 			$this->access = 0;
 			$this->redirect = '';
 			
 			$authentication_args = [
 				'cookie'=>$this->cookie,
 				'dbaccess'=>$this->db_access,
+				'globals'=>$this->globals,
 				'domain'=>$this->domain,
 				'time'=>$this->time,
 			];
@@ -81,11 +79,10 @@
 			return $this->authentication = $authentication;
 		}
 		
-		public function CheckSecurity()
-		{
-			$authenticate_args = array(
+		public function CheckSecurity() {
+			$authenticate_args = [
 				'script'=>$this->script,
-			);
+			];
 			$authentication = $this->authentication;
 			$authentication->Authenticate($authenticate_args);
 			
@@ -98,40 +95,54 @@
 			}
 		}
 		
-		public function Construct_Cleanser()
-		{
+		public function Construct_Cleanser() {
 			$cleanser = new HandleInput();
 			$this->cleanser = $cleanser;
 		}
 		
-		public function Construct_Domain()
-		{
+		public function Construct_Domain() {
 			$domain = new Domain();
 			$this->domain = $domain;
 		}
 		
-		public function Construct_Cookie()
-		{
+		public function Construct_Cookie() {
 			$cookie_args = [
 				domain=>$this->domain,
 				time=>$this->time,
 				cleanser=>$this->cleanser,
 			];
+			
 			$cookie = new Cookie($cookie_args);
-			$this->cookie = $cookie;
+			
+			return $this->cookie = $cookie;
 		}
 		
-		public function Construct_Query()
-		{
+		public function Construct_Globals() {
+			require('../classes/Globals/clonefrom.php');
+			$base_globals_classname = $this->domain->host . '.php';
+			
+			$client_globals_location = '../classes/Globals/' . $base_globals_classname;
+			
+			if(is_file($client_globals_location)) {
+				require($client_globals_location);
+				$globals = new globals([]);
+			} else {
+				$globals = new defaultglobals([]);
+			}
+			
+			return $this->globals = $globals;
+		}
+		
+		public function Construct_Query() {
 			$query_args = [
 				cleanser=>$this->cleanser,
 			];
 			$query = new Query($query_args);
-			$this->query = $query;
+			
+			return $this->query = $query;
 		}
 		
-		public function Construct_Language()
-		{
+		public function Construct_Language() {
 			$language_args = [
 				domain=>$this->domain,
 				cookie=>$this->cookie,
@@ -142,78 +153,64 @@
 			return $this->language = $language;
 		}
 		
-		public function Construct_Dictionaries()
-		{
+		public function Construct_Dictionaries() {
 			$dictionary = new Dictionary(['dbaccess'=>$this->db_access]);
 			
 			return $this->dictionary = $dictionary;
 		}
 		
-		public function Construct_Time()
-		{
-			$time_args = [];
-			$time = new Time($time_args);
-			$this->time = $time;
+		public function Construct_Time() {
+			$time = new Time([]);
+			return $this->time = $time;
 		}
 		
-		public function Construct_DBAccess()
-		{
-			$db_access_args = array(
-				cleanser=>$this->cleanser,
-				time=>$this->time,
-				domain=>$this->domain,
-			);
-			$db_access = new DBAccess($db_access_args);
+		public function Construct_DBAccess() {
+			$db_access = new DBAccess([
+				'cleanser'=>$this->cleanser,
+				'time'=>$this->time,
+				'domain'=>$this->domain,
+				'globals'=>$this->globals,
+			]);
 			$this->db_access = $db_access;
-			$this->db_access->DBStart();
+			return $this->db_access->DBStart();
 		}
 		
-		public function Construct_Action()
-		{
-			$cleanser_args = array(
-				'input'=>$this->query->Parameter(array('parameter'=>'action')),
-			);
+		public function Construct_Action() {
+			$cleanser_args = [
+				'input'=>$this->query->Parameter(['parameter'=>'action']),
+			];
 			
 			$this->desired_action = $this->cleanser->CleanseInput($cleanser_args)[cleansedinput];
 			
-			if(!strlen($this->desired_action))
-			{
+			if(!strlen($this->desired_action)) {
 				$this->desired_action = 'display';
 			}
 		}
 		
-		public function Construct_ObjectsAndScripts()
-		{
+		public function Construct_ObjectsAndScripts() {
 			$this->object_list = explode('/', ltrim($_SERVER[REDIRECT_URL], '/'));
+#			print("BT: URL???" . $_SERVER[REDIRECT_URL] . "|");
 			$this->desired_script = array_pop($this->object_list);
 			$object_list_count = count($this->object_list);
-			if($object_list_count > 0)
-			{
+			if($object_list_count > 0) {
 				$this->object_code = $this->object_list[$object_list_count - 1];
 				
-				if($object_list_count > 1)
-				{
+				if($object_list_count > 1) {
 					$this->object_parent = $this->object_list[$object_list_count - 2];
 				}
 			}
 		}
 		
-		public function Construct_ScriptName()
-		{
-			$cleanser_args = array(
+		public function Construct_ScriptName() {
+			$cleanser_args = [
 				'input'=>$this->desired_script,
-			);
+			];
 			
 			$this->script_name = $this->cleanser->CleanseInput($cleanser_args)[cleansedinput];
 			
-			if(!$this->script_name)
-			{
-				$permalink_id = (int)$this->query->Parameter([parameter=>'id']);
-				if($permalink_id)
-				{
-					require('../classes/Database/ORM.php');
-					$this->orm = new ORM([dbaccessobject=>$this->db_access]);
-					
+			if(!$this->script_name) {
+				$permalink_id = (int)$this->query->Parameter(['parameter'=>'id']);
+				if($permalink_id) {
 					$assignment_record_args = [
 						'type'=>Assignment,
 						'definition'=>[
@@ -223,8 +220,10 @@
 					
 					$assignment = $this->db_access->GetRecords($assignment_record_args);
 					
-					if($assignment && $assignment[0] && $assignment[0]['id'])
-					{
+					if($assignment && $assignment[0] && $assignment[0]['id']) {
+						require('../classes/Database/ORM.php');
+						$this->orm = new ORM([dbaccessobject=>$this->db_access]);
+						
 						$assignment = $assignment[0];
 						
 						$entry_records = $this->orm->SearchForEntries([
@@ -235,28 +234,34 @@
 						
 						$redirect_url = '';
 						
-						if($_SERVER[HTTPS] == 'on')
-						{
+						if($_SERVER[HTTPS] == 'on') {
 							$redirect_url .= 'https://www.';
-						}
-						else
-						{
+						} else {
 							$redirect_url .= 'http://www.';
 						}
 						
 						$redirect_url .= $this->domain->primary_domain;
 						
 						$entry_record_count = count($entry_records['parents']);
-						for($i = 0; $i < $entry_record_count; $i++)
-						{
+						for($i = 0; $i < $entry_record_count; $i++) {
 							$entry_record = $entry_records['parents'][$i];
 							$redirect_url .= '/' . $entry_record['Code'];
 						}
 						
 						$redirect_url .= '/view.php';
 						
+						if($this->desired_action) {
+							$redirect_url .= '?action=' . $this->desired_action;
+						}
+						
 						$this->redirect_url = $redirect_url;
 						return FALSE;
+					} else {
+						$this->issue_logging->createLog([
+							'issuetype'=>'BadPermalink',
+							'description'=>'Invalid Permalink ID: ' . $permalink_id,
+						]);
+					//	return FALSE;
 					}
 				}
 				
@@ -264,29 +269,24 @@
 			}
 		}
 		
-		public function Construct_ScriptFileAndExtension()
-		{
+		public function Construct_ScriptFileAndExtension() {
 			$script_name_pieces = explode('.', $this->script_name);
 			
 			$this->script_file = array_shift($script_name_pieces);
 			$this->script_extension = array_pop($script_name_pieces);
 		}
 		
-		public function Construct_ScriptClassname()
-		{
+		public function Construct_ScriptClassname() {
 			$this->script_classname = str_replace('-', '', $this->script_file);
 		}
 		
-		public function Construct_ScriptFormat()
-		{
+		public function Construct_ScriptFormat() {
 			$this->script_format = $this->Construct_ScriptFormat_DetermineScriptFormat();
 			$this->script_format_lower = $this->Construct_ScriptFormatLower_DetermineScriptFormatLower();
 		}
 		
-		public function Construct_ScriptLocation()
-		{
-			switch($this->script_format)
-			{
+		public function Construct_ScriptLocation() {
+			switch($this->script_format) {
 				case 'CSS':
 					$this->script_location = '../scripts/style.php';
 					break;
@@ -297,40 +297,33 @@
 			}
 		}
 		
-		public function Construct_SocialMedia()
-		{
-			$api_args = [
+		public function Construct_SocialMedia() {
+			$this->google_api = new Google([
 				'domainobject'=>$this->domain,
 				'dbaccessobject'=>$this->db_access,
 				'authenticationobject'=>$this->authentication,
-			];
-			
-			$this->google_api = new Google($api_args);
+				'globals'=>$this->globals,
+			]);
 			
 			$google_token_id = $this->query->Parameter([parameter=>'google_token_id']);
-			
 			$google_log_results = $this->google_api->AuthenticateOrDisauthenticateWithGoogle([
 				'token'=>$google_token_id,
 				'logout'=>$this->query->Parameter([parameter=>'logout']),
 			]);
 			
-			if($google_log_results['action'] == 'logout')
-			{
+			if($google_log_results['action'] == 'logout') {
 				$this->logout_results = TRUE;
 			}
 			
 			return TRUE;
 		}
 		
-		public function Construct_ScriptName_SetScriptNameDefault()
-		{
+		public function Construct_ScriptName_SetScriptNameDefault() {
 			return $this->script_name = 'view.php';
 		}
 		
-		public function Construct_ScriptFormat_DetermineScriptFormat()
-		{
-			switch ($this->script_extension)
-			{
+		public function Construct_ScriptFormat_DetermineScriptFormat() {
+			switch ($this->script_extension) {
 				case 'php':
 				case 'cgi':
 				case 'asp':
@@ -385,10 +378,8 @@
 			}
 		}
 		
-		public function Construct_ScriptFormatLower_DetermineScriptFormatLower()
-		{
-			switch ($this->script_extension)
-			{
+		public function Construct_ScriptFormatLower_DetermineScriptFormatLower() {
+			switch ($this->script_extension) {
 				case 'php':
 				case 'cgi':
 				case 'asp':
@@ -443,16 +434,18 @@
 			}
 		}
 		
-		public function HandleRequest()
-		{
-			if($this->redirect_url)
-			{		
+		public function HandleRequest() {
+			if(!$this->ValidateReferrals()) {
+				return FALSE;
+			}
+			
+			if($this->redirect_url) {
 				http_response_code(200);
 				header('Location: ' . $this->redirect_url);
 				return TRUE;
 			}
-			if(!$this->HandleRequest_Content())
-			{
+			
+			if(!$this->HandleRequest_Content()) {
 				$this->HandleRequest_Error_404();
 			}
 			
@@ -461,8 +454,16 @@
 			return TRUE;
 		}
 		
-		public function RecordUserStatistics()
-		{
+		public function ValidateReferrals() {
+			if(!$this->domain->ValidateReferringWebsite()) {
+				print("Error 403 - You done been smote.");
+				return FALSE;
+			}
+			
+			return TRUE;
+		}
+		
+		public function RecordUserStatistics() {
 			require('../classes/Networking/UserTracking.php');
 			$user_tracking_args = [
 				'domain'=>$this->domain,
@@ -475,11 +476,12 @@
 			$this->user_tracking->RecordUserTracking();
 		}
 		
-		public function HandleRequest_Content()
-		{
+		public function HandleRequest_Content() {
+			$client_location = '../' . $this->domain->primary_domain . $_SERVER['SCRIPT_URL'];
+			
 			$shared_location = '../clonefrom.com' . $_SERVER['SCRIPT_URL'];
 			
-			if(is_file($shared_location))
+			if(!is_file($client_location) && is_file($shared_location))
 			{
 				require('../classes/Networking/MIMEType.php');
 				$mimetype = new MIMEType;
@@ -519,8 +521,7 @@
 			return FALSE;
 		}
 		
-		public function HandleRequest_Content_Format()
-		{
+		public function HandleRequest_Content_Format() {
 			$this->CheckSecurity();
 			
 			if($this->access)
@@ -546,29 +547,27 @@
 			return FALSE;
 		}
 		
-		public function HandleRequest_Content_Format_GetFormatObject()
-		{
+		public function HandleRequest_Content_Format_GetFormatObject() {
 			$format_class_location = '../classes/Format/' . $this->script_format . '.php';
 			
 			require($format_class_location);
 		}
 		
-		public function HandleRequest_Content_Format_InstantiateFormatObject()
-		{
+		public function HandleRequest_Content_Format_InstantiateFormatObject() {
 			$script_format_args = $this->HandleRequest_Content_Format_InstantiateFormatObject_Args();
 			
 			return (new $this->script_format($script_format_args));
 		}
 		
-		public function HandleRequest_Content_Format_InstantiateFormatObject_Args()
-		{
-			return array(
+		public function HandleRequest_Content_Format_InstantiateFormatObject_Args() {
+			return [
 				'firstcall'=>1,
 				'authentication'=>$this->authentication,
 				'versionobject'=>$this->version_object,
 				'cleanser'=>$this->cleanser,
 				'query'=>$this->query,
 				'dbaccess'=>$this->db_access,
+				'globals'=>$this->globals,
 				'domain'=>$this->domain,
 				'time'=>$this->time,
 				'cookie'=>$this->cookie,
@@ -587,44 +586,49 @@
 				'scriptformatlower'=>$this->script_format_lower,
 				'scriptlocation'=>$this->script_location,
 				'googleapi'=>$this->google_api,
-			);
+			];
 		}
 		
-		public function HandleRequest_Content_Format_InstantiateFormatObject_PartialArgs()
-		{
-			return array(
+		public function HandleRequest_Content_Format_InstantiateFormatObject_PartialArgs() {
+			return [
 				'firstcall'=>0,
 				'cleanser'=>$this->cleanser,
 				'dbaccess'=>$this->db_access,
 				'language'=>$this->language,
+				'globals'=>$this->globals,
 				'domain'=>$this->domain,
 				'objectcode'=>$this->object_code,
 				'objectlist'=>$this->object_list,
 				'scriptclassname'=>$this->script_classname,
 				'scriptextension'=>$this->script_extension,
 				'scriptformat'=>$this->script_format,
-			);
+			];
 		}
 		
-		public function HandleRequest_Error_404()
-		{
+		public function HandleRequest_Error_404() {
 			require('../classes/Networking/Error404.php');
 			
 			$error_404 = new Error404;
 			$error_404_display_args = $this->HandleRequest_Error_404_Args();
 			$error_404->Display($error_404_display_args);
+			
+			$this->issue_logging->createLog([
+				'issuetype'=>'404',
+				'description'=>'404 URL',
+			]);
+			
+			return TRUE;
 		}
 		
-		public function HandleRequest_Error_404_Args()
-		{
-			return array(
+		public function HandleRequest_Error_404_Args() {
+			return [
 				'cleanser'=>$this->cleanser,
 				'scriptname'=>$this->script_name,
 				'scriptfile'=>$this->script_file,
 				'scriptclassname'=>$this->script_classname,
 				'scriptextension'=>$this->script_extension,
 				'scriptformat'=>$this->script_format,
-			);
+			];
 		}
 	}
 

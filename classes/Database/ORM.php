@@ -28,6 +28,7 @@
 				'Assignment'=>'assignment',
 				'Association'=>'association',
 				'EntryPermission'=>'entrypermission',
+				'Definition'=>'definition',
 			];
 			
 			return $entry_record_types;
@@ -47,6 +48,7 @@
 				'EventDate'=>'eventdate',
 				'Association'=>'association',
 				'AvailabilityDateRange'=>'availabilitydaterange',
+				'Definition'=>'definition',
 			];
 			
 			return $entry_record_types;
@@ -65,8 +67,92 @@
 			{
 				return $this->SearchForEntries_ByRecordField($args);
 			}
+			else if($fieldname == 'Level')
+			{
+				return $this->SearchForEntries_ByRecordLevel($args);
+			}
 			
 			return $this->SearchForEntries_ByChildField($args);
+		}
+		
+		public function SearchForEntries_ByRecordLevel($args)
+		{
+			$fieldname = $args[fieldname];
+			$fieldvalue = $args[fieldvalue];
+			
+			$level = min($fieldvalue, 10);
+			
+			$limit = $level;
+			
+			$selects = [
+				'Entry' . $limit . '.id AS Entry' . $limit . '_id, ' .
+				'Entry' . $limit . '.Title AS Entry' . $limit . '_Title, ' .
+				'Entry' . $limit . '.Subtitle AS Entry' . $limit . '_Subtitle, ' .
+				'Entry' . $limit . '.Code AS Entry' . $limit . '_Code '
+			];
+			
+			$joins = [];
+			
+			$limit--;
+			
+			while($limit >= 1) {
+				$previous_limit = $limit + 1;
+				$joins[] =
+					'JOIN Assignment AS Assignment' . $limit . ' ' .
+					'ON Assignment' . $limit . '.Parentid = Entry' . $previous_limit . '.id ' .
+					'JOIN Entry AS Entry' . $limit . ' ON Entry' . $limit . '.id = Assignment' . $limit . '.Childid ';
+				
+				$selects[] =
+					'Entry' . $limit . '.id AS Entry' . $limit . '_id, ' .
+					'Entry' . $limit . '.Title AS Entry' . $limit . '_Title, ' .
+					'Entry' . $limit . '.Subtitle AS Entry' . $limit . '_Subtitle, ' .
+					'Entry' . $limit . '.Code AS Entry' . $limit . '_Code '
+				;
+				
+				$limit--;
+			}
+			
+			$sql = 'SELECT ' . implode(',', $selects) . ' ';
+			
+			$sql .= 'FROM Assignment AS Assignment' . $level . ' ';
+			$sql .= 'JOIN Entry AS Entry' . $level . ' ON Entry' . $level . '.id = Assignment' . $level . '.Parentid and Assignment' . $level . '.Childid = 0 ';
+			
+			$sql .= implode('', $joins);
+		
+			$fill_arrays_from_db_args = [
+				query=>$sql,
+				sqlbindstring=>'',
+				recordvalues=>[],
+			];
+			
+			$results = $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);
+			
+			$entries = [];
+			
+			foreach($results as $result) {
+				$entry = [
+					'id'=>$result['Entry1_id'],
+					'Title'=>$result['Entry1_Title'],
+					'Code'=>$result['Entry1_Code'],
+				];
+				
+				$entry['parents'] = [];
+				
+				$limit = $level - 1;
+				
+				while($limit >= 1) {
+					$entry['parents'][] = [
+						'id'=>$result['Entry' . $limit . '_id'],
+						'Title'=>$result['Entry' . $limit . '_Title'],
+						'Code'=>$result['Entry' . $limit . '_Code'],
+					];
+					$limit--;
+				}
+				
+				$entries[] = $entry;
+			}
+			
+			return $entries;
 		}
 		
 		public function SearchForEntries_ByChildField($args)
@@ -127,6 +213,7 @@
 				case 'Association':
 				case 'AvailabilityStart':
 				case 'AvailabilityEnd':
+				case 'Definition':
 					$recordtype = $field;
 					break;
 			}
@@ -326,11 +413,77 @@
 			];
 		}
 		
-		public function GetEntryParents_GetRecords($args)
+		public function GetEntriesParents($args)
 		{
-			$entry = $args[entry];
+			$entries = $args['entries'];
+			$entries_count = count($entries);
+			$entry_ids = [];
+			for($i = 0; $i < $entries_count; $i++) {
+				$entry = $entries[$i];
+				$entry_ids[] = $entry['id'];
+			}
 			
-			$ids = [$entry[id]];
+			$parents = $this->GetEntriesParents_GetRecords(['entryids'=>$entry_ids]);
+			$entries_with_parents = $this->GetEntriesParents_SortRecords([entries=>$entries, parents=>$parents]);
+		//	print_r($entries_with_parents);
+			return $entries_with_parents;
+		}
+		
+		public function GetEntriesParents_SortRecords($args)
+		{
+			$entries = $args['entries'];
+			$entries_count = count($entries);
+			
+			$entries_hash = [];
+			
+			for($i = 0; $i < $entries_count; $i++) {
+				$entry = $entries[$i];
+				$entries_hash[$entry['id']] = $entry;
+			//	print_r($entry);
+			//	print("<BR><BR>");
+			}
+			
+			$parents = $args['parents'];
+			$parents_count = count($parents);
+			
+			$parents_hash = [];
+			for($i = 0; $i < $parents_count; $i++)
+			{
+				$parent = $parents[$i];
+				
+				$entry = $entries_hash[$parent['Assignment_1_Childid']];
+				$entries_hash[$parent['Assignment_1_Childid']]['parents'] = $this->GetEntryParents_SortRecords([parents=>$parent, entry=>$entry]);
+			}
+			
+			return array_values($entries_hash);
+			
+	//		print_r($parents_hash);
+			/*
+			for($i = 0; $i < $entries_count; $i++) {
+				$entry = $entries[$i];
+				
+				$parents = [];
+				
+				$current_entry = $entry;
+				
+				while($parents_hash[$current_entry['id']]) {
+					$new_parent = $parents_hash[$current_entry['id']];
+					$parents[] = $new_parent;
+					$current_entry = $new_parent;
+				}
+				
+				$entry['parents'] = $parents;
+				
+				$entries[$i] = $entry;
+			}*/
+			
+			return $entries;
+		}
+		
+		public function GetEntriesParents_GetRecords($args)
+		{
+			$entry_ids = $args['entryids'];
+			
 			
 			$sql = 'SELECT ';
 			
@@ -342,7 +495,11 @@
 				'Entry1.Title as Entry_1_Title',
 				'Entry1.Subtitle as Entry_1_Subtitle',
 				'Entry1.ListTitle as Entry_1_ListTitle',
+				'Entry1.ListTitle as Entry_1_ListTitleSortKey',
 				'Entry1.Code as Entry_1_Code',
+				'Entry1.ChildAdjective as Entry_1_ChildAdjective',
+				'Entry1.ChildNoun as Entry_1_ChildNoun',
+				'Entry1.ChildNounPlural as Entry_1_ChildNounPlural',
 				'Entry1.OriginalCreationDate as Entry_1_OriginalCreationDate',
 				'Entry1.LastModificationDate as Entry_1_LastModificationDate',
 			];
@@ -361,7 +518,94 @@
 				$selects[] = 'Entry' . $i . '.Title as Entry_' . $i . '_Title';
 				$selects[] = 'Entry' . $i . '.Subtitle as Entry_' . $i . '_Subtitle';
 				$selects[] = 'Entry' . $i . '.ListTitle as Entry_' . $i . '_ListTitle';
+				$selects[] = 'Entry' . $i . '.ListTitleSortKey as Entry_' . $i . '_ListTitleSortKey';
 				$selects[] = 'Entry' . $i . '.Code as Entry_' . $i . '_Code';
+				$selects[] = 'Entry' . $i . '.ChildAdjective as Entry_' . $i . '_ChildAdjective';
+				$selects[] = 'Entry' . $i . '.ChildNoun as Entry_' . $i . '_ChildNoun';
+				$selects[] = 'Entry' . $i . '.ChildNounPlural as Entry_' . $i . '_ChildNounPlural';
+				$selects[] = 'Entry' . $i . '.OriginalCreationDate as Entry_' . $i . '_OriginalCreationDate';
+				$selects[] = 'Entry' . $i . '.LastModificationDate as Entry_' . $i . '_LastModificationDate';
+				
+				$joins[] = 'LEFT JOIN Assignment AS Assignment' . $i . ' ON Assignment' . $i . '.Childid = Entry' . $previous_index . '.id';
+				$joins[] = 'LEFT JOIN Entry AS Entry' . $i . ' ON Assignment' . $i . '.Parentid = Entry' . $i . '.id';
+			}
+			
+			if(count($selects))
+			{
+				$sql .= ', ' . implode(', ', $selects) . ' ';
+			}
+			$sql .= 'FROM Assignment Assignment1 ';
+			$sql .= 'LEFT JOIN Entry AS Entry1 ON Entry1.id = Assignment1.Parentid ';
+			
+			$sql .= implode(' ', $joins);
+			$sql .= ' WHERE Assignment1.Childid IN (';
+			$sql .= implode(', ', array_fill(0, count($entry_ids), '?'));
+			$sql .= ')';
+			
+			$bind_string = str_repeat('i', count($entry_ids));
+			
+			if($args['assignmentid'])
+			{
+				$sql .= ' AND Assignment1.id = ?';
+				$bind_string .= 'i';
+				$ids[] = $args['assignmentid'];
+			}
+			
+			$fill_arrays_from_db_args = [
+				query=>$sql,
+				sqlbindstring=>$bind_string,
+				recordvalues=>$entry_ids,
+			];
+			
+			$parents = $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);
+			
+			return $parents;
+		}
+		
+		public function GetEntryParents_GetRecords($args)
+		{
+			$entry = $args[entry];
+			
+			$ids = [$entry[id]];
+			
+			$sql = 'SELECT ';
+			
+			$sql .= 'Assignment1.id as Assignment_1_id, Assignment1.Parentid as Assignment_1_Parentid, Assignment1.Childid as Assignment_1_Childid ';
+			
+			$joins = [];
+			$selects = [
+				'Entry1.id as Entry_1_id',
+				'Entry1.Title as Entry_1_Title',
+				'Entry1.Subtitle as Entry_1_Subtitle',
+				'Entry1.ListTitle as Entry_1_ListTitle',
+				'Entry1.ListTitleSortKey as Entry_1_ListTitleSortKey',
+				'Entry1.Code as Entry_1_Code',
+				'Entry1.ChildAdjective as Entry_1_ChildAdjective',
+				'Entry1.ChildNoun as Entry_1_ChildNoun',
+				'Entry1.ChildNounPlural as Entry_1_ChildNounPlural',
+				'Entry1.OriginalCreationDate as Entry_1_OriginalCreationDate',
+				'Entry1.LastModificationDate as Entry_1_LastModificationDate',
+			];
+			
+			$max_depth = 10;
+			
+			for($i = 2; $i < $max_depth; $i++)
+			{
+				$previous_index = $i - 1;
+				
+				$selects[] = 'Assignment' . $i . '.id as Assignment_' . $i . '_id';
+				$selects[] = 'Assignment' . $i . '.Parentid as Assignment_' . $i . '_Parentid';
+				$selects[] = 'Assignment' . $i . '.Childid as Assignment_' . $i . '_Childid';
+				
+				$selects[] = 'Entry' . $i . '.id as Entry_' . $i . '_id';
+				$selects[] = 'Entry' . $i . '.Title as Entry_' . $i . '_Title';
+				$selects[] = 'Entry' . $i . '.Subtitle as Entry_' . $i . '_Subtitle';
+				$selects[] = 'Entry' . $i . '.ListTitle as Entry_' . $i . '_ListTitle';
+				$selects[] = 'Entry' . $i . '.ListTitleSortKey as Entry_' . $i . '_ListTitleSortKey';
+				$selects[] = 'Entry' . $i . '.Code as Entry_' . $i . '_Code';
+				$selects[] = 'Entry' . $i . '.ChildAdjective as Entry_' . $i . '_ChildAdjective';
+				$selects[] = 'Entry' . $i . '.ChildNoun as Entry_' . $i . '_ChildNoun';
+				$selects[] = 'Entry' . $i . '.ChildNounPlural as Entry_' . $i . '_ChildNounPlural';
 				$selects[] = 'Entry' . $i . '.OriginalCreationDate as Entry_' . $i . '_OriginalCreationDate';
 				$selects[] = 'Entry' . $i . '.LastModificationDate as Entry_' . $i . '_LastModificationDate';
 				
@@ -421,7 +665,11 @@
 					$entry_title = $parents['Entry_' . $i . '_Title'];
 					$entry_subtitle = $parents['Entry_' . $i . '_Subtitle'];
 					$entry_listtitle = $parents['Entry_' . $i . '_ListTitle'];
+					$entry_listtitlesortkey = $parents['Entry_' . $i . '_ListTitleSortKey'];
 					$entry_code = $parents['Entry_' . $i . '_Code'];
+					$entry_childadjective = $parents['Entry_' . $i . '_ChildAdjective'];
+					$entry_childnoun = $parents['Entry_' . $i . '_ChildNoun'];
+					$entry_childnounplural = $parents['Entry_' . $i . '_ChildNounPlural'];
 					$entry_originalcreationdate = $parents['Entry_' . $i . '_OriginalCreationDate'];
 					$entry_latsmodificationdate = $parents['Entry_' . $i . '_LastModificationDate'];
 					
@@ -430,7 +678,11 @@
 						Title=>$entry_title,
 						Subtitle=>$entry_subtitle,
 						ListTitle=>$entry_listtitle,
+						ListTitleSortKey=>$entry_listtitlesortkey,
 						Code=>$entry_code,
+						ChildAdjective=>$entry_childadjective,
+						ChildNoun=>$entry_childnoun,
+						ChildNounPlural=>$entry_childnounplural,
 						OriginalCreationDate=>$entry_originalcreationdate,
 						LastModificationDate=>$entry_latsmodificationdate,
 						assignment=>[
@@ -464,7 +716,11 @@
 				'Entry.Title as Entry_Title, ' .
 				'Entry.Subtitle as Entry_Subtitle, ' .
 				'Entry.ListTitle as Entry_ListTitle, ' .
+				'Entry.ListTitleSortKey as Entry_ListTitleSortKey, ' .
 				'Entry.Code as Entry_Code, ' .
+				'Entry.ChildAdjective as Entry_ChildAdjective, ' .
+				'Entry.ChildNoun as Entry_ChildNoun, ' .
+				'Entry.ChildNounPlural as Entry_ChildNounPlural, ' .
 				'Entry.OriginalCreationDate as Entry_OriginalCreationDate, ' .
 				'Entry.LastModificationDate as Entry_LastModificationDate, ' .
 				'Assignment.id as Assignment_id, ' .
@@ -492,7 +748,11 @@
 					Title=>$master_record['Entry_Title'],
 					Subtitle=>$master_record['Entry_Subtitle'],
 					ListTitle=>$master_record['Entry_ListTitle'],
+					ListTitleSortKey=>$master_record['Entry_ListTitleSortKey'],
 					Code=>$master_record['Entry_Code'],
+					ChildAdjective=>$master_record['Entry_ChildAdjective'],
+					ChildNoun=>$master_record['Entry_ChildNoun'],
+					ChildNounPlural=>$master_record['Entry_ChildNounPlural'],
 					OriginalCreationDate=>$master_record['Entry_OriginalCreationDate'],
 					LastModificationDate=>$master_record['Entry_LastModificationDate'],
 					assignment=>[
@@ -521,7 +781,6 @@
 			
 			$entries_list_args = $args;
 			$entries_list_args[entrieslist] = $entries_list;
-			
 			$entries_list = $this->GetRecordTree_StructureRecords($entries_list_args);
 			
 			$entries_list_args[entrieslist] = $entries_list;
@@ -548,7 +807,14 @@
 			
 			$selects = $this->GetRecordTree_GetEntries_GetBaseSelect($get_base_select_args);
 			
-			$joins[] = 'JOIN Assignment AS Assignment' . $code_index . ' ON Assignment1.Childid = Entry' . $code_index . '.id';
+			if($code_list_count)
+			{
+				$joins[] = 'JOIN Assignment AS Assignment' . $code_index . ' ON Assignment1.Childid = Entry' . $code_index . '.id';
+			}
+			else
+			{
+				$joins[] = 'JOIN Assignment AS Assignment' . $code_index . ' ON Assignment1.Parentid = Entry' . $code_index . '.id AND Assignment' . $code_index . '.Childid = 0';
+			}
 			
 			if($code_list_count)
 			{
@@ -579,6 +845,9 @@
 				$code_index++;
 			}
 			
+			$joins[] = 'JOIN Assignment AS Assignmentx ON Assignmentx.Childid = 0 ';
+			$joins[] = 'JOIN Assignment AS Assignmenty ON Assignmenty.Parentid = Assignmentx.Parentid AND Assignmenty.Childid = Entry1.id ';
+			
 			$sql = 'SELECT ';
 			$sql .= implode(', ', $selects) . ' ';
 			$sql .= 'FROM ';
@@ -598,6 +867,10 @@
 				sqlbindstring=>$sql_bind_string,
 				recordvalues=>$code_list,
 			];
+			
+#			print($sql);
+#			print("<BR><BR>");
+#			print_r($code_list);
 			
 			return $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);
 		}
@@ -623,7 +896,11 @@
 					Title=>$entry['Entry_1_Title'],
 					Subtitle=>$entry['Entry_1_Subtitle'],
 					ListTitle=>$entry['Entry_1_ListTitle'],
+					ListTitleSortKey=>$entry['Entry_1_ListTitleSortKey'],
 					Code=>$entry['Entry_1_Code'],
+					ChildAdjective=>$entry['Entry_1_ChildAdjective'],
+					ChildNoun=>$entry['Entry_1_ChildNoun'],
+					ChildNounPlural=>$entry['Entry_1_ChildNounPlural'],
 					OriginalCreationDate=>$entry['Entry_1_OriginalCreationDate'],
 					LastModificationDate=>$entry['Entry_1_LastModificationDate'],
 					assignment=>[
@@ -653,9 +930,13 @@
 		public function GetRecordTree_StructureRecords($args)
 		{
 			$entries_list = $args[entrieslist];
-			$code_list = $args[codelist];
 			$entry_data = $entries_list[0];
-			$code_list_count = count($code_list);
+			$code_list_count = $args['codelistcount'];
+			
+			if(!$code_list_count) {
+				$code_list = $args[codelist];
+				$code_list_count = count($code_list);
+			}
 			
 			$new_entries_list = [];
 			
@@ -668,7 +949,11 @@
 						Title=>$entry_data['Entry_' . $i . '_Title'],
 						Subtitle=>$entry_data['Entry_' . $i . '_Subtitle'],
 						ListTitle=>$entry_data['Entry_' . $i . '_ListTitle'],
+						ListTitleSortKey=>$entry_data['Entry_' . $i . '_ListTitleSortKey'],
 						Code=>$entry_data['Entry_' . $i . '_Code'],
+						ChildAdjective=>$entry_data['Entry_' . $i . '_ChildAdjective'],
+						ChildNoun=>$entry_data['Entry_' . $i . '_ChildNoun'],
+						ChildNounPlural=>$entry_data['Entry_' . $i . '_ChildNounPlural'],
 						OriginalCreationDate=>$entry_data['Entry_' . $i . '_OriginalCreationDate'],
 						LastModificationDate=>$entry_data['Entry_' . $i . '_LastModificationDate'],
 						assignment=>[
@@ -697,6 +982,39 @@
 			
 			$sql_bind_string = 'i';
 			$sql_bind_values = [$entry['id']];
+			
+			if($where && count($where))
+			{
+				$sql .= $where['sql'];
+				$sql_bind_string .= $where['bind'];
+				foreach($where['value'] as $where_value)
+				{
+					$sql_bind_values[] = $where_value;
+				}
+			}
+			
+			$sql .= ';';
+			
+			$fill_arrays_from_db_args = [
+				query=>$sql,
+				sqlbindstring=>$sql_bind_string,
+				recordvalues=>$sql_bind_values,
+			];
+			
+			$child_record_count = $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);
+			return $child_record_count[0][ChildRecordCount];
+		}
+		
+		public function GetRecordEntryCount($args)
+		{
+			$where = $args[where];
+			
+			$sql = 'SELECT COUNT(Entry1.id) AS ChildRecordCount ';
+			$sql .= 'FROM ';
+			$sql .= 'Entry AS Entry1 ';
+			
+			$sql_bind_string = '';
+			$sql_bind_values = [];
 			
 			if($where && count($where))
 			{
@@ -846,6 +1164,7 @@
 				$sql .= 'LIMIT ' . ($start_index - 1) . ',' . ($end_index) ;
 			}
 #			print("BT:");
+#			print_r($sql_bind_values);
 #			print_r($sql);
 			$sql .= ';';
 			
@@ -854,6 +1173,10 @@
 				sqlbindstring=>$sql_bind_string,
 				recordvalues=>$sql_bind_values,
 			];
+			
+		#	print("<sql . " . $sql_bind_string . "|");
+		#	print_r($sql_bind_values);
+		#	print(">\n\n\n");
 			
 			$child_entries = $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);
 #			print_r($child_entries);
@@ -975,6 +1298,18 @@
 				$siblings[$type_key] = $type_siblings;
 			}
 			
+			$given_younger_siblings = $siblings['younger'];
+			$given_younger_siblings_count = count($given_younger_siblings);
+			$younger_siblings = [];
+			
+			for($i = $given_younger_siblings_count - 1; $i >= 0; $i--)
+			{
+				$younger_sibling = $given_younger_siblings[$i];
+				$younger_siblings[] = $younger_sibling;
+			}
+			
+			$siblings['younger'] = $younger_siblings;
+			
 			return $siblings;
 		}
 		
@@ -992,6 +1327,7 @@
 				'EventDate',
 				'AvailabilityDateRange',
 				'Association',
+				'Definition',
 			];
 		}
 		
@@ -1117,7 +1453,11 @@
 			$selects[] = 'Entry' . $index . '.Title as Entry_' . $index . '_Title';
 			$selects[] = 'Entry' . $index . '.Subtitle as Entry_' . $index . '_Subtitle';
 			$selects[] = 'Entry' . $index . '.ListTitle as Entry_' . $index . '_ListTitle';
+			$selects[] = 'Entry' . $index . '.ListTitleSortKey as Entry_' . $index . '_ListTitleSortKey';
 			$selects[] = 'Entry' . $index . '.Code as Entry_' . $index . '_Code';
+			$selects[] = 'Entry' . $index . '.ChildAdjective as Entry_' . $index . '_ChildAdjective';
+			$selects[] = 'Entry' . $index . '.ChildNoun as Entry_' . $index . '_ChildNoun';
+			$selects[] = 'Entry' . $index . '.ChildNounPlural as Entry_' . $index . '_ChildNounPlural';
 			$selects[] = 'Entry' . $index . '.OriginalCreationDate as Entry_' . $index . '_OriginalCreationDate';
 			$selects[] = 'Entry' . $index . '.LastModificationDate as Entry_' . $index . '_LastModificationDate';
 			
@@ -1156,28 +1496,17 @@
 			
 			if($record_type == 'Association')
 			{
-				$sql = 'DELETE FROM ' . $record_type;
+				$sql = 'DELETE Association FROM ' . $record_type;
+				$sql .= ' LEFT JOIN Entry ON Entry.id = Association.Entryid ';
 				
-				$sql .= ' WHERE ChosenEntryid = ' . $entry['id'];
+				$sql .= ' WHERE ChosenEntryid = ' . $entry['id'] . ' ';
+				$sql .= ' AND Entry.id IS NULL ';
+				$sql_bind_string = '';
 				
-				if(count($record_ids_to_keep))
-				{
-					$sql .= ' AND id NOT IN (' ;
-					
-					$sql .= implode(', ', array_fill(0, count($record_ids_to_keep), '?'));
-				
-					$sql .= ')';
-					
-					$sql_bind_string = str_repeat('i', count($record_ids_to_keep));
-				}
-				else
-				{
-					$sql_bind_string = '';
-				}
 				$fill_arrays_from_db_args = [
 					query=>$sql,
 					sqlbindstring=>$sql_bind_string,
-					recordvalues=>$record_ids_to_keep,
+					recordvalues=>[],
 				];
 				
 				if($this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args)['line'])
@@ -1274,12 +1603,9 @@
 		public function GetTagCounts($args)
 		{
 			$tags = $args['tags'];
-			$entry = $args['entry'];
 			
 			$sql = 'SELECT DISTINCT Tag, Count(Tag.id) AS Count ';
 			$sql .= 'FROM Tag ';
-			$sql .= 'JOIN Entry Child ON Child.id = Tag.Entryid ';
-			$sql .= 'JOIN Assignment ON Assignment.Childid = Child.id AND Assignment.Parentid = ? ';
 			$sql .= 'WHERE Tag.Tag IN(';
 
 			$question_marks = array_fill(0, count($tags), '?');
@@ -1290,10 +1616,10 @@
 			$sql .= 'GROUP BY Tag.Tag ';
 			$sql .= 'ORDER BY Tag.Tag;';
 			
-			$sql_bind_string = 'i' . str_repeat('s', count($tags));
+			$sql_bind_string = str_repeat('s', count($tags));
 			
 			$sql_args = [];
-			$sql_args[] = $entry['id'];
+			
 			foreach($tags as $tag)
 			{
 				$sql_args[] = $tag;

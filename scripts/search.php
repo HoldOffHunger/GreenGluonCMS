@@ -77,36 +77,31 @@
 			return TRUE;
 		}
 		
-		public function SetSearchTerm()
-		{
+		public function SetSearchTerm() {
 			return $this->search_term = urldecode($this->Param('search'));
 		}
 		
-		public function SetORMSearch()
-		{
+		public function SetORMSearch() {
 			require('../classes/Database/ORMSearch.php');
 			
 			return $this->orm_search = new ORMSearch([dbaccessobject=>$this->db_access_object]);
 		}
 		
-		public function SetSearchResultCount()
-		{
+		public function SetSearchResultCount() {
 			return $this->search_results_count = $this->orm_search->SearchResultsCount([
 				searchterm=>$this->search_term,
 			]);
 		}
 		
-		public function PerformSearch()
-		{
+		public function PerformSearch() {
 			return $this->search_results = $this->orm_search->Search([
-				searchterm=>$this->search_term,
+				searchterms=>[$this->search_term],
 				startindex=>$this->search_record_start_index,
 				endindex=>$this->perpage,
 			]);
 		}
 		
-		public function SetEntryScoreList()
-		{
+		public function SetEntryScoreList() {
 			$entry_scores = [];
 			
 			foreach($this->search_results as $search_result)
@@ -117,8 +112,7 @@
 			return $this->entry_scores = $entry_scores;
 		}
 		
-		public function SetSearchEntryScores()
-		{
+		public function SetSearchEntryScores() {
 			$entry_scores = $this->entry_scores;
 			
 			foreach($this->entries as $entry_key => $entry)

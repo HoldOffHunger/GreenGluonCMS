@@ -1,7 +1,6 @@
 <?php
 
-	class DBAccess
-	{
+	class DBAccess {
 		private $hostname;
 		private $username;
 		private $password;
@@ -18,11 +17,11 @@
 			// Construction
 			// -------------------------------------------------
 		
-		public function __construct($args)
-		{
-			$this->cleanser = $args[cleanser];
-			$this->time = $args[time];
-			$this->domain = $args[domain];
+		public function __construct($args) {
+			$this->cleanser = $args['cleanser'];
+			$this->time = $args['time'];
+			$this->domain = $args['domain'];
+			$this->globals = $args['globals'];
 			
 			$this->SetCredentials($args);
 			$this->SetDatabase($args);
@@ -40,54 +39,49 @@
 			$escapemysql = new EscapeMySQL($escape_mysql_args);
 			$this->escapemysql = $escapemysql;
 			
-			if(!$this->ip_address)
-			{
-				die("Unable to proceed if user has no recognizable IP address.");
-			}
-		}
-		
-		public function SetCredentials($args)
-		{
-			if($args['hostname'])
-			{
-				$this->hostname = $args['hostname'];
-			}
-			else
-			{
-				$this->hostname = 'YOUR HOST';
+			if(!$this->ip_address) {
+				die('Unable to proceed if user has no recognizable IP address.');
 			}
 			
-			if($args['username'])
-			{
+			return TRUE;
+		}
+		
+		public function SetCredentials($args) {
+			$globals = $this->globals;
+			$db = $globals->db;
+			
+			if($args['username']) {
 				$this->username = $args['username'];
-			}
-			else
-			{
-				$this->username = 'YOUR USERNAME';
+			} else {
+				$this->username = $db['username'];
 			}
 			
-			if($args['password'])
-			{
+			if($args['password']) {
 				$this->password = $args['password'];
+			} else {			
+				$this->password = $db['password'];
 			}
-			else
-			{			
-				$this->password = 'YOUR PASSWORD';
+			
+			if($args['hostname']) {
+				$this->hostname = $args['hostname'];
+			} else {
+				$this->hostname = $db['hostname'];
 			}
+			
+			return TRUE;
 		}
 		
-		public function SetDatabase($args)
-		{
-			if($args['database'])
-			{
+		public function SetDatabase($args) {
+			if($args['database']) {
 				$this->database = $args['database'];
-			}
-			else
-			{
+			} else {
 				$server_base_name = $this->domain->host;
 				
-				switch($server_base_name)
-				{
+				switch($server_base_name) {
+					case 'punkerslut':
+						$valid_database_name = 'anarchistrevolt';
+						break;
+						
 					DEFAULT:
 						$valid_database_name = $server_base_name;
 						break;
@@ -95,26 +89,23 @@
 				
 				$this->database = $valid_database_name;
 			}
+			
+			return TRUE;
 		}
 		
 			// Start/Stop the DB
 			// -------------------------------------------------
 		
-		public function DBStart()
-		{
+		public function DBStart() {
 			error_reporting(E_ERROR);
 			
-			if($this->database)
-			{
+			if($this->database) {
 				$this->db_link = new mysqli($this->hostname,$this->username,$this->password,$this->database);
-			}
-			else
-			{
+			} else {
 				$this->db_link = new mysqli($this->hostname,$this->username,$this->password);
 			}
 			
-			if($this->db_link->connect_errno)
-			{
+			if($this->db_link->connect_errno) {
 				$this->hostname = 'mysql.' . $this->database . '.com';
 				$this->db_link = new mysqli($this->hostname,$this->username,$this->password,$this->database);
 			}
@@ -124,26 +115,38 @@
 			$results = 1;
 			$errors = [];
 			
-			if($this->db_link->connect_errno)
-			{
+			if($this->db_link->connect_errno) {
 				$results = 0;
 				$errors[] = [
-					errornumber=>$this->db_link->connect_errno,
-					errormessage=>$this->db_link->connect_error,
+					'errornumber'=>$this->db_link->connect_errno,
+					'errormessage'=>$this->db_link->connect_error,
 				];
-			}
-			else
-			{
+			} else {/*
 				unset($this->hostname);
 				unset($this->username);
 				unset($this->password);
-				unset($this->database);
+				unset($this->database);*/
 			}
 			
-			if($this->db_link->connect_error)
-			{
-				http_response_code(500);
+			if($this->db_link->connect_error) {
+				http_response_code(500);/*
+				print('<BR><BR>');
+				print('HOST'  . $this->hostname);
+				print("<BR><BR>");
+				print('USEr'  . $this->username);
+				print("<BR><BR>");
+				print('DB'  . $this->database);
+				print("<BR><BR>");
+				print('PW LENGTH'  . strlen($this->password));
+				print("<BR><BR>");
+				print("<PRE>");
+				print_r($this->db_link);
+				$e = new \Exception;
+var_dump($e->getTraceAsString());*/
+				print("</PRE>");
 				die ("Database unavailable. =(");
+				#	for when I'm feeling vengeful :
+				#die ('DreamHost MySQL connection fail.  Please contact DreamHost hosting-services ASAP.<BR><BR><img SRC="http://www.wordweight.com/image/dreamhost_logo.jpg">');
 			}
 			
 		#	$this->db_link->set_charset("utf8");
@@ -154,27 +157,24 @@
 			];
 		}
 		
-		public function DBEnd()
-		{
-			if(!$this->db_link->connect_error)
-			{
+		public function DBEnd() {
+			if(!$this->db_link->connect_error) {
 				mysqli_close($this->db_link);
 			}
+			
+			return TRUE;
 		}
 		
 			// Get Schema Information
 			// -------------------------------------------------
 		
-		public function FetchAllRows($args)
-		{
+		public function FetchAllRows($args) {
 			$query = $args[query];
 			$objects = [];
 			
 			$query_result = $this->db_link->query($query);
-			if($query_result)
-			{
-				while ($row = $query_result->fetch_assoc())
-				{
+			if($query_result) {
+				while ($row = $query_result->fetch_assoc()) {
 					$objects[] = $row;
 				}
 			}
@@ -185,14 +185,13 @@
 			// Get Information
 			// -------------------------------------------------
 		
-		public function GetRecords($args)
-		{
-			$record_select = $args[select];
-			$record_type = $args[type];
-			$record_definition = $args[definition];
-			$record_limit = $args[limit];
-			$order_by = $args[orderby];
-			$group_by = $args[groupby];
+		public function GetRecords($args) {
+			$record_select = $args['select'];
+			$record_type = $args['type'];
+			$record_definition = $args['definition'];
+			$record_limit = $args['limit'];
+			$order_by = $args['orderby'];
+			$group_by = $args['groupby'];
 			$debug = $args['debug'];
 			
 			$joins = $args[joins];
@@ -204,12 +203,9 @@
 			];
 			$record_description = $this->GetRecordDescription($get_description_args);
 			
-			if($record_select)
-			{
+			if($record_select) {
 				$get_query_select = $record_select;
-			}
-			else
-			{
+			} else {
 				$get_record_select_args = [
 					recordtype=>$record_type,
 					recorddescription=>$record_description,
@@ -239,18 +235,15 @@
 			$record_where = $record_where_results[sqlwhereclause];
 			$record_values = $record_where_results[sqlwherevalues];
 			
-			if($record_where)
-			{
+			if($record_where) {
 				$get_query_statement .= ' WHERE ' . $record_where;
 			}
 			
-			if($group_by)
-			{
+			if($group_by) {
 				$get_query_statement .= ' GROUP BY ' . $group_by;
 			}
 			
-			if($order_by)
-			{
+			if($order_by) {
 				$get_query_statement .= ' ORDER BY ' . $order_by;
 			}
 			
@@ -270,19 +263,19 @@
 				sqlbindstring=>$sql_bind_string,
 				recordvalues=>$record_values,
 			];
-			if($debug)
-			{
+			
+			if($debug) {
 				print("QUERY: ");
 				print_r($get_query_statement);
 				print("<BR><BR> VALUES: ");
 				print_r($record_values);
 				print("<BR><BR>");
 			}
+			
 			return $this->FillArraysFromDB($fill_arrays_from_db_args);
 		}
 		
-		public function GetRecords_Select($args)
-		{
+		public function GetRecords_Select($args) {
 			$record_type = $args[recordtype];
 			$record_description = $args[recorddescription];
 			$joins = $args[joins];
@@ -295,14 +288,10 @@
 			$all_selected_fields = [];
 			$all_selected_fields[] = $this->escapemysql->GetRecordFullSelectStatement($get_record_select_main_table_args);
 			
-			if($joins)
-			{
-				foreach ($joins as $join_type => $join_array)
-				{
-					if($join_array)
-					{
-						foreach($join_array as $table => $field_where)
-						{
+			if($joins) {
+				foreach ($joins as $join_type => $join_array) {
+					if($join_array) {
+						foreach($join_array as $table => $field_where) {
 							$join_table_description_args = [
 								type=>$table,
 							];
@@ -326,27 +315,21 @@
 			return $all_selected_fields_string;
 		}
 		
-		public function GetRecords_ApplyJoin($args)
-		{
+		public function GetRecords_ApplyJoin($args) {
 			$joins = $args[joins];
 			
-			if($joins)
-			{
-				$full_join_query = array();
+			if($joins) {
+				$full_join_query = [];
 				
-				foreach ($joins as $join_type => $join_array)
-				{
-					if($join_array)
-					{
-						foreach($join_array as $table => $field_where)
-						{
+				foreach ($joins as $join_type => $join_array) {
+					if($join_array) {
+						foreach($join_array as $table => $field_where) {
 							$full_join_query[] = ' ' . $join_type . ' ' . $table . ' ON ' . $field_where;
 						}
 					}
 				}
 				
-				if($full_join_query)
-				{
+				if($full_join_query) {
 					return implode(' ', $full_join_query);
 				}
 			}
@@ -358,11 +341,10 @@
 		{
 			$record_limit = $args[recordlimit];
 			
-			if($record_limit)
-			{
-				$cleanse_limit_args = array(
+			if($record_limit) {
+				$cleanse_limit_args = [
 					input=>$record_limit,
-				);
+				];
 				$cleansed_limit_results = $this->cleanser->CleanseInput_Integer($cleanse_limit_args);
 				$cleansed_limit = $cleansed_limit_results[cleansedinput];
 				return ' LIMIT ' . $cleansed_limit;
@@ -371,8 +353,7 @@
 			return '';
 		}
 		
-		public function FillArraysFromDB($args)
-		{
+		public function FillArraysFromDB($args) {
 			$query = $args[query];
 			$sqlbindstring = $args[sqlbindstring];
 			$recordvalues = $args[recordvalues];
@@ -380,19 +361,19 @@
 			$prepare_line = __LINE__;	# Current line number
 			$statement = $this->db_link->prepare($query);
 			
-			if($statement)
-			{
-				if($sqlbindstring)
-				{
+#			print("BT: " . $query);
+#			print_r($recordvalues);
+			
+			if($statement) {
+				if($sqlbindstring) {
 					$bind_arguments = [];
 					$bind_arguments[] = $sqlbindstring;
-					foreach ($recordvalues as $recordkey => $recordvalue)
-					{
+					foreach ($recordvalues as $recordkey => $recordvalue) {
 						$bind_arguments[] = & $recordvalues[$recordkey];
 					}
 					
 					$bind_line = __LINE__;		# Current line number
-					$bind_results = call_user_func_array(array($statement, 'bind_param'), $bind_arguments);
+					$bind_results = call_user_func_array([$statement, 'bind_param'], $bind_arguments);
 					
 					if(!$bind_results) {
 						$get_error_args = [
@@ -412,10 +393,8 @@
 				$statement->execute();
 				$result = $statement->get_result();
 				
-				if($result)
-				{
-					while ($row = $result->fetch_assoc())
-					{
+				if($result) {
+					while ($row = $result->fetch_assoc()) {
 						$format_row_args = [
 							row=>$row,
 						];
@@ -440,8 +419,7 @@
 			# http://php.net/manual/en/language.constants.predefined.php
 		}
 		
-		public function GetError($args)
-		{
+		public function GetError($args) {
 			$error_pieces = $args;
 			
 			$error = [];
@@ -469,25 +447,21 @@
 			return $error;
 		}
 		
-		public function FillArraysFromDB_FormatRow($args)
-		{
+		public function FillArraysFromDB_FormatRow($args) {
 			$row = $args[row];
 			
 			$sub_tables = [];
 			
-			foreach ($row as $field_name => $field_value)
-			{
+			foreach ($row as $field_name => $field_value) {
 				$first_row_field_name_char = substr($field_name, 0, 1);
 				
-				if($first_row_field_name_char == '.')
-				{
+				if($first_row_field_name_char == '.') {
 					$row_explosion = explode('.', $field_name);
 					
 					$joined_table_name = $row_explosion[1];
 					$joined_table_field = $row_explosion[2];
 					
-					if(!$sub_tables[$joined_table_name])
-					{
+					if(!$sub_tables[$joined_table_name]) {
 						$sub_tables[$joined_table_name] = [];
 					}
 					
@@ -496,16 +470,14 @@
 				}
 			}
 			
-			foreach ($sub_tables as $sub_table => $sub_table_fields)
-			{
+			foreach ($sub_tables as $sub_table => $sub_table_fields) {
 				$row[strtolower($sub_table)] = $sub_table_fields;
 			}
 			
 			return $row;
 		}
 		
-		public function GetRecordDescription($args)
-		{
+		public function GetRecordDescription($args) {
 			$record_type = $args[type];
 			$record_schema_query = 'DESCRIBE ' . $record_type;
 			
@@ -513,10 +485,8 @@
 			
 			$record_description = [];
 			
-			if($result)
-			{
-				while ($row = $result->fetch_assoc())
-				{
+			if($result) {
+				while ($row = $result->fetch_assoc()) {
 					$base_and_attribute_args = [
 						Type=>$row['Type'],
 					];
@@ -535,9 +505,7 @@
 						'Extra'=>$row['Extra'],
 					];
 				}
-			}
-			else
-			{
+			} else {
 				die('Failed : ' . $this->database . "|" . $record_schema_query);
 			}
 			
@@ -547,20 +515,16 @@
 			return $record_description;
 		}
 		
-		public function GetRecordDescription_GetTypeBaseAndAttribute($args)
-		{
+		public function GetRecordDescription_GetTypeBaseAndAttribute($args) {
 			$type = $args[Type];
 			$type_base_explosion = explode('(', $type, 2);
 			
 			$type_base = $type_base_explosion[0];
 			$type_attribute_unclean = $type_base_explosion[1];
 			
-			if($type_attribute_unclean)
-			{
+			if($type_attribute_unclean) {
 				$type_attribute = substr($type_attribute_unclean, 0, strlen($type_attribute_unclean) - 1);
-			}
-			else
-			{
+			} else {
 				$type_attribute = '';
 			}
 			
@@ -570,8 +534,7 @@
 			];
 		}
 		
-		public function GetRecordWhere($args)
-		{
+		public function GetRecordWhere($args) {
 			$record_description = $args[recorddescription];
 			$record_where = $args[recordwhere];
 			$delimiter = $args[delimiter];
@@ -581,28 +544,30 @@
 			$sql_where_values = [];
 			$all_bindings = [];
 			
-			foreach ($record_where as $key => $value)
-			{
+			foreach ($record_where as $key => $value) {
 				$field_description = $record_description[$key];
 				
-				if($key == 'RAW')
-				{
-					foreach($value as $valuekey => $valuevalue)
-					{
+				if($key == 'RAW') {
+					if(!is_array($value)) {
+						return [
+							sqlbindstring=>'',
+							sqlwhereclause=>$value,
+							sqlwherevalues=>'',
+							allbindings=>[],
+						];
+					}
+					
+					foreach($value as $valuekey => $valuevalue) {
 						$fieldkey = $valuekey;
 						$operator = ' ' .  $valuevalue[0] . ' ';
 						$binding = $valuevalue[1];
 					}
-				}
-				elseif(!(is_array($value)))
-				{
+				} elseif(!(is_array($value))) {
 					$fieldkey = $key;
 					$operator = ' = ';
 					$escaped_value = $value;
 					$binding = '?';
-				}
-				else
-				{
+				} else {
 					$fieldkey = $key;
 					$operator = ' ' . $value[0] . ' ';
 					$escaped_value = $value[1];
@@ -613,8 +578,7 @@
 					fielddescription=>$field_description,
 				];
 				
-				if($binding == '?')
-				{
+				if($binding == '?') {
 					$sql_bind_string .= $this->GetMySQLFieldPHPBinding($sql_bind_string_args);
 					$sql_where_values[] = $escaped_value;
 				}
@@ -633,12 +597,10 @@
 			];
 		}
 		
-		public function GetMySQLFieldPHPBinding($args)
-		{
-			$fielddescription = $args[fielddescription];
+		public function GetMySQLFieldPHPBinding($args) {
+			$fielddescription = $args['fielddescription'];
 			
-			switch($fielddescription[TypeBase])
-			{
+			switch($fielddescription['TypeBase']) {
 				case 'bigint':
 				case 'int':
 				case 'mediumint':
@@ -660,37 +622,35 @@
 			// Update Information
 			// -------------------------------------------------
 		
-		public function UpdateRecord($args)
-		{
-			$record_type = $args[type];
-			$record_update = $args[update];
-			$record_where = $args[where];
+		public function UpdateRecord($args) {
+			$record_type = $args['type'];
+			$record_update = $args['update'];
+			$record_where = $args['where'];
 			
-			if($record_type)
-			{
+			if($record_type) {
 				$get_description_args = [
 					type=>$record_type,
 				];
 				$record_description = $this->GetRecordDescription($get_description_args);
 				
 				$record_update_for_where = $record_update;
-				unset($record_update_for_where[id]);
+				unset($record_update_for_where['id']);
 				
 				$record_set_args = [
-					recorddescription=>$record_description,
-					recordwhere=>$record_update_for_where,
-					delimiter=>', ',
+					'recorddescription'=>$record_description,
+					'recordwhere'=>$record_update_for_where,
+					'delimiter'=>', ',
 				];
 				
 				$record_set_results = $this->GetRecordWhere($record_set_args);
-				$set_sql_bind_string = $record_set_results[sqlbindstring];
-				$set_record_where = $record_set_results[sqlwhereclause];
-				$set_record_values = $record_set_results[sqlwherevalues];
+				$set_sql_bind_string = $record_set_results['sqlbindstring'];
+				$set_record_where = $record_set_results['sqlwhereclause'];
+				$set_record_values = $record_set_results['sqlwherevalues'];
 				
 				$record_where_args = [
-					recorddescription=>$record_description,
-					recordwhere=>$record_where,
-					delimiter=>' AND ',
+					'recorddescription'=>$record_description,
+					'recordwhere'=>$record_where,
+					'delimiter'=>' AND ',
 				];
 				
 				$record_where_results = $this->GetRecordWhere($record_where_args);
@@ -700,8 +660,7 @@
 				
 				$update_statement = 'UPDATE ' . $record_type . ' SET ' . $set_record_where . ', LastModificationDate = NOW()';
 				
-				if($record_where)
-				{
+				if($record_where) {
 					$update_statement .= ' WHERE ' . $record_where;
 				}
 				
@@ -723,19 +682,17 @@
 					query=>'SELECT @update_id;',
 				]);
 				
-				$new_record_where = array(
+				$new_record_where = [
 					type=>$record_type,
-					definition=>array(
+					definition=>[
 						id=>$record_update_ids[0]['@update_id'],
-					),
-				);
+					],
+				];
 				
 				$new_record = $this->GetRecords($new_record_where);
 				
 				return $new_record;
-			}
-			else
-			{
+			} else {
 				return FALSE;
 			}
 		}
@@ -743,8 +700,7 @@
 			// Insert Information
 			// -------------------------------------------------
 		
-		public function CreateRecord($args)
-		{
+		public function CreateRecord($args) {
 		#	print("BT: CREATERECORDS");
 			$record_type = $args[type];
 			$record_definition = $args[definition];
@@ -755,9 +711,9 @@
 			$record_description = $this->GetRecordDescription($get_description_args);
 			
 			$record_values_args = [
-				recorddescription=>$record_description,
-				recordwhere=>$record_definition,
-				delimiter=>', ',
+				'recorddescription'=>$record_description,
+				'recordwhere'=>$record_definition,
+				'delimiter'=>', ',
 			];
 			
 			$record_where_results = $this->GetRecordWhere($record_values_args);
@@ -768,7 +724,7 @@
 			$all_bindings = $record_where_results[allbindings];
 			
 			$record_columns_args = [
-				recorddefinition=>$record_definition,
+				'recorddefinition'=>$record_definition,
 			];
 			$record_columns = $this->GetRecordColumns($record_columns_args);
 			$record_columns .= ', OriginalCreationDate, LastModificationDate';
@@ -781,11 +737,14 @@
 				recordvalues=>$record_values,
 			]);
 			
+#			print_r($query_statement);
+#			print_r($record_values);
+#			print("<BR><BR>");
+			
 			$new_record_id = mysqli_insert_id($this->db_link);
 			#print("BT: New..." . $new_record_id );
 			
-			if($new_record_id)
-			{
+			if($new_record_id) {
 				$new_record_where = [
 					type=>$record_type,
 					definition=>[
@@ -803,8 +762,7 @@
 			// Delete Information
 			// -------------------------------------------------
 		
-		public function DeleteRecords($args)
-		{
+		public function DeleteRecords($args) {
 			$type = $args['type'];
 			$where = $args['where'];
 			$sql_bind_string = $args['sqlbindstring'];
@@ -820,23 +778,17 @@
 			return $this->FillArraysFromDB($fill_arrays_from_db_args);
 		}
 		
-		public function GetRecordColumns($args)
-		{
+		public function GetRecordColumns($args) {
 			$record_definition = $args[recorddefinition];
 			
-			$record_keys = array();
+			$record_keys = [];
 			
-			foreach ($record_definition as $key => $value)
-			{
-				if($key == 'RAW')
-				{
-					foreach($value as $valuekey => $valuevalue)
-					{
+			foreach ($record_definition as $key => $value) {
+				if($key == 'RAW') {
+					foreach($value as $valuekey => $valuevalue) {
 						$record_keys[] = $valuekey;
 					}
-				}
-				else
-				{
+				} else {
 					$record_keys[] = $key;
 				}
 			}
@@ -849,8 +801,7 @@
 			// Delete Other Information
 			// -------------------------------------------------
 		
-		public function DeleteOtherRecords($args)
-		{
+		public function DeleteOtherRecords($args) {
 			$type = $args['type'];
 			$field = $args['field'];
 			$fieldtype = $args['fieldtype'];
@@ -859,12 +810,9 @@
 			
 			$sql = 'DELETE FROM ' . $type . ' WHERE ' . $field . ' NOT IN(';
 			
-			if($fieldtype = 'int')
-			{
+			if($fieldtype = 'int') {
 				$repeat_component = 'i';
-			}
-			else
-			{
+			} else {
 				$repeat_component = 's';
 			}
 			
@@ -873,8 +821,7 @@
 			
 			$sql .= ')';
 			
-			if($extrawhere)
-			{
+			if($extrawhere) {
 				$sql .= ' AND ' . $extrawhere;
 			}
 			
@@ -883,6 +830,18 @@
 				sqlbindstring=>$sql_bind_string,
 				recordvalues=>$notin,
 			];
+			return $this->FillArraysFromDB($fill_arrays_from_db_args);
+		}
+		
+		public function RunQuery($args) {
+			$sql = $args['sql'];
+			
+			$fill_arrays_from_db_args = [
+				query=>$sql,
+				sqlbindstring=>'',
+				recordvalues=>[],
+			];
+			
 			return $this->FillArraysFromDB($fill_arrays_from_db_args);
 		}
 	}

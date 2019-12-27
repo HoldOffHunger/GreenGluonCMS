@@ -3,4 +3,4 @@
 # This file/command may not be called 'mysql', since that is the command
 # reserved for the actual MySQL server.
 
-mysql -u YOURUSERNAME -pYOURPASSWORD -h YOUR HOST
+mysql -u ouruprising -pYOURPASSWORDHERE -h mysql.ouruprising.com

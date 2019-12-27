@@ -164,7 +164,7 @@
 	
 	print('<div class="horizontal-left">');
 	
-	print('Entry Length : <input type="text" name="length">');
+	print('Entry Level : <input type="text" name="length">');
 	
 	print('<center>');
 	print('<input type="submit" name="detect-broken-records" value="Detect Broken Records">');

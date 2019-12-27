@@ -84,7 +84,14 @@
 			
 			if($image && ($left_image_enable || $right_image_enable))
 			{
-				$this->display_Image($args);
+				print('<table width="100%"><tr><td width="1">');
+				
+				if($left_image_enable) {
+					print('<center>');
+					$this->display_Image($args);
+					print('</center>');
+					print('</td><td>');
+				}
 			}
 			
 			if($text_span_class)
@@ -134,13 +141,19 @@
 				print('</div>');
 			}
 			
-			if($left_image_enable || $right_image_enable)
+			if($image && ($left_image_enable || $right_image_enable))
 			{
-				$indent_args = array(
-					indentlevel=>$indent_level + 1,
-				);
-				$this->DisplayIndent($indent_args);
-				print('<div class="clear-float"></div>');
+				if($right_image_enable)
+				{
+					print('</td><td width="1">');
+					print('<center>');
+					$this->display_Image($args);
+					print('</center>');
+					print('</td>');
+				} else {
+					print('</td>');
+				}
+				print('</tr></table>');
 			}
 			
 			$this->DisplayDoubleLineBreak();
@@ -217,7 +230,7 @@
 				imagedivclasstext=>$image_divclass_text,
 			);
 			
-			if($left_image_enable)
+			if($left_image_enable || $right_image_enable)
 			{
 				$this->display_Image_LeftImageOpeningDiv($opening_div_args);
 				
@@ -236,35 +249,6 @@
 				$closing_div_args = array(
 					indentlevel=>$indent_level,
 				);
-				$this->display_Image_ClosingDivs($closing_div_args);
-			}
-			
-			if($right_image_enable)
-			{
-				$this->display_Image_RightImageOpeningDiv($opening_div_args);
-				
-				$this->display_Image_ImagePaddingDiv($padding_div_args);
-				
-				if($right_image)
-				{
-					$right_image_to_display = $right_image;
-					$right_image_class_text = $left_image_class_text;
-				}
-				else
-				{
-					$right_image_to_display = $image;
-				}
-				
-				$image_tag_args = array(
-					indentlevel=>$indent_level,
-					primarydomain=>$primary_domain,
-					image=>$right_image_to_display,
-					imagetext=>$image_text,
-					imageclasstext=>$right_image_class_text,
-				);
-				
-				$this->display_Image_ImageTag($image_tag_args);
-				
 				$this->display_Image_ClosingDivs($closing_div_args);
 			}
 		}

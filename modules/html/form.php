@@ -89,6 +89,7 @@
 			$form_element_selected = $args['selected'];
 			$form_element_disabled = $args['disabled'];
 			$form_element_readonly = $args['readonly'];
+			$form_element_autofocus = $args['autofocus'];
 			
 			if($form_element_type)
 			{
@@ -180,6 +181,10 @@
 				if($form_element_multiple)
 				{
 					print(' multiple="multiple"');
+				}
+				
+				if($form_element_autofocus) {
+					print(' autofocus');
 				}
 				
 				$form_element_value_insert = str_replace('&', '&amp;', $form_element_value);

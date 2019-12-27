@@ -38,12 +38,6 @@
 			
 		public function Special()
 		{
-			$this->results = 'No special functionality for the wizard today.';
-			
-			return TRUE;
-		}
-		
-		public function Special_UpdateFieldsAndMoveFilesForImageSubdirectoryMove
 			$this->SetPrimaryHostRecords();
 			
 			$bad_image_directory_where = [

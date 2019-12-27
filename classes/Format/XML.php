@@ -112,7 +112,8 @@
 		{
 			header("Content-type: application/xml");
 			
-			$this->script->Display();
+			$desired_action = $this->desired_action;
+			$display_results = $this->script->$desired_action();
 			
 			$this->StartXML();
 			$this->script->DisplayTemplates();

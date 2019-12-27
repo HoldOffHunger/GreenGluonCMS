@@ -115,6 +115,7 @@
 			{
 				return FALSE;
 			}
+			$this->script->DisplayTemplates();
 			
 			$this->SetCSVHeadersForHTTP();
 			
@@ -171,7 +172,7 @@
 			
 			$escaped_data = $this->EscapeDataForCSV([data=>$data]);
 			
-			return $escaped_data . "1";
+			return $escaped_data;
 		}
 		
 		public function EscapeDataForCSV($args)

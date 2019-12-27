@@ -119,6 +119,7 @@
 			{
 				return FALSE;
 			}
+			$this->script->DisplayTemplates();
 			$this->SetOPDSFileName();
 			$this->SetOPDSDisplayFileName();
 			
@@ -163,6 +164,22 @@
 			$opds_body .= '    <dc:issued>' . $this->script->record_to_use['OriginalCreationDate'] . '</dc:issued>' . "\n";
 			$opds_body .= '    <category label="' . $this->script->subject . '">' . "\n";
 			$opds_body .= '    <summary>' . $description . '</summary>' . "\n";
+			
+			$valid_record_fields = [
+				'privacypolicy'=>TRUE,
+				'termsofservice'=>TRUE,
+			];
+			
+			$record_fields = array_keys($this->script->record_to_use);
+			$record_fields_count = count($record_fields);
+			
+			for($i = 0; $i < $record_fields_count; $i++) {
+				$record_field = $record_fields[$i];
+				
+				if($valid_record_fields[$record_field]) {
+					$opds_body .= '    <' . $record_field . '>' . $this->script->record_to_use[$record_field] . '</' . $record_field . '>' . "\n";
+				}
+			}
 			
 			$base_url = $this->domain_object->GetPrimaryDomain([insecure=>1, lowercase=>0, www=>1]);
 			$url_end_piece = preg_replace('/view\.opds$/i', '', $_SERVER['REDIRECT_URL']);
@@ -319,15 +336,30 @@
 		
 		public function SetOPDSDisplayFileName()
 		{
-			$opds_display_filename = '';
+			$opds_filename = $this->script->entry['id'];
 			
-			if($this->script->record_to_use && $this->script->record_to_use['Code'])
-			{
-				$opds_display_filename = $this->script->record_to_use['Code'];
-			}
-			else
-			{
-				$opds_display_filename = 'portable-file';
+			if($this->desired_action == 'exportuser') {
+				$opds_filename = 'user-' . $this->script->user['id'];
+			} elseif($this->script_classname == 'privacy') {
+				$language_code = $this->language->GetLanguageCode();
+				$opds_filename = 'privacy-policy_' . $language_code;
+			} elseif($this->script_classname == 'terms') {
+				$language_code = $this->language->GetLanguageCode();
+				$opds_filename = 'terms-and-conditions_' . $language_code;
+			} else {
+				if($this->script->entry['textbody'])
+				{
+					$textbody_count = count($this->script->entry['textbody']);
+					
+					if($textbody_count)
+					{
+						$textbody_for_use = $this->script->entry['textbody'][0];
+						if($textbody_for_use && $textbody_for_use['id'])
+						{
+							$opds_filename .= '_' . $textbody_for_use['id'];
+						}
+					}
+				}
 			}
 			
 			return $this->opds_display_filename = $opds_display_filename;

@@ -3429,6 +3429,65 @@
 			
 			return $markup;
 		}
+		
+						// HTML Data
+						// ---------------------------------------------
+		
+		public function GetHTMLFormatData_Title()
+		{
+			switch($this->language_object->getLanguageCode()) {
+				default:
+				case 'en':
+					$header_title_text = 'Privacy Policy for ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'de':
+					$header_title_text = 'Datenschutzerklärung für ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'es':
+					$header_title_text = 'Política de privacidad para ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'fr':
+					$header_title_text = 'Politique de confidentialité pour ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'ja':
+					$header_title_text = $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'] . 'のプライバシーポリシー';
+					break;
+					
+				case 'it':
+					$header_title_text = 'Informativa sulla privacy per ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'nl':
+					$header_title_text = 'Privacybeleid voor ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'pl':
+					$header_title_text = 'Polityka prywatności dla ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'pt':
+					$header_title_text = 'Política de Privacidade para ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'ru':
+					$header_title_text = 'Политика конфиденциальности для ' . $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'];
+					break;
+					
+				case 'tr':
+					$header_title_text = $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'] . ' için Gizlilik Politikası';
+					break;
+					
+				case 'zh':
+					$header_title_text = $this->master_record['Title'] . ' : ' . $this->master_record['Subtitle'] . '的隐私政策';
+					break;
+			}
+			
+			return $this->header_title_text = $header_title_text;
+		}
 	}
 	
 ?>

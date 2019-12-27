@@ -127,7 +127,7 @@
 		
 		public function RefreshAuthentication()
 		{
-			return $this->Login_Successful([useraccount=>$this->user_account]);
+			return $this->Login_Successful([useraccount=>$this->user_account, refresh=>1]);
 		}
 		
 		public function CheckAuthenticationForCurrentObject()
@@ -350,53 +350,62 @@
 			
 			if(!$userid)
 			{
-				$userid = $user_session[Userid];
+				$userid = $user_session['Userid'];
 			}
-			
-			$user_session_where_args = [
-				type=>UserSession,
-				definition=>[
-					Userid=>$userid,
-				],
-				limit=>1,
-			];
-						
-			$user_session = $this->db_access->GetRecords($user_session_where_args);
-			
+				
 			$cookie_token_args = [
 				useraccount=>$first_user_account,
 			];
 			$cookie_token = $this->GenerateCookieToken($cookie_token_args);
 			
-			if($user_session)
+			if(!$this->AllowMultipleDeviceLogin() || $args['refresh'])
 			{
-				$first_user_session = $user_session[0];
-				$new_user_session = $first_user_session;
-				$new_user_session[CookieToken] = $cookie_token;
-				$new_user_session[LastAccess] = 'NOW()';
-				
-				$user_session_update_args = [
+				$user_session_where_args = [
 					type=>UserSession,
-					update=>[
-						CookieToken=>$cookie_token,
-						RAW=>[
-							LastAccess=>[
-								'=',
-								'NOW()',
-							],
-						],
+					definition=>[
+						Userid=>$userid,
 					],
-					where=>[
-						id=>$new_user_session[id],
-					],
+					limit=>1,
 				];
 				
-				$user_session_update_results = $this->db_access->UpdateRecord($user_session_update_args);
+				if($args['refresh'])
+				{
+					$user_session_where_args['definition']['CookieToken'] = $user_session['CookieToken'];
+				}
 				
-				$user_session_returnable = $new_user_session;
-				$user_session_returnable = $user_session_update_results[0];
+				$user_session = $this->db_access->GetRecords($user_session_where_args);
+				
+				if($user_session)
+				{
+					$first_user_session = $user_session[0];
+					$new_user_session = $first_user_session;
+					$new_user_session[CookieToken] = $cookie_token;
+					$new_user_session[LastAccess] = 'NOW()';
+					
+					$user_session_update_args = [
+						type=>UserSession,
+						update=>[
+							CookieToken=>$cookie_token,
+							RAW=>[
+								LastAccess=>[
+									'=',
+									'NOW()',
+								],
+							],
+						],
+						where=>[
+							id=>$new_user_session[id],
+						],
+					];
+					
+					$user_session_update_results = $this->db_access->UpdateRecord($user_session_update_args);
+					
+					$user_session_returnable = $new_user_session;
+					$user_session_returnable = $user_session_update_results[0];
+				}
 			}
-			else
+			
+			if(!$user_session_returnable)
 			{
 				$user_session_insert_args = [
 					type=>UserSession,
@@ -443,6 +452,11 @@
 				status=>'Failure',
 				useraccount=>[],
 			];
+		}
+		
+		public function AllowMultipleDeviceLogin()
+		{
+			return TRUE;
 		}
 		
 		public function RedirectToNewURL($args)

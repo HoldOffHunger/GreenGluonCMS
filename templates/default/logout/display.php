@@ -37,7 +37,7 @@
 		$primary_color = '6495ED';
 	}
 	
-	$header_primary_args = [
+	$header_primary_args = array(
 		'indentlevel'=>1,
 		'title'=>'Logout Results : ' . $this->logout_status,
 		'image'=>'master-c-icon.jpg',
@@ -51,7 +51,7 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	];
+	);
 	
 			// Display Header
 		

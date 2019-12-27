@@ -28,19 +28,19 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = [
+	$divider_padding_start_args = array(
 		'class'=>'margin-5px padding-5px',
-	];
+	);
 	
-	$divider_end_args = [
+	$divider_end_args = array(
 		'indentlevel'=>1,
-	];
+	);
 	
 			// Display Header
 		
 		// -------------------------------------------------------------
 	
-	$header_primary_args = [
+	$header_primary_args = array(
 		'indentlevel'=>1,
 		'title'=>$this->domain_object->primary_domain . ' System Status : Show Tables List (Schemas)',
 		'image'=>'system-status-icon.jpg',
@@ -54,7 +54,7 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	];
+	);
 	
 	$header->display($header_primary_args);
 			
@@ -62,7 +62,7 @@
 		
 		// -------------------------------------------------------------
 	
-	$return_to_master_c_args = [
+	$return_to_master_c_args = array(
 		'indentlevel'=>1,
 		'title'=>'Return to the Master Control Program',
 		'image'=>'master-c-icon.jpg',
@@ -77,7 +77,7 @@
 		'leftimageenable'=>1,
 		'rightimageenable'=>0,
 		'link'=>'master-c.php',
-	];
+	);
 	
 	$header->display($return_to_master_c_args);
 	
@@ -93,24 +93,24 @@
 		
 		$divider->displaystart($divider_padding_start_args);
 		
-		$version_list_display_args = [
-			'options'=>[
+		$version_list_display_args = array(
+			'options'=>array(
 				'indentlevel'=>1,
 				'tableheaders'=>0,
 				'tableclass'=>'width-50percent horizontal-center border-2px background-color-gray13',
 				'rowclass'=>'border-1px horizontal-left',
-				'cellclass'=>[
+				'cellclass'=>array(
 					'border-1px vertical-top',
 					'border-1px width-100percent vertical-top',
-				],
-			],
-			'list'=>[
-				[
+				),
+			),
+			'list'=>array(
+				array(
 					'Table:',
-					$table_name,
-				],
-			],
-		];
+					$table_name
+				),
+			),
+		);
 		$generic_list->Display($version_list_display_args);
 		
 		$divider->displayend($divider_end_args);
@@ -121,23 +121,23 @@
 		
 		$divider->displaystart($divider_padding_start_args);
 		
-		$version_list_display_args = [
-			'options'=>[
+		$version_list_display_args = array(
+			'options'=>array(
 				'indentlevel'=>1,
 				'tableheaders'=>0,
 				'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13',
 				'rowclass'=>'border-1px horizontal-left',
-				'cellclass'=>[
+				'cellclass'=>array(
 					'border-1px vertical-top',
 					'border-1px vertical-top',
 					'border-1px vertical-top',
 					'border-1px vertical-top',
 					'border-1px vertical-top',
 					'border-1px vertical-top',
-				],
-			],
+				),
+			),
 			'list'=>$table_data,
-		];
+		);
 		$generic_list->Display($version_list_display_args);
 		
 		$divider->displayend($divider_end_args);

@@ -248,7 +248,7 @@
 				}
 			}
 			
-			return $this->author = $author_text;
+			$this->author = $author_text;
 		}
 		
 		public function SetDescription()

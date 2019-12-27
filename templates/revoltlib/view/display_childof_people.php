@@ -769,9 +769,8 @@
 				// Admin Controls
 			
 			// -------------------------------------------------------------
-			
-		if($this->authentication_object->user_session['UserAdmin.id'])
-		{
+		
+		if($this->authentication_object->user_session['UserAdmin.id']) {
 			print('<div class="horizontal-center width-95percent margin-top-5px border-2px">');
 					// "Controls" Header
 				

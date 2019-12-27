@@ -37,3 +37,5 @@ width/width-50px.css
 font/header-1.css
 font/header-2.css
 font/noselect.css
+font/font-family-tahoma.css
+font/font-family-arial.css

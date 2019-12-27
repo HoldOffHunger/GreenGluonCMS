@@ -47,6 +47,7 @@
 			$this->domain_object = $args[domain];
 			$this->time = $args[time];
 			$this->cookie = $args[cookie];
+			$this->globals = $args[globals];
 			$this->language = $args[language];
 			$this->dictionary = $args[dictionary];
 			$this->desired_script = $args[desiredscript];
@@ -111,6 +112,7 @@
 				'cleanserobject'=>$this->cleanser_object,
 				'queryobject'=>$this->query_object,
 				'dbaccessobject'=>$this->db_access_object,
+				'globals'=>$this->globals,
 				'domainobject'=>$this->domain_object,
 				'languageobject'=>$this->language,
 				'dictionary'=>$this->dictionary,

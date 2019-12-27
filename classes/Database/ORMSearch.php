@@ -11,20 +11,17 @@ ALTER TABLE TextBody ADD FULLTEXT INDEX `Text`  (`Text` DESC);
 
 */
 
-	class ORMSearch
-	{
+	class ORMSearch {
 		
 			// Construction
 			// -------------------------------------------------
 		
-		public function __construct($args)
-		{
-			$this->dbaccessobject = $args[dbaccessobject];
+		public function __construct($args) {
+			$this->dbaccessobject = $args['dbaccessobject'];
 		}
 		
-		public function Search($args)
-		{
-			$search_term = $args['searchterm'];
+		public function Search($args) {
+			$search_terms = $args['searchterms'];
 			$start_index = $args['startindex'];
 			$end_index = $args['endindex'];
 			
@@ -66,7 +63,7 @@ ALTER TABLE TextBody ADD FULLTEXT INDEX `Text`  (`Text` DESC);
 			$fill_arrays_from_db_args = [
 				query=>$sql,
 				sqlbindstring=>'s',
-				recordvalues=>[$search_term],
+				recordvalues=>$search_terms,
 			];
 			
 			$codes = $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);
@@ -74,8 +71,7 @@ ALTER TABLE TextBody ADD FULLTEXT INDEX `Text`  (`Text` DESC);
 			return $codes;
 		}
 		
-		public function SearchResultsCount($args)
-		{
+		public function SearchResultsCount($args) {
 			$search_term = $args['searchterm'];
 			
 			$sql = 'SELECT COUNT(*) as count ';

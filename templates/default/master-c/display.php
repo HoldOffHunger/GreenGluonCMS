@@ -322,6 +322,21 @@
 				],
 			],
 			[
+				'text'=>'Detect Entry Issues',
+				'link'=>' ',
+				'mouseover'=>'Detect Entry Issues',
+				[
+					'text'=>'Text Issues',
+					'link'=>' ',
+					'mouseover'=>'Detect Text Issues',
+					[
+						'text'=>'Detect Bad Text',
+						'link'=>'dbstatus.php?action=DetectBadText',
+						'mouseover'=>'Detect Bad Text',
+					],
+				],
+			],
+			[
 				'text'=>'Detect Entry Errors',
 				'link'=>' ',
 				'mouseover'=>'Detect Entry Errors',

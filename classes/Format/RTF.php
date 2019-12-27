@@ -113,7 +113,6 @@
 		
 		public function Display()
 		{
-			
 			if(!$this->PrepareScriptForRTFConversion())
 			{
 				return FALSE;
@@ -126,7 +125,6 @@
 			$rtf_file_location = $this->SetRTFFileLocation();
 			
 			$rtf_input = $this->SetHTMLForRTFConversion();
-			
 			if(!$rtf_input)
 			{
 				return FALSE;
@@ -139,7 +137,7 @@
 				$old_rtf_input = file_get_contents($source_file_location);
 			}
 			
-			if(!is_file($rtf_file_location) || $old_rtf_input != $rtf_input)
+			if($_GET['forceregen'] || !is_file($rtf_file_location) || $old_rtf_input != $rtf_input)
 			{
 				$rtf_output = $this->ConvertHTMLToRTF();
 				
@@ -192,8 +190,7 @@
 			*/
 		}
 		
-		public function ConvertHTMLToRTF()
-		{
+		public function ConvertHTMLToRTF() {
 				# http://www.biblioscape.com/rtf15_spec.htm
 			$rtf_output = $this->rtf_input;
 			
@@ -205,6 +202,10 @@
 			
 			$rtf_output = str_replace('<p>', '\fs16\par ', $rtf_output);
 			$rtf_output = str_replace('</p>', '\par ', $rtf_output);
+			
+			$rtf_output = str_replace('<li>', '\fs16\par ', $rtf_output);
+			$rtf_output = str_replace('</li>', '\par ', $rtf_output);
+			
 			$rtf_output = str_replace('<br>', '\par ', $rtf_output);
 			
 			$rtf_output = str_replace('<blockquote>', '\par\fs16\li200\ri200 ', $rtf_output);
@@ -224,6 +225,8 @@
 			$rtf_output = str_replace('</u>', '\ulnone ', $rtf_output);
 			
 			$rtf_output = str_replace('&bull;', '\bullet ', $rtf_output);
+			
+			$rtf_output = preg_replace('/<a href=[\"\']*([^\"\']+)[\"\']*>/', ' $1 ', $rtf_output);
 			
 			$rtf_output = html_entity_decode($rtf_output);
 			$rtf_output = strip_tags($rtf_output);	# URLs and anything else
@@ -249,23 +252,30 @@
 		public function SetRTFHeadersForHTTP()
 		{
 			header('Content-Disposition:inline;filename=' . urlencode($this->rtf_display_filename) . '.rtf');
-			header("Content-type: text/richtext");
+			header('Content-type: text/richtext');
 		}
 		
 		public function SetRTFFileName()
 		{
 			$rtf_filename = $this->script->entry['id'];
 			
-			if($this->script->entry['textbody'])
-			{
-				$textbody_count = count($this->script->entry['textbody']);
-				
-				if($textbody_count)
-				{
-					$textbody_for_use = $this->script->entry['textbody'][0];
-					if($textbody_for_use && $textbody_for_use['id'])
-					{
-						$rtf_filename .= '_' . $textbody_for_use['id'];
+			if($this->desired_action == 'exportuser') {
+				$pdf_filename = 'user-' . $this->script->user['id'];
+			} elseif($this->script_name == 'privacy') {
+				$language_code = $this->language->GetLanguageCode();
+				$pdf_filename = 'privacy-policy_' . $language_code;
+			} elseif($this->script_name == 'terms') {
+				$language_code = $this->language->GetLanguageCode();
+				$pdf_filename = 'terms-and-conditions_' . $language_code;
+			} else {
+				if($this->script->entry['textbody']) {
+					$textbody_count = count($this->script->entry['textbody']);
+					
+					if($textbody_count) {
+						$textbody_for_use = $this->script->entry['textbody'][0];
+						if($textbody_for_use && $textbody_for_use['id']) {
+							$rtf_filename .= '_' . $textbody_for_use['id'];
+						}
 					}
 				}
 			}

@@ -67,7 +67,7 @@
 				}
 				else
 				{
-					print('<a href="' . str_replace('/', '', $_SERVER['SCRIPT_URL']) . '?language=' . $native_language_key . '">');
+					print('<a href="' . $_SERVER['SCRIPT_URL'] . '?language=' . $native_language_key . '">');
 				}
 				
 				print('<img src="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '/image/flags/' . $language_flag_filename . '" style="margin:0px;" width="64" height="64">');
@@ -178,7 +178,7 @@
 				
 				if($current_language_code != $native_language_key)
 				{
-					print('<a href="' . str_replace('/', '', $_SERVER['SCRIPT_URL']) . '?language=' . $native_language_key . '">');
+					print('<a href="' . $_SERVER['SCRIPT_URL'] . '?language=' . $native_language_key . '">');
 				}
 				
 				$flag_mouseover = $native_language_name;

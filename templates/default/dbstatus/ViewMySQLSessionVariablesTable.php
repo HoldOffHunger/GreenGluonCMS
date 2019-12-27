@@ -25,19 +25,19 @@
 		
 		// -------------------------------------------------------------
 	
-	$divider_padding_start_args = [
+	$divider_padding_start_args = array(
 		'class'=>'margin-5px padding-5px',
-	];
+	);
 	
-	$divider_end_args = [
+	$divider_end_args = array(
 		'indentlevel'=>1,
-	];
+	);
 	
 			// Display Header
 		
 		// -------------------------------------------------------------
 	
-	$header_primary_args = [
+	$header_primary_args = array(
 		'indentlevel'=>1,
 		'title'=>$this->domain_object->primary_domain . ' System Status : View MySQL Session Variables',
 		'image'=>'system-status-icon.jpg',
@@ -51,7 +51,7 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	];
+	);
 	
 	$header->display($header_primary_args);
 			
