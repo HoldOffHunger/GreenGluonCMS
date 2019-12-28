@@ -69,6 +69,8 @@
 
 # Done
 
+## Version 1.0
+
 * make format icons tiny, but have them resize to large when hover'd over
 * add server, get, post var's to internalserverissue-logging
 * issue logging on 404
