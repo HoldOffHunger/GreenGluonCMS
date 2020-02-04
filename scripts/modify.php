@@ -1580,25 +1580,11 @@
 				$original_image = $this->image_unset[$i];
 				$i++;
 				
-				if(strlen($image['Title']) > 255) {
-					$this->errors[] = ['Image Titles may not be longer than 255 characters.'];
-					$validation_results = FALSE;
-				}
-				
-				if(strlen($image['Description']) > 1023) {
-					$this->errors[] = ['Image Descriptions may not be longer than 1,023 characters.'];
-					$validation_results = FALSE;
-				}
-				
-				if(strlen($image['FileName']) > 255) {
-					$this->errors[] = ['Image FileNames may not be longer than 255 characters.'];
-					$validation_results = FALSE;
-				}
-				
-				if(preg_match('/advert/i', $image['FileName'])) {
-					$this->errors[] = ['Image FileNames may not contain the text "advert", because they may cause them to be blocked by ad-blocking software.'];
-					$validation_results = FALSE;
-				}
+				$validation_results = $this->ValidateSingleImage([
+					'image'=>$image,
+					'entrytype'=>'Image',
+					'validationresults'=>$validation_results,
+				]);
 				
 				if($file['name']) {	// New File Upload
 					$new_file_location = 'image/' . $image['FileName'];
@@ -1671,20 +1657,44 @@
 			$validation_results = TRUE;
 			
 			foreach ($this->imagetranslation as $image_translation) {
-				if(strlen($image_translation['Title']) > 255) {
-					$this->errors[] = ['The Image Translation Title may not be longer than 255 characters.'];
-					$validation_results = FALSE;
-				}
-				
-				if(strlen($image_translation['Description']) > 1023) {
-					$this->errors[] = ['The Image Translation Description may not be longer than 1,023 characters.'];
-					$validation_results = FALSE;
-				}
-				
-				if(strlen($image_translation['FileName']) > 255) {
-					$this->errors[] = ['The Image Translation FileName may not be longer than 255 characters.'];
-					$validation_results = FALSE;
-				}
+				$validation_results = $this->ValidateSingleImage([
+					'image'=>$image_translation,
+					'entrytype'=>'Image Translation',
+					'validationresults'=>$validation_results,
+				]);
+			}
+			
+			return $validation_results;
+		}
+		
+		public function ValidateSingleImage($args) {
+			$image = $args['image'];
+			$entry_type = $args['entrytype'];
+			$validation_results = $args['validationresults'];
+			
+			if(strlen($image['Title']) > 255) {
+				$this->errors[] = [$entry_type . ' Titles may not be longer than 255 characters.'];
+				$validation_results = FALSE;
+			}
+			
+			if(strlen($image['Description']) > 1023) {
+				$this->errors[] = [$entry_type . ' Descriptions may not be longer than 1,023 characters.'];
+				$validation_results = FALSE;
+			}
+			
+			if(strlen($image['FileName']) > 255) {
+				$this->errors[] = [$entry_type . ' FileNames may not be longer than 255 characters.'];
+				$validation_results = FALSE;
+			}
+			
+			if(preg_match('/advert/i', $image['FileName'])) {
+				$this->errors[] = [$entry_type . ' FileNames may not contain the text "advert", because they may cause them to be blocked by ad-blocking software.'];
+				$validation_results = FALSE;
+			}
+			
+			if(preg_match('/%/i', $image['FileName'])) {
+				$this->errors[] = [$entry_type . ' FileNames may not contain the "%" character, as this character is reserved as an escape character for http URLs (i.e., "%20" is a space, " ", etc.).'];
+				$validation_results = FALSE;
 			}
 			
 			return $validation_results;
@@ -2174,7 +2184,7 @@
 						
 						$save_image_results = $this->SaveRecordFromQuery_Base($save_record_from_query_args);
 					} else {
-						if(strlen($image['FileName'])) {
+						if(strlen($image['FileName']) > 0) {
 							if($image['FileName'] != $original_image['FileName']) {		// Rename/Move Old File Upload
 								$original_file_location = 'image/' . $original_image_location . $original_image['FileName'];
 								$new_file_location = 'image/' . $original_image_location . $image['FileName'];
@@ -2195,33 +2205,37 @@
 								rename($original_file_standard_location, $new_file_standard_location);
 								
 								$this->image[$i]['FileName'] = $image['FileName'];
-								$this->image[$i]['IconFileName'] = $image['IconFileName'];
-								$this->image[$i]['StandardFileName'] = $image['StandardFileName'];
+								$this->image[$i]['IconFileName'] = $alternate_new_filenames['icon_name'];
+								$this->image[$i]['StandardFileName'] = $alternate_new_filenames['standard_name'];
 								
 								$save_image_results = $this->SaveRecordFromQuery_Base($save_record_from_query_args);
 							}
 						} else {
 							unset($this->image[$i]);
 							
-							$file_location = 'image/' . $original_image_location . $original_image['FileName'];
-							$standard_file_location = 'image/' . $original_image_location . $original_image['StandardFileName'];
-							$icon_file_location = 'image/' . $original_image_location . $original_image['IconFileName'];
+							$files = [
+								'image/' . $original_image_location . $original_image['FileName'],
+								'image/' . $original_image_location . $original_image['StandardFileName'],
+								'image/' . $original_image_location . $original_image['IconFileName'],
+							];
 							
-							if(is_file($file_location)) {
-								unlink($file_location);
-							}
-							if(is_file($standard_file_location)) {
-								unlink($standard_file_location);
-							}
-							if(is_file($icon_file_location)) {
-								unlink($icon_file_location);
-							}
+							$this->DeleteFiles(['files'=>$files]);
 						}
 					}
 				}
 			}
 			
 			return $save_image_results;
+		}
+		
+		public function DeleteFiles($args) {
+			$files = $args['files'];
+			
+			foreach($files as $file) {
+				unlink($file);
+			}
+			
+			return TRUE;
 		}
 		
 		public function UpdateImagesDirectory($args) {

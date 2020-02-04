@@ -1939,29 +1939,34 @@
 	print('<center><h2 class="margin-5px font-family-tahoma">' . $about_header_title_text . ' :</h2></center>');
 	
 	$divider->displayend($divider_end_args);
-	
-			// Breadcrumb Trails
 		
-		// -------------------------------------------------------------
-	
-	print('<div class="horizontal-center width-95percent margin-top-5px">');
-	print('<div class="float-left border-2px background-color-gray13">');
-	print('<p class="font-family-arial margin-5px">');
-	
-	if($this->master_record)
-	{
-		print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '">');
-		print($this->header_title_text);
-		print('</a>');
+				// Start Top Bar
+			
+			// -------------------------------------------------------------
 		
-		print(' &gt;&gt; ');
+		print('<div class="horizontal-center width-95percent margin-top-5px">');
 		
-		print($about_header_title_text);
-	}
-	
-	print('</p>');
-	print('</div>');
-	print('</div>');
+				// Breadcrumbs Info
+			
+			// -------------------------------------------------------------
+		
+		require('../modules/html/breadcrumbs.php');
+		$breadcrumbs = new module_breadcrumbs(['that'=>$this, 'title'=>$about_header_title_text]);
+		$breadcrumbs->Display();
+		
+				// Login Info
+			
+			// -------------------------------------------------------------
+			
+		require('../modules/html/auth.php');
+		$auth = new module_auth(['that'=>$this]);
+		$auth->Display();
+		
+				// End Top Bar
+			
+			// -------------------------------------------------------------
+		
+		print('</div>');
 	
 			// Finish Breadcrumb Trails
 		

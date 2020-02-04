@@ -119,110 +119,43 @@
 		
 		// -------------------------------------------------------------
 	
-	if($this->authentication_object->user_session['UserAdmin.id'])
-	{
-		print('<div class="horizontal-center width-95percent margin-top-5px border-2px">');
-				// "Controls" Header
-			
-			// -------------------------------------------------------------
-			
-		print('<center>');
-		print('<div class="horizontal-center width-95percent">');
-		print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-		print('<h2 class="horizontal-left margin-5px font-family-arial">');
-		print('Controls for Entry ' . $this->entry['id']);
-		print('</h2>');
-		print('</div>');
-		print('</div>');
-		print('</center>');
-		
-				// Finish Admin Controls
-			
-			// -------------------------------------------------------------
-								
-		$clear_float_divider_start_args = [
-			'class'=>'clear-float',
-			'indentlevel'=>5,
-		];
-		
-		$divider->displaystart($clear_float_divider_start_args);
-		
-		$clear_float_divider_end_args = [
-			'indentlevel'=>5,
-		];
-		
-		$divider->displayend($clear_float_divider_end_args);
-		
-				// "Add" / "Edit" Option
-			
-			// -------------------------------------------------------------
-		
-		print('<div class="horizontal-center width-95percent margin-top-5px">');
-		
-		print('<div class="float-left margin-5px border-2px background-color-gray13">');
-		print('<p class="font-family-arial margin-5px">');
-		print('<a href="modify.php?action=Edit">EDIT</a>');
-		print('</p>');
-		print('</div>');
-		
-		print('<div class="float-left margin-5px border-2px background-color-gray13">');
-		print('<p class="font-family-arial margin-5px">');
-		print('<a href="modify.php?action=Add">ADD CHILD</a>');
-		print('</p>');
-		print('</div>');
-		
-		print('</div>');
-		
-				// Finish Admin Controls
-			
-			// -------------------------------------------------------------
-								
-		$clear_float_divider_start_args = [
-			'class'=>'clear-float',
-			'indentlevel'=>5,
-		];
-		
-		$divider->displaystart($clear_float_divider_start_args);
-		
-		$clear_float_divider_end_args = [
-			'indentlevel'=>5,
-		];
-		
-		$divider->displayend($clear_float_divider_end_args);
-		
-		print('</div>');
+	if($this->authentication_object->user_session['UserAdmin.id']) {
+		require('../modules/html/entry-controls.php');
+		$entry_controls = new module_entrycontrols;
+		$entry_controls->Display(['that'=>$this]);
 	}
 	
-			// Breadcrumb Trails
+			// Start Top Bar
 		
 		// -------------------------------------------------------------
 	
 	print('<div class="horizontal-center width-95percent margin-top-5px">');
-	print('<div class="float-left border-2px background-color-gray13">');
-	print('<p class="font-family-arial margin-5px">');
 	
-	if($this->master_record)
-	{
-		$record_list_count = count($this->record_list);
-		if($record_list_count)
-		{
-			print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '">');
-		}
-		print($this->master_record['Title']);
+			// Breadcrumbs Info
 		
-		if($record_list_count)
-		{
-			print('</a>');
-		}
+		// -------------------------------------------------------------
 		
-		$link_list = '';
+	require('../modules/html/breadcrumbs.php');
+	$breadcrumbs = new module_breadcrumbs(['that'=>$this]);
+	$breadcrumbs->Display();
+	
+			// Login Info
 		
-		print(' &gt;&gt; ');
-		print($this->entry['ListTitle']);
-	}
-	print('</p>');
+		// -------------------------------------------------------------
+		
+	require('../modules/html/auth.php');
+	$auth = new module_auth(['that'=>$this]);
+	$auth->Display();
+	
+			// End Top Bar
+		
+		// -------------------------------------------------------------
+	
 	print('</div>');
-	print('</div>');
+	
+			// Finish Breadcrumb Trails
+		
+		// -------------------------------------------------------------
 							
 	$clear_float_divider_start_args = [
 		'class'=>'clear-float',

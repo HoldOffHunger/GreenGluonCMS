@@ -112,56 +112,35 @@
 	$divider_end_args = [
 		'indentlevel'=>1,
 	];
-			// Breadcrumb Trails
-		
-		// -------------------------------------------------------------
 	
-	print('<div class="horizontal-center width-95percent margin-top-5px">');
-	print('<div class="float-left border-2px background-color-gray13">');
-	print('<p class="font-family-arial margin-5px">');
-	
-	if($this->master_record)
-	{
-		$record_list_count = count($this->record_list);
-		if($record_list_count)
-		{
-			print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '">');
-		}
-		print($this->master_record['Title']);
 		
-		if($record_list_count)
-		{
-			print('</a>');
-		}
+				// Start Top Bar
+			
+			// -------------------------------------------------------------
 		
-		$link_list = '';
+		print('<div class="horizontal-center width-95percent margin-top-5px">');
 		
-		for($i = 0; $i < $record_list_count; $i++)
-		{
-			$record = $this->record_list[$i];
-			print(' &gt;&gt; ');
+				// Breadcrumbs Info
 			
-			$link_list .= '/' . $record['Code'];
-			
-			print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . $link_list . '/view.php');
-			
-			if($i == 0)
-			{
-				print('?action=index');
-			}
-			
-			print('">');
-			
-			print($record['Title']);
-			
-			print('</a>');
-		}
+			// -------------------------------------------------------------
 		
-		print(' &gt;&gt; Browsing by Tag "' . $this->tag_cleansed . '"');
-	}
-	print('</p>');
-	print('</div>');
-	print('</div>');
+		require('../modules/html/breadcrumbs.php');
+		$breadcrumbs = new module_breadcrumbs(['that'=>$this, 'title'=>'Browsing By Tag "' . $this->tag_cleansed . '"']);
+		$breadcrumbs->Display();
+		
+				// Login Info
+			
+			// -------------------------------------------------------------
+			
+		require('../modules/html/auth.php');
+		$auth = new module_auth(['that'=>$this]);
+		$auth->Display();
+		
+				// End Top Bar
+			
+			// -------------------------------------------------------------
+		
+		print('</div>');
 	
 			// Finish Breadcrumb Trails
 		

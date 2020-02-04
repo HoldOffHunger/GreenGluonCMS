@@ -16,6 +16,7 @@
 			*/
 			
 		public function __construct($args) {
+			$this->args = $args;
 			return TRUE;
 		}
 		

@@ -27,6 +27,23 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'undertook'=>['undertok',],
+				'unexpectedly'=>['unexpectadly',],
+				'unforeseen'=>['unforseen',],
+				'uninterrupted'=>'uninterupted',
+				'united'=>[
+					'unitesd',
+					'unitd',
+				],
+				'united states'=>[				
+					'unitd states',
+					'united staes',
+					'united stats',
+				],
+				'universities'=>['univerisities',],
+				'unmanageable'=>'umnanageable',
+				'unmistakable'=>'unmistakeable',
+				'upon'=>'apon',
 			];
 		}
 	}

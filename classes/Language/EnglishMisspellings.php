@@ -18,9 +18,27 @@
 		
 		public function __construct($args) {
 			require('../classes/Language/EnglishMisspellings_Words.php');
-			$this->words = new EnglishMisspellings_Words([]);
+			$this->words = new EnglishMisspellings_Words();
 			$this->misspellings = $this->words->GetEnglishMisspellings();
 			return TRUE;
+		}
+		
+		public function GetWords_Misspelled() {
+			$misspelled_words = array_values($this->misspellings);
+			
+			$misspellings = [];
+			
+			foreach($misspelled_words as $misspelled_word) {
+				if(is_array($misspelled_word)) {
+					foreach($misspelled_word as $multi_misspelling) {
+						$misspellings[] = $multi_misspelling;
+					}
+				} else {
+					$misspellings[] = $misspelled_word;
+				}
+			}
+			
+			return $misspellings;
 		}
 	}
 ?>

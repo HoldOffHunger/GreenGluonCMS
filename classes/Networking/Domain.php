@@ -49,13 +49,13 @@
 				$primary_domain .= 'http://';
 			}
 			
-			if($args[www]) {
+			if($args['www']) {
 				$primary_domain .= 'www.';
 			}
 			
-			if($args[domain]) {
+			if($args['domain']) {
 				$primary_domain .= $args['domain'];
-			} elseif($args[lowercased] || $args['lowercase']) {
+			} elseif($args['lowercased'] || $args['lowercase']) {
 				$primary_domain .= $this->primary_domain_lowercased;
 			} else {
 				$primary_domain .= $this->primary_domain;

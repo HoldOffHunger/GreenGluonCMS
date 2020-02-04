@@ -27,6 +27,65 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'galapogos'=>'galopogos',
+				'gallant'=>['galliant',],
+				'Galileo'=>['Gallileo',],
+				'gathering'=>'gethering',
+				'gauge'=>['guage',],
+				'geminiani'=>['geminani',],
+				'generally'=>[
+					'generelly',
+					'genrally',
+				],
+				'German'=>['Geramn',],
+				'gesture'=>'gseture',
+				'getting'=>['gettng',],
+				'global'=>['globial',],
+				'globalization'=>['globlization',],
+				'goddess'=>['goddes', 'godess',],
+				'government'=>[
+					'goverment',
+					'governement',
+					'governemnt',
+					'governemt',
+					'governent',
+					'governmen',
+					'governmet',
+					'govrenment',
+				],
+				'grammatical'=>'gramatical',
+				'great'=>'gerat',
+				'grecian'=>['greecian',],
+				'grievance'=>[
+					'greivance',
+					'greviance',
+					'grivance',
+				],
+				'grievously'=>[
+					'greivously',
+					'greviously',
+					'grivously',
+				],
+				'ground-based'=>[
+					'ground based',
+				],
+				'group'=>'gorup',
+				'groups'=>'gorups',
+				'guerrilla'=>[
+					'guerrala',
+					'guerralla',
+					'guerilla',
+					'guerrila',
+					'guerrilal',
+				],
+				'guerrillas'=>[
+					'guerillas',
+					'guerralas',
+					'guerrallas',
+					'guerrilals',
+					'guerrilas',
+				],
+				'gymnastics'=>['gymastics', 'gynmastics',],
 			];
 		}
 	}

@@ -7,6 +7,7 @@ width/width-85percent.css
 width/width-80percent.css
 width/width-70percent.css
 width/width-50percent.css
+width/width-25percent.css
 location/float-left.css
 location/float-right.css
 location/horizontal-center.css

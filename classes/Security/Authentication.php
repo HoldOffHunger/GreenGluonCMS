@@ -1,7 +1,6 @@
 <?php
 
-	class Authentication
-	{
+	class Authentication {
 		public $access_granted;
 		public $redirect;
 		public $protocol;
@@ -14,8 +13,7 @@
 		public $cookie;
 		public $time;
 		
-		public function __construct($args)
-		{
+		public function __construct($args) {
 			$this->db_access = $args[dbaccess];
 			$this->domain = $args[domain];
 			$this->cookie = $args[cookie];
@@ -26,11 +24,9 @@
 			$this->protocol = '';
 		}
 		
-		public function Authenticate($args)
-		{
+		public function Authenticate($args) {
 			$this->script = $args[script];
-			if($this->script->script)
-			{
+			if($this->script->script) {
 				$this->DetectHTTPS();
 				if($this->protocol == 'ssl')
 				{
@@ -104,8 +100,7 @@
 			}
 		}
 		
-		public function ReAuthenticate()
-		{
+		public function ReAuthenticate() {
 			if(!$this->user_session)
 			{
 				$this->CheckCurrentAuthentication();
@@ -125,13 +120,11 @@
 			return TRUE;
 		}
 		
-		public function RefreshAuthentication()
-		{
+		public function RefreshAuthentication() {
 			return $this->Login_Successful([useraccount=>$this->user_account, refresh=>1]);
 		}
 		
-		public function CheckAuthenticationForCurrentObject()
-		{
+		public function CheckAuthenticationForCurrentObject() {
 			if($this->CheckAuthenticationForCurrentObject_IsAdmin() || $this->CheckAuthenticationForCurrentObject_IsOwner())
 			{
 				return TRUE;
@@ -140,8 +133,7 @@
 			return FALSE;
 		}
 		
-		public function CheckAuthenticationForCurrentObject_IsAdmin()
-		{
+		public function CheckAuthenticationForCurrentObject_IsAdmin() {
 			if($this->user_session && $this->user_session['UserAdmin.id'])
 			{
 				return TRUE;
@@ -150,28 +142,24 @@
 			return FALSE;
 		}
 		
-		public function CheckAuthenticationForCurrentObject_IsOwner()
-		{
+		public function CheckAuthenticationForCurrentObject_IsOwner() {
 			return FALSE;
 		}
 		
-		public function CheckCurrentAuthentication()
-		{
+		public function CheckCurrentAuthentication() {
 			$authentication_token = $this->cookie_token;
 			
-			if(!$authentication_token)
-			{
-				$authentication_token = $this->cookie->GetCookie([cookie=>'AuthenticationToken']);
+			if(!$authentication_token) {
+				$authentication_token = $this->cookie->GetCookie(['cookie'=>'AuthenticationToken']);
 			}
 			
-			if($authentication_token)
-			{
+			if($authentication_token) {
 				$user_session_record_args = [
-					'type'=>UserSession,
+					'type'=>'UserSession',
 					'definition'=>[
-						CookieToken=>$authentication_token,
+						'CookieToken'=>$authentication_token,
 						'RAW'=>[
-							LastAccess=>[
+							'LastAccess'=>[
 								'<',
 								'DATE_ADD(UserSession.LastAccess, INTERVAL 160 HOUR)',
 							],
@@ -187,8 +175,7 @@
 				];
 				
 				$user_session = $this->db_access->GetRecords($user_session_record_args);
-				if($user_session)
-				{
+				if($user_session) {
 					$this->user_session = $user_session[0];
 					return TRUE;
 				}
@@ -197,8 +184,7 @@
 			return 0;
 		}
 		
-		public function Login($args)
-		{
+		public function Login($args) {
 			$username = $args[username];
 			$password = $args[password];
 			
@@ -225,75 +211,70 @@
 			
 			$user_account = $this->db_access->GetRecords($user_record_args);
 			
-			if($user_account)
-			{
+			if($user_account) {
 				$this->user_account = $user_account;
 				$login_successful_args = [
-					useraccount=>$user_account,
+					'useraccount'=>$user_account,
 				];
 				return $this->Login_Successful($login_successful_args);
-			}
-			else
-			{
+			} else {
 				$login_failure_args = [
-					username=>$username,
-					password=>$password,
-					hashedpassword=>$hashed_password,
+					'username'=>$username,
+					'password'=>$password,
+					'hashedpassword'=>$hashed_password,
 				];
 				return $this->Login_Failure($login_failure_args);
 			}
 		}
 		
-		public function Logout()
-		{
+		public function Logout() {
+			$user_session = $this->user_session;
+			
 			$this->Logout_ResetCookie();
 			$this->Logout_ResetDatabase();
 			
 			unset($this->user_session);
 			unset($this->user_account);
-			return TRUE;
+			
+			return $user_session;
 		}
 		
-		public function Logout_ResetDatabase()
-		{
-			$authentication_token = $this->cookie->GetCookie([cookie=>'AuthenticationToken']);
+		public function Logout_ResetDatabase() {
+			$authentication_token = $this->cookie->GetCookie(['cookie'=>'AuthenticationToken']);
 			
 			$user_session_update_args = [
-				type=>'UserSession',
-				update=>[
-					CookieToken=>'',
-					LastAccess=>'00:00:00 0000-00-00',
+				'type'=>'UserSession',
+				'update'=>[
+					'CookieToken'=>'',
+					'LastAccess'=>'00:00:00 0000-00-00',
 				],
-				where=>[
-					CookieToken=>$authentication_token,
+				'where'=>[
+					'CookieToken'=>$authentication_token,
 				],
 			];
 			
 			return $this->db_access->UpdateRecord($user_session_update_args);
 		}
 		
-		public function Logout_ResetCookie()
-		{
+		public function Logout_ResetCookie() {
 			$set_authentication_cookie_args = [
-				secure=>TRUE,
-				key=>'AuthenticationToken',
-				value=>null,
+				'secure'=>TRUE,
+				'key'=>'AuthenticationToken',
+				'value'=>null,
 			];
 			
 			$this->cookie->SetCookie($set_authentication_cookie_args);
 		}
 		
-		public function GenerateCookieToken($args)
-		{
+		public function GenerateCookieToken($args) {
 			return $this->GenerateCookieToken_Secure($args);
 		}
 		
-		public function GenerateCookieToken_Secure($args)
-		{
-			$user_account = $args[useraccount];
+		public function GenerateCookieToken_Secure($args) {
+			$user_account = $args['useraccount'];
 			
 			$hash_values = [];
-			$hash_values[] = $user_account[Username];
+			$hash_values[] = $user_account['Username'];
 			$hash_values[] = $this->AuthenticationToken_Salt1();
 			$hash_values[] = $this->time->time;
 			$hash_values[] = $this->AuthenticationToken_Salt2();
@@ -305,9 +286,9 @@
 			$this->base_object = $base_object;
 			
 			$convert_base_args = [
-				value=>$hash_token,
-				startingbase=>'Hexadecimal',
-				endingbase=>'Base64',
+				'value'=>$hash_token,
+				'startingbase'=>'Hexadecimal',
+				'endingbase'=>'Base64',
 			];
 			
 			$hash_token_base64 = $base_object->ConvertBase($convert_base_args);
@@ -315,18 +296,15 @@
 			return $hash_token_base64;
 		}
 		
-		public function AuthenticationToken_Salt1()
-		{
+		public function AuthenticationToken_Salt1() {
 			return 'Ehtdetohda80d2)*08';
 		}
 		
-		public function AuthenticationToken_Salt2()
-		{
+		public function AuthenticationToken_Salt2() {
 			return ';d79d(:Ddaddhr]LS-';
 		}
 		
-		public function GenerateCookieToken_Random()
-		{
+		public function GenerateCookieToken_Random() {
 			$random_class_location = '../classes/Math/Random.php';
 			require($random_class_location);
 			$this->random = new Random();
@@ -340,47 +318,42 @@
 			return $cookie_token;
 		}
 		
-		public function Login_Successful($args)
-		{
-			$user_account = $args[useraccount];
+		public function Login_Successful($args) {
+			$user_account = $args['useraccount'];
 			$user_session = $this->user_session;
 			$first_user_account = $user_account[0];
 			
 			$userid = $first_user_account[id];
 			
-			if(!$userid)
-			{
+			if(!$userid) {
 				$userid = $user_session['Userid'];
 			}
 				
 			$cookie_token_args = [
-				useraccount=>$first_user_account,
+				'useraccount'=>$first_user_account,
 			];
 			$cookie_token = $this->GenerateCookieToken($cookie_token_args);
 			
-			if(!$this->AllowMultipleDeviceLogin() || $args['refresh'])
-			{
+			if(!$this->AllowMultipleDeviceLogin() || $args['refresh']) {
 				$user_session_where_args = [
-					type=>UserSession,
-					definition=>[
-						Userid=>$userid,
+					'type'=>'UserSession',
+					'definition'=>[
+						'Userid'=>$userid,
 					],
-					limit=>1,
+					'limit'=>1,
 				];
 				
-				if($args['refresh'])
-				{
+				if($args['refresh']) {
 					$user_session_where_args['definition']['CookieToken'] = $user_session['CookieToken'];
 				}
 				
 				$user_session = $this->db_access->GetRecords($user_session_where_args);
 				
-				if($user_session)
-				{
+				if($user_session) {
 					$first_user_session = $user_session[0];
 					$new_user_session = $first_user_session;
-					$new_user_session[CookieToken] = $cookie_token;
-					$new_user_session[LastAccess] = 'NOW()';
+					$new_user_session['CookieToken'] = $cookie_token;
+					$new_user_session['LastAccess'] = 'NOW()';
 					
 					$user_session_update_args = [
 						type=>UserSession,
@@ -405,8 +378,7 @@
 				}
 			}
 			
-			if(!$user_session_returnable)
-			{
+			if(!$user_session_returnable) {
 				$user_session_insert_args = [
 					type=>UserSession,
 					definition=>[
@@ -442,8 +414,7 @@
 			];
 		}
 		
-		public function Login_Failure($args)
-		{
+		public function Login_Failure($args) {
 			$username = $args[username];
 			$password = $args[password];
 			$hashed_password = $args[hashed_password];
@@ -454,18 +425,15 @@
 			];
 		}
 		
-		public function AllowMultipleDeviceLogin()
-		{
+		public function AllowMultipleDeviceLogin() {
 			return TRUE;
 		}
 		
-		public function RedirectToNewURL($args)
-		{
-			$redirect_object = $args[redirect];
-			unset($args[redirect]);
+		public function RedirectToNewURL($args) {
+			$redirect_object = $args['redirect'];
+			unset($args['redirect']);
 			
-			switch($this->redirect_type)
-			{
+			switch($this->redirect_type) {
 				case 'ssl':
 					return $redirect_object->RedirectToSecuredConnection($args);
 					break;
@@ -482,14 +450,10 @@
 			return FALSE;
 		}
 		
-		public function DetectHTTPS()
-		{
-			if($_SERVER[HTTPS] == 'on')
-			{
+		public function DetectHTTPS() {
+			if($_SERVER['HTTPS'] == 'on') {
 				$this->protocol = 'ssl';
-			}
-			else
-			{
+			} else {
 				$this->protocol = 'unencrypted';
 			}
 		}

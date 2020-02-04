@@ -336,29 +336,34 @@
 			]],
 		];
 		$generic_list->Display($version_list_display_args);
-	
-			// Breadcrumb Trails
 		
-		// -------------------------------------------------------------
-	
-	print('<div class="horizontal-center width-95percent margin-top-5px">');
-	print('<div class="float-left border-2px background-color-gray13">');
-	print('<p class="font-family-arial margin-5px">');
-	
-	if($this->master_record)
-	{
-		print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '">');
-		print($this->header_title_text);
-		print('</a>');
+				// Start Top Bar
+			
+			// -------------------------------------------------------------
 		
-		print(' &gt;&gt; ');
+		print('<div class="horizontal-center width-95percent margin-top-5px">');
 		
-		print($privacy_header_title_text);
-	}
-	
-	print('</p>');
-	print('</div>');
-	print('</div>');
+				// Breadcrumbs Info
+			
+			// -------------------------------------------------------------
+		
+		require('../modules/html/breadcrumbs.php');
+		$breadcrumbs = new module_breadcrumbs(['that'=>$this, 'title'=>'Privacy Policy']);
+		$breadcrumbs->Display();
+		
+				// Login Info
+			
+			// -------------------------------------------------------------
+			
+		require('../modules/html/auth.php');
+		$auth = new module_auth(['that'=>$this]);
+		$auth->Display();
+		
+				// End Top Bar
+			
+			// -------------------------------------------------------------
+		
+		print('</div>');
 	
 			// Finish Breadcrumb Trails
 		
@@ -376,144 +381,15 @@
 	];
 	
 	$divider->displayend($clear_float_divider_end_args);
-	
 		
-						// All Formats
-					
-					// -------------------------------------------------------------
+				// Alternate Formats Info
 			
+			// -------------------------------------------------------------
 			
-			print('<div class="horizontal-center width-80percent margin-top-5px">');
-			
-			$full_user_name = urlencode($this->user['Username']);
-			
-			$formats = [
-				[
-					text=>'Mobile<br>Version',
-					image=>'mobile-icon.jpg',
-					url=>'privacy.php?mobilefriendly=1',
-				],
-				[
-					text=>'PDF<br>File',
-					image=>'pdf-file-icon.jpg',
-					url=>'privacy.pdf',
-				],
-				[
-					text=>'Printer<br>Friendly',
-					image=>'printer-friendly-icon.jpg',
-					url=>'privacy.php?printerfriendly=1',
-				],
-				[
-					text=>'Plaintext<br>File',
-					image=>'plaintext-format-icon.jpg',
-					url=>'privacy.txt',
-				],
-				[
-					text=>'Wrapped<br>Plaintext',
-					image=>'wrapped-plaintext-format-icon.jpg',
-					url=>'privacy.txt?wrapped=1',
-				],
-				[
-					text=>'Inverted<br>Colors',
-					image=>'colors-inverted-icon.jpg',
-					url=>'privacy.php?invertedcolors=1',
-				],
-				[
-					text=>'RTF<br>File',
-					image=>'rtf-file-icon.jpg',
-					url=>'privacy.rtf',
-				],
-				[
-					text=>'Epub<br>File',
-					image=>'epub-file-icon.jpg',
-					url=>'privacy.epub',
-				],
-				[
-					text=>'DAISY<br>Format',
-					image=>'daisy-format-icon.jpg',
-					url=>'privacy.daisy',
-				],
-				[
-					text=>'SGML<br>Format',
-					image=>'sgml-format-icon.jpg',
-					url=>'privacy.sgml',
-				],
-				[
-					text=>'JSON<br>Format',
-					image=>'json-format-icon.jpg',
-					url=>'privacy.json',
-				],
-				[
-					text=>'XML<br>Format',
-					image=>'xml-format-icon.jpg',
-					url=>'privacy.xml',
-				],
-				[
-					text=>'CSV<br>Format',
-					image=>'csv-format-icon.jpg',
-					url=>'privacy.csv',
-				],
-				[
-					text=>'Latex<br>Format',
-					image=>'latex-format-icon.jpg',
-					url=>'privacy.tex',
-				],
-				[
-					text=>'OPDS<br>Format',
-					image=>'opds-format-icon.jpg',
-					url=>'privacy.opds',
-				],
-				[
-					text=>'RDF<br>Format',
-					image=>'rdf-format-icon.jpg',
-					url=>'privacy.rdf',
-				],
-			];
-			
-			if($this->mobile_friendly)
-			{
-				$formats[0] = [
-					text=>'Standard<br><nobr>PC Format</nobr>',
-					image=>'',
-					url=>'privacy.php',
-				];
-			}
-			
-			$formats_count = count($formats);
-			
-			for($i = 0; $i < $formats_count; $i++)
-			{
-				$format = $formats[$i];
-				
-				print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-				print('<div class="margin-5px font-family-arial">');
-				
-				if(!$this->mobile_friendly)
-				{
-					print('<div class="margin-2px">');
-					print('<a href="');
-					print($format['url']);
-					print('">');
-					print('<img src="');
-					print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
-					print('/image/');
-					print($format['image']);
-					print('">');
-					print('</a>');
-					print('</div>');
-				}
-				
-				print('<p class="margin-0px font-family-arial font-size-75percent">');
-				print('<a href="');
-				print($format['url']);
-				print('">');
-				print($format['text']);
-				print('</a>');
-				print('</p>');
-				print('</div>');
-				print('</div>');
-			}
-			
+		require('../modules/html/alternateformats.php');
+		$auth = new module_alternateformats(['that'=>$this]);
+		$auth->Display();
+		
 					// Finish Textbody Header
 				
 				// -------------------------------------------------------------
@@ -604,11 +480,10 @@
 		
 		$privacy_policy_text = $this->getPrivacyPolicy();
 		$privacy_policy_text = str_replace('<p>', '<p class="margin-top-10px margin-bottom-0px text-indent-25px">', $privacy_policy_text);
-		$element_text_args = [
-			text=>$privacy_policy_text,
-			indentlevel=>5,
-		];
-		$text->Display($element_text_args);
+		
+		print('<div class="text-to-play-as-audio">');
+		print($privacy_policy_text);
+		print('</div>');
 		
 		$divider->displayend($divider_end_args);
 		

@@ -27,6 +27,17 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'various'=>[
+					'varoius',
+					'varous',
+				],
+				'vegetables'=>['vegeatables',],
+				'vice-minister'=>'viceminister',
+				'Vietnamese'=>['Vietnames',],
+				'vigorous'=>'vigourous',
+				'virginia'=>'virgina',
+				'vladivostok'=>['vladivostock', 'vladovostock',],
+				'volunteers'=>'volimteers',
 			];
 		}
 	}

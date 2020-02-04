@@ -27,6 +27,23 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'japanese'=>[
+					'japaneese',
+					'japanes',
+				],
+				'job hunting'=>[
+					'jobhunting',
+				],
+				'joined'=>[
+					'joinde',
+				],
+				'jordanian'=>[
+					'jordianian',
+					'jordnian',
+				],
+				'june'=>[
+					'jime',
+				],
 			];
 		}
 	}

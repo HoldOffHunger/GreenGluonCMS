@@ -32,9 +32,6 @@ $(document).ready(function(event){
 			$(this).html('&#9658; Listen');
 			responsiveVoice.pause();
 		}
-		
-		//BT: ???
-		//return false;
 	});
 	
 	function getCleanText() {

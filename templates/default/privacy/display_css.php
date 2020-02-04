@@ -1,6 +1,7 @@
 width/width-1percent.css
 width/width-33percent.css
 width/width-100percent.css
+width/width-85percent.css
 width/width-80percent.css
 width/width-70percent.css
 width/width-95percent.css

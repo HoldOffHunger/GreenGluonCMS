@@ -29,7 +29,8 @@ function updateLanguage() {
 function setLanguages() {
 	const voiceoptions = [];
 	voices = window.speechSynthesis.getVoices();
-	
+	console.log("BT: VOICES!");
+	console.log(voices);
 	for(i = 0; i < voices.length; i++)
 	{
 		voice = voices[i];

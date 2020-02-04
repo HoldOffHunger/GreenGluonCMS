@@ -24,6 +24,11 @@ ALTER TABLE TextBody ADD FULLTEXT INDEX `Text`  (`Text` DESC);
 			$search_terms = $args['searchterms'];
 			$start_index = $args['startindex'];
 			$end_index = $args['endindex'];
+			$mode = $args['mode'];
+			
+			if(!$mode) {
+				$mode = 'NATURAL LANGUAGE';
+			}
 			
 			$sql = 'SELECT ';
 			
@@ -46,24 +51,34 @@ ALTER TABLE TextBody ADD FULLTEXT INDEX `Text`  (`Text` DESC);
 			$sql .= 'Entry.OriginalCreationDate as Entry_OriginalCreationDate, ';
 			$sql .= 'Entry.LastModificationDate as Entry_LastModificationDate, ';
 			*/
-			$sql .= 'MATCH (TextBody.Text) AGAINST (? IN NATURAL LANGUAGE MODE) AS score ';
+			$sql .= 'MATCH (TextBody.Text) AGAINST (? IN ' . $mode . ' MODE) AS score ';
 			
 			$sql .= 'FROM TextBody ';
 			$sql .= 'JOIN Entry ON Entry.id = TextBody.Entryid ';
+			
+			$where = $args['where'];
+			
+			if($where) {
+				$sql .= 'WHERE ' . $where;
+			}
+			
 			$sql .= 'HAVING score > 0 ';
 			$sql .= 'ORDER BY score DESC ';
 			
-			if($start_index && $end_index)
-			{
+			if($start_index && $end_index) {
 				$sql .= 'LIMIT ' . ($start_index - 1) . ',' . ($end_index) ;
+			}
+			
+			if(count($search_terms) > 1) {
+				$search_terms = [implode(' ', $search_terms)];
 			}
 			
 			$sql .= ';';
 			
 			$fill_arrays_from_db_args = [
-				query=>$sql,
-				sqlbindstring=>'s',
-				recordvalues=>$search_terms,
+				'query'=>$sql,
+				'sqlbindstring'=>'s',
+				'recordvalues'=>$search_terms,
 			];
 			
 			$codes = $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);
@@ -83,9 +98,9 @@ ALTER TABLE TextBody ADD FULLTEXT INDEX `Text`  (`Text` DESC);
 			$sql .= ';';
 			
 			$fill_arrays_from_db_args = [
-				query=>$sql,
-				sqlbindstring=>'s',
-				recordvalues=>[$search_term],
+				'query'=>$sql,
+				'sqlbindstring'=>'s',
+				'recordvalues'=>[$search_term],
 			];
 			
 			$results = $this->dbaccessobject->FillArraysFromDB($fill_arrays_from_db_args);

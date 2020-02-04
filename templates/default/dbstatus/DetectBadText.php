@@ -84,6 +84,8 @@
 	
 	$primary_url = $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]);
 	
+	$note = 'Note: This will detect bad text.  Total filters: ' . number_format($this->misspellingscount) . '. Total entries (estimate): ' . number_format($this->entry_end - $this->entry_start) . '.';
+	
 	$version_list_display_args = [
 		'options'=>[
 			'indentlevel'=>1,
@@ -96,10 +98,29 @@
 			],
 		],
 		'list'=>[[
-			'Note: This will detect bad text.  Total filters: ' . $this->misspellingscount ,
+			$note,
 		]],
 	];
 	$generic_list->Display($version_list_display_args);
+	
+	if($this->search_results_count) {
+		$version_list_display_args = [
+			'options'=>[
+				'indentlevel'=>1,
+				'tableheaders'=>0,
+				'tableclass'=>'width-50percent horizontal-center border-2px background-color-gray13 margin-top-14px',
+				'rowclass'=>'border-1px horizontal-left',
+				'cellclass'=>[
+					'border-1px vertical-top',
+					'border-1px width-100percent vertical-top',
+				],
+			],
+			'list'=>[[
+				'<nobr>Search Results</nobr>', number_format($this->search_results_count),
+			]],
+		];
+		$generic_list->Display($version_list_display_args);
+	}
 	
 			// Display Form Elements : Start
 		
@@ -127,23 +148,77 @@
 		// -------------------------------------------------------------
 	
 	$element_text_args = [
-		text=>'<center>',
-		indentlevel=>5,
+		'text'=>'<center>',
+		'indentlevel'=>5,
 	];
 	$text->Display($element_text_args);
 	
-	print('<select name="type" id="type">');
-	print('<option value="Entry_Title">Entry: Title</option>');
-	print('<option value="TextBody_Text">TextBody: Text</option>');
+	print('<select name="algorithm" id="algorithm">');
+	
+	print('<option value="standard"');
+	if($this->algorithm == 'standard') {
+		print('selected');
+	}
+	print('>Standard Algorithm</option>');
+	
+	print('<option value="intensive"');
+	if($this->algorithm == 'intensive') {
+		print('selected');
+	}
+	print('>Intensive Algorithm</option>');
+	
 	print('</select>');
+	
+	print('<BR>');
+	
+	print('<select name="type" id="type">');
+	
+	print('<option value="Entry_Title"');
+	if($this->type == 'Entry_Title') {
+		print('selected');
+	}
+	print('>Entry: Title</option>');
+	
+	print('<option value="Entry_Subtitle"');
+	if($this->type == 'Entry_Subtitle') {
+		print('selected');
+	}
+	print('>Entry: Subtitle</option>');
+	
+	print('<option value="Entry_ListTitle"');
+	if($this->type == 'Entry_ListTitle') {
+		print('selected');
+	}
+	print('>Entry: ListTitle</option>');
+	
+	print('<option value="Entry_ListTitleSortKey"');
+	if($this->type == 'Entry_ListTitleSortKey') {
+		print('selected');
+	}
+	print('>Entry: ListTitleSortKey</option>');
+	
+	print('<option value="Entry_Code"');
+	if($this->type == 'Entry_Code') {
+		print('selected');
+	}
+	print('>Entry: Code</option>');
+	
+	print('<option value="TextBody_Text"');
+	if($this->type == 'TextBody_Text') {
+		print('selected');
+	}
+	print('>TextBody: Text</option>');
+	
+	print('</select>');
+	
 	print('<br>');
 	
 	print('First Correction To Test : ');
-	print('<input type="text" name="correction-id-start" value="1">');
+	print('<input type="text" name="correction-id-start" value="' . $this->correction_start_id . '"> (first: 1)');
 	print('<br>');
 	
 	print('Last Correction To Test : ');
-	print('<input type="text" name="correction-id-last" value="' . $this->misspellingscount . '">');
+	print('<input type="text" name="correction-id-last" value="' . $this->correction_end_id . '"> (normal-last: ' . $this->misspellingscount . '; intensive-last: ' . $this->intensivemisspellingscount . ')');
 	print('<br>');
 	
 	print('First Entry To Test : ');
@@ -155,20 +230,61 @@
 	print('<br>');
 	
 	$type_args = [
-		type=>'submit',
-		name=>'fix-broken-records',
+		'type'=>'submit',
+		'name'=>'fix-broken-records',
 		'class'=>'margin-5px',
-		value=>'Detect Bad-Text Records',
-		indentlevel=>5,
+		'value'=>'Detect Bad-Text Records',
+		'indentlevel'=>5,
 	];
 	
 	$form->DisplayFormField($type_args);
 	
 	$element_text_args = [
-		text=>'</center>',
-		indentlevel=>5,
+		'text'=>'</center>',
+		'indentlevel'=>5,
 	];
 	$text->Display($element_text_args);
+			
+			// Display Instructions
+		
+		// -------------------------------------------------------------
+	
+	$primary_url = $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]);
+	
+	if(count($this->search_results) > 0) {
+		$version_list_display_args = [
+			'options'=>[
+				'indentlevel'=>1,
+				'tableheaders'=>0,
+				'tableclass'=>'width-70percent horizontal-center border-2px background-color-gray13 margin-top-14px',
+				'rowclass'=>'border-1px horizontal-left',
+				'cellclass'=>[
+					'border-1px vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+					'border-1px width-100percent vertical-top',
+				],
+			],
+			'list'=>array_merge(
+				$this->search_header,
+				$this->search_results
+			),
+		];
+		$generic_list->Display($version_list_display_args);
+	}
 	
 		// Hidden Action
 		// -----------------------------------------------------

@@ -7,8 +7,7 @@
 	require('../traits/scripts/SimpleORM.php');
 	require('../traits/scripts/SimpleSocialMedia.php');
 
-	class view extends basicscript
-	{
+	class view extends basicscript {
 						// Traits
 						// ---------------------------------------------
 		
@@ -22,25 +21,21 @@
 						// Security Data
 						// ---------------------------------------------
 		
-		public function IsSecure()
-		{
+		public function IsSecure() {
 			return FALSE;
 		}
 		
-		public function RequiresLogin()
-		{
+		public function RequiresLogin() {
 			return FALSE;
 		}
 		
 						// Select Entry by ID Form
 						// ---------------------------------------------
 		
-		public function Select()
-		{
+		public function Select() {
 			$this->SetOrmBasics();
 			
-			if(!$this->ValidateOrm())
-			{
+			if(!$this->ValidateOrm()) {
 				return FALSE;	# Causes 404
 			}
 			
@@ -58,18 +53,15 @@
 				($this->by == 'AvailabilityStart') ||
 				($this->by == 'AvailabilityEnd') ||
 				($this->by == 'Level')
-			)
-			{
+			) {
 				$this->fieldname_validity = 1;
 				$this->select = $this->param('Select');	# Form Button
 				
-				if($this->select)
-				{
+				if($this->select) {
 					$fieldname = $this->param('fieldname');
 					$this->urlaction = $this->param('urlaction');
 					
-					switch($this->urlaction)
-					{
+					switch($this->urlaction) {
 						case 'view':
 							$this->script_name = 'view.php';
 							break;
@@ -79,8 +71,7 @@
 							break;
 					}
 					
-					if($fieldname)
-					{
+					if($fieldname) {
 						$this->fieldname = $fieldname;
 						$this->matchlike = $this->param('matchlike');
 						
@@ -92,16 +83,12 @@
 						
 						$record_results = $this->SearchForEntries($orm_match_args);
 					#	print_r($record_results);
-						if($record_results['error'])
-						{
+						if($record_results['error']) {
 							$this->admin_errors[] = $record_results;
-						}
-						else
-						{
+						} else {
 							$this->selections = $record_results;
 							$this->StatusDataArray = [];
-							foreach($this->selections as $entry)
-							{
+							foreach($this->selections as $entry) {
 								$this->StatusDataArray[] = [
 									$this->Bullet() .
 									$this->NonBreakingSpace() .
@@ -114,15 +101,11 @@
 								];
 							}
 						}
-					}
-					else
-					{
+					} else {
 						$this->errors[] = ['You must enter some search term in order to search.'];
 					}
 				}
-			}
-			else
-			{
+			} else {
 				$this->errors[] = ['The selected fieldname, "' . $this->CleanseForDisplay($this->by) . '", is invalid.'];
 				$this->fieldname_validity = 0;
 			}
@@ -823,8 +806,7 @@
 			];
 		}
 		
-		public function downvote($args)
-		{
+		public function downvote($args) {
 			$this->SetUserAndEntry();
 			$likedislike = $this->GetUserLike([]);
 			$likedislike = $this->SetUserLike(['likedislike'=>$likedislike, 'liked'=>0]);
@@ -834,8 +816,7 @@
 			];
 		}
 		
-		public function undodownvote($args)
-		{
+		public function undodownvote($args) {
 			$this->SetUserAndEntry();
 			$likedislike = $this->GetUserLike([]);
 			$this->RemoveUserVote(['likedislike'=>$likedislike]);
@@ -845,32 +826,27 @@
 			];
 		}
 		
-		public function SetUserAndEntry($args)
-		{
+		public function SetUserAndEntry($args) {
 			$user_id = $this->authentication_object->user_session['User.id'];
 			
-			if(!$user_id)
-			{
+			if(!$user_id) {
 				return FALSE;
 			}
 			
 			$this->user_id = $user_id;
 			
-			if(!$this->orm)
-			{
+			if(!$this->orm) {
 				$this->SetORMBasics();
 			}
 			
-			if(!$this->entry || !$this->entry['id'])
-			{
+			if(!$this->entry || !$this->entry['id']) {
 				return FALSE;
 			}
 			
 			return TRUE;
 		}
 		
-		public function GetUserLike($args)
-		{
+		public function GetUserLike($args) {
 			$user_id = $this->user_id;
 			
 			$user_upvote_args = [

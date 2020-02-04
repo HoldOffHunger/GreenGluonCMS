@@ -27,6 +27,55 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'lamennais'=>[
+					'lamenais',
+				],
+				'lamp post'=>[
+					'lampost',
+					'lamppost',
+				],
+				'lamp posts'=>[
+					'lamposts',
+					'lampposts',
+				],
+				'language'=>[
+					'langauge',
+				],
+				'languages'=>[
+					'langauges',
+				],
+				'later on'=>[
+					'alter on',
+				],
+				'lawyer'=>[
+					'lawyre',
+				],
+				'legislative'=>[
+					'legilative',
+				],
+				'legitimist'=>[
+					'legimist',
+				],
+				'library'=>[
+					'libarry',
+					'libary',
+				],
+				'lieutenant'=>[
+					'leiutenant',
+					'leuitenant',
+					'liuetenant',
+				],
+				'light'=>[
+					'Iight',
+				],
+				'looking'=>[
+					'loking',
+				],
+				'london'=>'lond',
+				'long'=>'iong',
+				'longing'=>'ionging',
+				'longs'=>'iongs',
+				'lucky'=>'lukcy',
 			];
 		}
 	}

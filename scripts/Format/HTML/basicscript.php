@@ -60,9 +60,9 @@
 			$this->script_args = $args[scriptargs];
 			$this->google_api = $args[googleapi];
 			
-			$this->authentication_object = $args[authenticationobject];
-			$this->cleanser_object = $args[cleanserobject];
-			$this->query_object = $args[queryobject];
+			$this->authentication_object = $args['authenticationobject'];
+			$this->cleanser_object = $args['cleanserobject'];
+			$this->query_object = $args['queryobject'];
 			$this->db_access_object = $args['dbaccessobject'];
 			$this->domain_object = $args['domainobject'];
 			$this->globals = $args['globals'];

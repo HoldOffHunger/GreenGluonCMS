@@ -39,16 +39,19 @@
 				}
 				
 				$image->scaleImage($new_width, $new_height);
+			} else {	# image is smaller than absolute icon limits, so, this is its new size.
+				$new_height = $image_height;
+				$new_width = $image_width;
 			}
 			
 			$image_icon_filehandle = fopen($new_icon_location, 'w+');
 			$image->writeImageFile($image_icon_filehandle);
 			
 			$icon_results = [
-				originalheight=>$image_height,
-				originalwidth=>$image_width,
-				resizedheight=>$new_height,
-				resizedwidth=>$new_width,
+				'originalheight'=>$image_height,
+				'originalwidth'=>$image_width,
+				'resizedheight'=>$new_height,
+				'resizedwidth'=>$new_width,
 			];
 			
 			return $icon_results;

@@ -113,67 +113,47 @@
 	$divider_end_args = [
 		'indentlevel'=>1,
 	];
-	
-			// Breadcrumb Trails
 		
-		// -------------------------------------------------------------
-	
-	print('<div class="horizontal-center width-95percent margin-top-5px">');
-	print('<div class="float-left border-2px background-color-gray13">');
-	print('<p class="font-family-arial margin-5px">');
-	
-	if($this->master_record)
-	{
-		$record_list_count = count($this->record_list);
+				// Start Top Bar
+			
+			// -------------------------------------------------------------
 		
-		print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '">');
+		print('<div class="horizontal-center width-95percent margin-top-5px">');
 		
-		print($this->master_record['Title']);
+				// Breadcrumbs Info
+			
+			// -------------------------------------------------------------
 		
-		print('</a>');
-		
-		$link_list = '';
-		
-		for($i = 0; $i < $record_list_count; $i++)
-		{
-			$record = $this->record_list[$i];
-			print(' &gt;&gt; ');
-			
-			$link_list .= '/' . $record['Code'];
-			
-			print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . $link_list . '/view.php');
-			
-			if($i == 0)
-			{
-				print('?action=index');
-			}
-			
-			print('">');
-			
-			print($record['Title']);
-			
-			print('</a>');
+
+		$breadcrumbs_title = '<a href="users.php?action=viewuser';
+		if(!$this->Param('userid')) {
+			$breadcrumbs_title .= '&user=' . urlencode($this->user['Username']);
+		} else {
+			$breadcrumbs_title .= '&userid=' . $this->user['id'];
 		}
+		$breadcrumbs_title .= '">';
+		$breadcrumbs_title .= $this->user['Username'];
+		$breadcrumbs_title .= '</a>';
+		$breadcrumbs_title .= ' &gt;&gt; ';
+		$breadcrumbs_title .= 'Browsing Comments';
 		
-		print(' &gt;&gt; ');
-		print('<a href="users.php?action=viewuser');
-		if(!$this->Param('userid'))
-		{
-			print('&user=' . urlencode($this->user['Username']));
-		}
-		else
-		{
-			print('&userid=' . $this->user['id']);
-		}
-		print('">');
-		print($this->user['Username']);
-		print('</a>');
+		require('../modules/html/breadcrumbs.php');
+		$breadcrumbs = new module_breadcrumbs(['that'=>$this, 'title'=>$breadcrumbs_title]);
+		$breadcrumbs->Display();
 		
-		print(' &gt;&gt; Browsing Comments');
-	}
-	print('</p>');
-	print('</div>');
-	print('</div>');
+				// Login Info
+			
+			// -------------------------------------------------------------
+			
+		require('../modules/html/auth.php');
+		$auth = new module_auth(['that'=>$this]);
+		$auth->Display();
+		
+				// End Top Bar
+			
+			// -------------------------------------------------------------
+		
+		print('</div>');
 	
 			// Finish Breadcrumb Trails
 		

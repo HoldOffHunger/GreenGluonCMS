@@ -76,7 +76,7 @@
 	if($this->authentication_object->user_session['UserAdmin.id']) {
 		require('../modules/html/entry-controls.php');
 		$entry_controls = new module_entrycontrols;
-		$entry_controls->Display();
+		$entry_controls->Display(['that'=>$this]);
 	}
 	
 			// View Selected Record List

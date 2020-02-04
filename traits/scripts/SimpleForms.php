@@ -11,8 +11,7 @@
 		{
 			$entry = $args['entry'];
 			
-			if(!$entry || !$entry['id'])
-			{
+			if(!$entry || !$entry['id']) {
 				$entry = $this->entry;
 			}
 			
@@ -77,8 +76,7 @@
 			return $list_title;
 		}
 		
-		public function GenerateEntryListTitle_SubTitle($args)
-		{
+		public function GenerateEntryListTitle_SubTitle($args) {
 			$list_title = $args['title'];
 			
 			$list_title = preg_replace('/\s+/', ' ', $list_title);
@@ -104,34 +102,25 @@
 			$all_list_title_pieces = [$list_title];
 			$all_list_title_piece_count = count($all_list_title_pieces);
 			
-			for($i = 0; $i < $explosion_operators_count; $i++)
-			{
+			for($i = 0; $i < $explosion_operators_count; $i++) {
 				$explosion_operator = $explosion_operators[$i];
 				
 				$new_all_list = [];
 				
-				for($j = 0; $j < $all_list_title_piece_count; $j++)
-				{
+				for($j = 0; $j < $all_list_title_piece_count; $j++) {
 					$list_title_piece = $all_list_title_pieces[$j];
 					
 					$new_title_pieces = explode($explosion_operator, $list_title_piece);
 					$new_title_pieces_count = count($new_title_pieces);
 					
-					if($new_title_pieces_count <= 1)
-					{
+					if($new_title_pieces_count <= 1) {
 						$new_all_list[] = $list_title_piece;
-					}
-					else
-					{
-						for($k = 0; $k < $new_title_pieces_count; $k++)
-						{
+					} else {
+						for($k = 0; $k < $new_title_pieces_count; $k++) {
 							$new_title_piece = $new_title_pieces[$k];
-							if($k + 1 < $new_title_pieces_count)
-							{
+							if($k + 1 < $new_title_pieces_count) {
 								$new_all_list[] = $new_title_piece . $special_delimiter . $explosion_operator;
-							}
-							else
-							{
+							} else {
 								$new_all_list[] = $new_title_piece;
 							}
 						}
@@ -144,8 +133,7 @@
 			
 			$full_title_text = '';
 			
-			for($i = 0; $i < $all_list_title_piece_count; $i++)
-			{
+			for($i = 0; $i < $all_list_title_piece_count; $i++) {
 				$list_piece = $all_list_title_pieces[$i];
 				
 				$list_piece_subpieces = explode(' ', $list_piece);
@@ -154,19 +142,16 @@
 				
 				$found = 0;
 				
-				for($j = 0; $j < $title_operators_count; $j++)
-				{
+				for($j = 0; $j < $title_operators_count; $j++) {
 					$title_operator = $title_operators[$j];
 					
-					if($title_operator == $first_list_subpiece_comparable)
-					{
+					if($title_operator == $first_list_subpiece_comparable) {
 						$found = 1;
 						$j = $title_operators_count;
 					}
 				}
 				
-				if($found)
-				{
+				if($found) {
 					$first_title_piece_subpiece = $list_piece_subpieces[0];
 					unset($list_piece_subpieces[0]);
 				}
@@ -177,32 +162,28 @@
 				$new_title_piece_reexplode_count = count($new_title_piece_reexplode);
 				
 				$phrase_separator = FALSE;
-				if($new_title_piece_reexplode_count > 1)
-				{
+				if($new_title_piece_reexplode_count > 1) {
 					$phrase_separator = $new_title_piece_reexplode[$new_title_piece_reexplode_count - 1];
 					
 					unset($new_title_piece_reexplode[$new_title_piece_reexplode_count - 1]);
 				}
 				$new_title_piece = implode($special_delimiter, $new_title_piece_reexplode);
 				
-				if($found)
-				{
+				if($found) {
 					$new_title_piece .= ', ' . $first_title_piece_subpiece;
 				}
 				
-				if($phrase_separator)
-				{
+				if($phrase_separator) {
 					$new_title_piece .= $phrase_separator;
 				}
 				
 				$full_title_text .= $new_title_piece;
 			}
 			
-			return $full_title_text;
+			return ucfirst($full_title_text);
 		}
 		
-		public function GenerateEntryCode()
-		{
+		public function GenerateEntryCode() {
 			$pieces = [];
 			
 			$current_length = 0;
@@ -213,31 +194,25 @@
 				$this->entry['Subtitle'],
 			];
 			
-			foreach($this->tag as $tag)
-			{
+			foreach($this->tag as $tag) {
 				$values[] = $tag['Tag'];
 			}
 			
 			$values[] = $this->quote['Quote'];
 			$values[] = $this->description['Description'];
 			
-			for($i = 0; $i < count($values); $i++)
-			{
+			for($i = 0; $i < count($values); $i++) {
 				$value = $values[$i];
-				if(strlen($value))
-				{
+				if(strlen($value)) {
 					$new_value = $value;
 					$new_value = preg_replace('/[^\p{L}\p{N}\s]/u', '', $new_value);
 					
 					$new_value_pieces = preg_split('/\s+/', $new_value);
 					
-					foreach($new_value_pieces as $new_value_piece)
-					{
-						if($current_length < $max_length)
-						{
+					foreach($new_value_pieces as $new_value_piece) {
+						if($current_length < $max_length) {
 							$formatted_piece = $this->TransliterateString(mb_strtolower(trim($new_value_piece), 'UTF-8'));
-							if((strlen($formatted_piece) + $current_length + 1) <= $max_length)
-							{
+							if((strlen($formatted_piece) + $current_length + 1) <= $max_length) {
 								$pieces[] = $formatted_piece;
 						#		print("FORMATTED PIECE???...|" . $formatted_piece . "|");
 								$current_length += strlen($formatted_piece) + 1;

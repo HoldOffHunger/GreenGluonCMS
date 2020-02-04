@@ -75,6 +75,53 @@
 	];
 	
 	$header->display($header_primary_args);
+		
+				// Start Top Bar
+			
+			// -------------------------------------------------------------
+		
+		print('<div class="horizontal-center width-95percent margin-top-5px">');
+		
+				// Breadcrumbs Info
+			
+			// -------------------------------------------------------------
+		
+		$breadcrumbs_title = 'Make a Suggestion';
+		
+		require('../modules/html/breadcrumbs.php');
+		$breadcrumbs = new module_breadcrumbs(['that'=>$this, 'title'=>$breadcrumbs_title]);
+		$breadcrumbs->Display();
+		
+				// Login Info
+			
+			// -------------------------------------------------------------
+			
+		require('../modules/html/auth.php');
+		$auth = new module_auth(['that'=>$this]);
+		$auth->Display();
+		
+				// End Top Bar
+			
+			// -------------------------------------------------------------
+		
+		print('</div>');
+	
+			// Finish Breadcrumb Trails
+		
+		// -------------------------------------------------------------
+							
+	$clear_float_divider_start_args = [
+		'class'=>'clear-float',
+		'indentlevel'=>5,
+	];
+	
+	$divider->displaystart($clear_float_divider_start_args);
+	
+	$clear_float_divider_end_args = [
+		'indentlevel'=>5,
+	];
+	
+	$divider->displayend($clear_float_divider_end_args);
 	
 			// Basic Divider Arguments
 		
@@ -154,17 +201,14 @@
 					
 				print('Suggestions For : ' . $this->parent['Title'] . ' > ' . $this->entry['Title']);
 					
-					if($this->authentication_object->user_session['User.Username'])
-					{
+					if($this->authentication_object->user_session['User.Username']) {
 						$username = $this->authentication_object->user_session['User.Username'];
-					}
-					else
-					{
+					} else {
 						$username = $this->authentication_object->user_session['User.EmailAddress'];
 					}
 				
 				print('</h2>');
-				print('<p class="font-size-100percent font-family-tahoma margin-left-20px">Logged in as : <b>' . $username . '</b> (<a href="suggest.php?logout=true">Logout</a>)</p>');
+				
 				print('<h2 class="horizontal-left margin-5px font-family-arial">');
 				
 						// Display Form
@@ -191,16 +235,16 @@
 					
 				print('<BR><BR>');
 				
-						// Search Button
+						// Suggestion Button
 					
 					// -------------------------------------------------------------
 				
 				$type_args = [
-					type=>'submit',
-					name=>'submit',
-					value=>'Submit Suggestion',
+					'type'=>'submit',
+					'name'=>'submit',
+					'value'=>'Submit Suggestion',
 					'class'=>'float-right',
-					indentlevel=>5,
+					'indentlevel'=>5,
 				];
 				
 				$form->DisplayFormField($type_args);
@@ -234,7 +278,7 @@
 					// -------------------------------------------------------------
 				
 				$end_form_args = [
-					indentlevel=>1,
+					'indentlevel'=>1,
 				];
 				$form->EndForm($end_form_args);
 			} else {
@@ -260,8 +304,7 @@
 					
 					// -------------------------------------------------------------
 				
-				if($this->authentication_object->user_session['UserAdmin.id'])
-				{
+				if($this->authentication_object->user_session['UserAdmin.id']) {
 					print('<CODE>');
 					
 					print('ADMIN, Suggestion Definition ::');
@@ -349,11 +392,11 @@
 			print('<div style="display:none;">');
 			print('<input type="hidden" name="google_token_id" id="google_token_id" class="google_token_id">');
 			$type_args = [
-				type=>'submit',
-				id=>'submit',
-				name=>'Comment',
-				value=>'Comment',
-				indentlevel=>5,
+				'type'=>'submit',
+				'id'=>'submit',
+				'name'=>'Comment',
+				'value'=>'Comment',
+				'indentlevel'=>5,
 			];
 
 			print('<input type="hidden" name="userid" id="userid" class="userid" value="' . $this->authentication_object->user_session['User.id'] . '">' . "\n\n");
@@ -395,38 +438,18 @@
 		print('<div class="border-2px background-color-gray13 margin-5px horizontal-center width-50percent font-family-tahoma">');
 		
 		$new_url = str_replace('/view.php', '/view.php#comments', $_SERVER['SCRIPT_URL']);
-		print('<p><b><a href="' . $this->domain_object->GetPrimaryDomain([secure=>1, lowercase=>0, www=>1]) . $new_url . '">Login to Comment</a></b></p>');
+		print('<p><b><a href="' . $this->domain_object->GetPrimaryDomain(['secure'=>1, 'lowercase'=>0, 'www'=>1]) . $new_url . '">Login to Comment</a></b></p>');
 		
 		print('</div>');
 		print('</center>');
 	}
-	
-			// DEBUG
-		
-		// -------------------------------------------------------------
-	
-#	print("BT: INDEX view.php script, display.php template, CHILDOF-people<BR><BR>");
-	
-	/*
-	print("<PRE>RECORD LIST:");
-	print_r($this->record_list);
-	print("\n\nMASTER RECORD:\n\n");
-	print_r($this->master_record);
-	print("\n\nPARENT:\n\n");
-	print_r($this->parent);
-	print("\n\nENTRY:\n\n");
-	print_r($this->entry);
-	print("\n\nCHILDREN:\n\n");
-	print_r($this->children);
-	print("</PRE>");
-	*/
 	
 			// Display Final Ending Navigation
 		
 		// -------------------------------------------------------------
 	
 	$bottom_navigation_args = [
-		'thispage'=>'Search',
+		'thispage'=>'Suggestions',
 	];
 	$navigation->DisplayBottomNavigation($bottom_navigation_args);
 	

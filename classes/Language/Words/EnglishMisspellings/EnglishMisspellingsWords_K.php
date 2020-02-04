@@ -27,6 +27,14 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'knowledge'=>[
+					'knoweldge',
+					'knowlege',
+				],
+				'kropotkin'=>[
+					'kroptkin',
+					'kroptokin',
+				],
 			];
 		}
 	}

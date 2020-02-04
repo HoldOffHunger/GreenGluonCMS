@@ -10,6 +10,7 @@
 			$this->db_access_object = $args['dbaccessobject'];
 			$this->authentication_object = $args['authenticationobject'];
 			$this->globals = $args['globals'];
+			$this->cookie = $args['cookie'];
 			
 			if(count($this->globals->apidata) < 1) {
 				return FALSE;
@@ -39,7 +40,7 @@
 					$email_address = $payload['email'];
 					
 					$user_record_args = [
-						'type'=>User,
+						'type'=>'User',
 						'definition'=>[
 							'EmailAddress'=>$email_address,
 						],
@@ -55,12 +56,12 @@
 					
 					if($user_account[0] && $user_account[0]['id']) {
 						$this->authentication_object->user_account = $user_account;
-						$this->authentication_object->Login_Successful([useraccount=>$user_account]);
+						$this->authentication_object->Login_Successful(['useraccount'=>$user_account]);
 						$results['newuser'] = 0;
 					} else {
 						$hashed_password = hash('sha256', $this->globals->passwordseed);
 						$user_record_args = [
-							'type'=>User,
+							'type'=>'User',
 							'definition'=>[
 								'EmailAddress'=>$email_address,
 								'RAW'=>[
@@ -75,18 +76,22 @@
 						$user_creation_results = $this->db_access_object->CreateRecord($user_record_args);
 						
 						$this->authentication_object->user_account = [$user_creation_results];
-						$this->authentication_object->Login_Successful([useraccount=>[$user_account]]);
+						$this->authentication_object->Login_Successful(['useraccount'=>[$user_account]]);
 						$results['newuser'] = 1;
 					}
 					
 					$this->authentication_object->CheckCurrentAuthentication();
 					$results['action'] = 'login';
+					
+					$this->handleLoginCookie();
 				}
 			}
 			
 			if($logout) {
 				$this->Logout();
 				$results['action'] = 'logout';
+				
+				$this->handleLogoutCookie();
 			}
 			
 			return $results;
@@ -94,6 +99,22 @@
 		
 		public function Logout() {
 			return $this->authentication_object->Logout();
+		}
+		
+		public function handleLoginCookie() {
+			return $this->cookie->SetCookie([
+				'key'=>'loggedin',
+				'value'=>TRUE,
+				'permanent'=>TRUE,
+			]);
+		}
+		
+		public function handleLogoutCookie() {
+			return $this->cookie->SetCookie([
+				'key'=>'loggedin',
+				'value'=>FALSE,
+				'permanent'=>TRUE,
+			]);
 		}
 	}
 

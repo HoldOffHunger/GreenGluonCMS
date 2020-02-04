@@ -27,6 +27,54 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'Oaxaca'=>'Oaxac',
+				'obligatory'=>'obligatoty',
+				'ocean-based'=>['ocean based',],
+				'October'=>[
+					'Ocotober',
+					'Octeber',
+					'Octtober',
+				],
+				'of'=>[
+					'of of',
+				],
+				'of the'=>['fo the', 'ofthe',],
+				'of their'=>['oftheir',],
+				'officer'=>'officier',
+				'officers'=>'officiers',
+				'okhrana'=>['okrana',],
+				'openly'=>['openely',],
+				'operations'=>['operatons',],
+				'opossum'=>'opposum',
+				'opportunities'=>[
+					'opportuinities',
+					'opportunites',
+				],
+				'opportunity'=>[
+					'opportuinity',
+					'opportunitey',
+				],
+				'oppression'=>[
+					'oppresion',
+					'opresion',
+					'opression',
+				],
+				'or'=>[
+					'lor',
+				],
+				'orbital'=>['oribital',],
+				'ordinance'=>['ordience',],
+				'organization'=>[
+					'organizaton',
+				],
+				'organizations'=>[
+					'organizatons',
+				],
+				'original'=>['origial',],
+				'originally'=>['origially', 'originaly',],
+				'other hand'=>'otherhand',
+				'others'=>['tohers',],
+				'overwhelmed'=>['overwhemed', 'overwelmed',],
 			];
 		}
 	}

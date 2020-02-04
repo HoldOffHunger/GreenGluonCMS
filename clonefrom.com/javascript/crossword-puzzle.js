@@ -554,7 +554,7 @@
 						viewPuzzle(matrix);
 						
 						solutioncoordinates = [fullmatrix.length + 1, 0];
-						matrix = compactCrosswordBlockSource({'matrix':matrix})['matrix'];	// BT: this shouldn't be necessary, =\, someone forgot a slice() somewhere
+						matrix = compactCrosswordBlockSource({'matrix':matrix})['matrix'];
 						fullmatrix.push('');
 						fullmatrix = joinVerticalMatrices(fullmatrix, matrix);
 						

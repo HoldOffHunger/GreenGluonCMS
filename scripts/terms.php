@@ -1,6 +1,7 @@
 <?php
 
 	require('../traits/scripts/DBFunctions.php');
+	require('../traits/scripts/TermsOfService.php');
 	require('../traits/scripts/SimpleErrors.php');
 	require('../traits/scripts/SimpleForms.php');
 	require('../traits/scripts/SimpleLookupLists.php');
@@ -12,6 +13,7 @@
 						// ---------------------------------------------
 		
 		use DBFunctions;
+		use TermsOfService;
 		use SimpleErrors;
 		use SimpleForms;
 		use SimpleLookupLists;

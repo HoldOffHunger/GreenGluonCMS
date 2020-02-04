@@ -1,7 +1,8 @@
 <?php
 
 	class module_entrycontrols extends module_spacing {
-		public function Display() {
+		public function Display($args) {
+			$that = $args['that'];
 			print('<div class="horizontal-center width-95percent margin-top-5px border-2px">');
 					// "Controls" Header
 				
@@ -11,7 +12,7 @@
 			print('<div class="horizontal-center width-90percent">');
 			print('<div class="border-2px background-color-gray15 margin-5px float-left">');
 			print('<h2 class="horizontal-left margin-5px font-family-arial">');
-			print('Controls for Entry ' . $this->entry['id']);
+			print('Controls for Entry ' . $that->entry['id']);
 			print('</h2>');
 			print('</div>');
 			print('</div>');

@@ -1,7 +1,6 @@
 <?php
 	
-	class Handler
-	{
+	class Handler {
 		public $access;
 		public $redirect;
 		
@@ -39,14 +38,16 @@
 			$this->Construct_PresetAuthentication();
 			$this->Construct_ObjectsAndScripts();
 			$this->Construct_ScriptName();
-			if($this->script_name)
-			{
+			
+			if($this->script_name) {
 				$this->Construct_ScriptFileAndExtension();
 				$this->Construct_ScriptClassname();
 				$this->Construct_ScriptFormat();
 				$this->Construct_ScriptLocation();
 				$this->Construct_SocialMedia();
 			}
+			
+			return TRUE;
 		}
 		
 		public function __destruct() {
@@ -54,8 +55,8 @@
 		}
 		
 		public function Construct_SetErrorLogging() {
-			$this->error_logging = new ErrorLogging([handler=>$this]);
-			$this->issue_logging = new IssueLogging([handler=>$this]);
+			$this->error_logging = new ErrorLogging(['handler'=>$this]);
+			$this->issue_logging = new IssueLogging(['handler'=>$this]);
 			return TRUE;
 		}
 		
@@ -89,8 +90,7 @@
 			$this->access = $authentication->access_granted;
 			$this->redirect = $authentication->redirect;
 			
-			if($this->script->script->isSecure())
-			{
+			if($this->script->script->isSecure()) {
 				$this->authentication->ReAuthenticate();
 			}
 		}
@@ -154,7 +154,10 @@
 		}
 		
 		public function Construct_Dictionaries() {
-			$dictionary = new Dictionary(['dbaccess'=>$this->db_access]);
+			$dictionary = new Dictionary([
+				'dbaccess'=>$this->db_access,
+				'globals'=>$this->globals,
+			]);
 			
 			return $this->dictionary = $dictionary;
 		}
@@ -212,9 +215,9 @@
 				$permalink_id = (int)$this->query->Parameter(['parameter'=>'id']);
 				if($permalink_id) {
 					$assignment_record_args = [
-						'type'=>Assignment,
+						'type'=>'Assignment',
 						'definition'=>[
-							id=>$permalink_id,
+							'id'=>$permalink_id,
 						],
 					];
 					
@@ -222,14 +225,14 @@
 					
 					if($assignment && $assignment[0] && $assignment[0]['id']) {
 						require('../classes/Database/ORM.php');
-						$this->orm = new ORM([dbaccessobject=>$this->db_access]);
+						$this->orm = new ORM(['dbaccessobject'=>$this->db_access]);
 						
 						$assignment = $assignment[0];
 						
 						$entry_records = $this->orm->SearchForEntries([
-							fieldname=>'id',
-							fieldvalue=>$assignment['Childid'],
-							assignmentid=>$permalink_id,
+							'fieldname'=>'id',
+							'fieldvalue'=>$assignment['Childid'],
+							'assignmentid'=>$permalink_id,
 						])[0];
 						
 						$redirect_url = '';
@@ -248,7 +251,13 @@
 							$redirect_url .= '/' . $entry_record['Code'];
 						}
 						
-						$redirect_url .= '/view.php';
+						$action = $this->query->Parameter(['parameter'=>'action']);
+						
+						if($action == 'Edit') {
+							$redirect_url .= '/modify.php';
+						} else {
+							$redirect_url .= '/view.php';
+						}
 						
 						if($this->desired_action) {
 							$redirect_url .= '?action=' . $this->desired_action;
@@ -303,12 +312,13 @@
 				'dbaccessobject'=>$this->db_access,
 				'authenticationobject'=>$this->authentication,
 				'globals'=>$this->globals,
+				'cookie'=>$this->cookie,
 			]);
 			
-			$google_token_id = $this->query->Parameter([parameter=>'google_token_id']);
+			$google_token_id = $this->query->Parameter(['parameter'=>'google_token_id']);
 			$google_log_results = $this->google_api->AuthenticateOrDisauthenticateWithGoogle([
 				'token'=>$google_token_id,
-				'logout'=>$this->query->Parameter([parameter=>'logout']),
+				'logout'=>$this->query->Parameter(['parameter'=>'logout']),
 			]);
 			
 			if($google_log_results['action'] == 'logout') {
@@ -435,6 +445,10 @@
 		}
 		
 		public function HandleRequest() {
+			if($this->SecureRequired()) {
+				return $this->SecureRedirect();
+			}
+			
 			if(!$this->ValidateReferrals()) {
 				return FALSE;
 			}
@@ -454,9 +468,26 @@
 			return TRUE;
 		}
 		
+		public function SecureRequired() {
+			if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off") {
+				if($_COOKIE['loggedin']) {
+					return TRUE;
+				}
+			}
+			
+			return FALSE;
+		}
+		
+		public function SecureRedirect() {
+			$location = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+			header('Location: ' . $location);
+			
+			return TRUE;
+		}
+		
 		public function ValidateReferrals() {
 			if(!$this->domain->ValidateReferringWebsite()) {
-				print("Error 403 - You done been smote.");
+				print('Error 403 - You done been smote.');
 				return FALSE;
 			}
 			
@@ -481,40 +512,33 @@
 			
 			$shared_location = '../clonefrom.com' . $_SERVER['SCRIPT_URL'];
 			
-			if(!is_file($client_location) && is_file($shared_location))
-			{
+			if(!is_file($client_location) && is_file($shared_location)) {
 				require('../classes/Networking/MIMEType.php');
 				$mimetype = new MIMEType;
 				$mimetypes = $mimetype->GetMIMETypeCodes();
 				
 				$desired_content_header = $mimetypes[$this->script_extension];
 				
-				if($desired_content_header)
-				{
+				if($desired_content_header) {
 					$header_text = 'Content-type: ' . $desired_content_header . '; charset=utf-8';
 					header($header_text);
 				}
 				
-				if($desired_content_header == 'text/html')
-				{
+				if($desired_content_header == 'text/html') {
 					return require($shared_location);
-				}
-				else
-				{
+				} else {
 					return readfile($shared_location);
 				}
 			}
 			
-			if(!is_file($this->script_location) || !$this->script_format)
-			{
+			if(!is_file($this->script_location) || !$this->script_format) {
 				return FALSE;
 			}
 			
 			$this->HandleRequest_Content_Format_GetFormatObject();
 			$this->script = $this->HandleRequest_Content_Format_InstantiateFormatObject();
 			
-			if($this->script->CanAccess())
-			{
+			if($this->script->CanAccess()) {
 				return $this->HandleRequest_Content_Format();
 			}
 			
@@ -524,22 +548,17 @@
 		public function HandleRequest_Content_Format() {
 			$this->CheckSecurity();
 			
-			if($this->access)
-			{
-				if(method_exists($this->script->script, $this->desired_action))
-				{
+			if($this->access) {
+				if(method_exists($this->script->script, $this->desired_action)) {
 					$desired_action = $this->desired_action;
 					
 					return $this->script->Display();
 				}
-			}
-			else
-			{
-				if($this->authentication->redirect)
-				{
+			} else {
+				if($this->authentication->redirect) {
 						# handle security-triggered redirect
 					$other_script_args = $this->HandleRequest_Content_Format_InstantiateFormatObject_PartialArgs();
-					$other_script_args[redirect] = $this->script->redirect_object;
+					$other_script_args['redirect'] = $this->script->redirect_object;
 					return ($this->authentication->RedirectToNewURL($other_script_args));
 				}
 			}

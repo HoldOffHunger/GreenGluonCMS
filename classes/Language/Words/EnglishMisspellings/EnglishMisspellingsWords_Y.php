@@ -27,6 +27,18 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'yahoo'=>[
+					'yahhoo',
+				],
+				'year'=>[
+					'yera',
+				],
+				'years'=>[
+					'yeras',
+				],
+				'yield'=>[
+					'yeild',
+				],
 			];
 		}
 	}

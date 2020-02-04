@@ -28,16 +28,13 @@
 		
 		// -------------------------------------------------------------
 		
-	if($this->primary_host_record['PrimaryColor'])
-	{
+	if($this->primary_host_record['PrimaryColor']) {
 		$primary_color = $this->primary_host_record['PrimaryColor'];
-	}
-	else
-	{
+	} else {
 		$primary_color = '6495ED';
 	}
 	
-	$header_primary_args = array(
+	$header_primary_args = [
 		'indentlevel'=>1,
 		'title'=>'Logout Results : ' . $this->logout_status,
 		'image'=>'master-c-icon.jpg',
@@ -51,13 +48,45 @@
 		'domainobject'=>$this->domain_object,
 		'leftimageenable'=>1,
 		'rightimageenable'=>1,
-	);
+	];
 	
 			// Display Header
 		
 		// -------------------------------------------------------------
 	
 	$header->display($header_primary_args);
+	
+			// Cool Shit
+		
+		// -------------------------------------------------------------
+
+	$styles = [
+		'border-1px width-50percent vertical-top link-clickable cursor-pointer',
+		'border-1px width-50percent vertical-top link-clickable cursor-pointer',
+	];
+	
+	$columns = [
+		'&bull; <a href="/">Home</a>',
+		'&bull; <a href="login.php">Login</a>',
+	];
+
+			// Display Quick-Options Panel
+		
+		// -------------------------------------------------------------
+	
+	$version_list_display_args = [
+		'options'=>[
+			'indentlevel'=>1,
+			'tableheaders'=>0,
+			'tableclass'=>'width-100percent horizontal-center border-2px background-color-gray13 margin-top-5px font-family-tahoma',
+			'rowclass'=>'border-1px horizontal-left',
+			'cellclass'=>$styles,
+		],
+		'list'=>[
+			$columns,
+		],
+	];
+	$generic_list->Display($version_list_display_args);
 	
 			// Display Message
 		
@@ -67,16 +96,13 @@
 			
 			// -------------------------------------------------------------
 	
-	if($this->logout_status == 'Success')
-	{
+	if($this->logout_status == 'Success') {
 		$message = 'Logged out successfully!';
-	}
-	else
-	{
+	} else {
 		$message = 'Log out failed!  Perhaps you were not logged in?';
 	}
 	
-	$message .= '<br><br>' . 'Redirecting to login screen.';
+	#$message .= '<br><br>' . 'Redirecting to login screen.';
 		
 				// Show Message
 			
@@ -101,5 +127,29 @@
 	];
 	
 	$generic_list->Display($version_list_display_args);
+	
+			// Display Form Elements : Google Login
+		
+		// -------------------------------------------------------------
+	
+	print('<BR>');
+	
+	print('<center>');
+	print('<div class="g-signin2" data-onsuccess="onSignIn"></div>');
+	print('</center>');
+	
+	print('<BR>');
+	
+			// Hidden Data
+		
+		// -------------------------------------------------------------
+	
+	print('<input type="hidden" id="google_token_id" name="google_token_id" class="google_token_id">');
+	print('<input type="hidden" id="logout" name="logout" value="1">');
+	$redirect = $this->param('redirect');
+	
+	if($this->validateRedirect(['url'=>$redirect])) {
+		print('<input type="hidden" id="redirect" name="redirect" value="' . $redirect . '">');
+	}
 	
 ?>

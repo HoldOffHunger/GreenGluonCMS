@@ -771,131 +771,37 @@
 			// -------------------------------------------------------------
 		
 		if($this->authentication_object->user_session['UserAdmin.id']) {
-			print('<div class="horizontal-center width-95percent margin-top-5px border-2px">');
-					// "Controls" Header
-				
-				// -------------------------------------------------------------
-				
-			print('<center>');
-			print('<div class="horizontal-center width-95percent">');
-			print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-			print('<h2 class="horizontal-left margin-5px font-family-arial">');
-			print('Controls for Entry ' . $this->entry['id']);
-			print('</h2>');
-			print('</div>');
-			print('</div>');
-			print('</center>');
-			
-					// Finish Admin Controls
-				
-				// -------------------------------------------------------------
-									
-			$clear_float_divider_start_args = [
-				'class'=>'clear-float',
-				'indentlevel'=>5,
-			];
-			
-			$divider->displaystart($clear_float_divider_start_args);
-			
-			$clear_float_divider_end_args = [
-				'indentlevel'=>5,
-			];
-			
-			$divider->displayend($clear_float_divider_end_args);
-			
-					// "Add" / "Edit" Option
-				
-				// -------------------------------------------------------------
-			
-			print('<div class="horizontal-center width-95percent margin-top-5px">');
-			
-			print('<div class="float-left margin-5px border-2px background-color-gray13">');
-			print('<p class="font-family-arial margin-5px">');
-			print('<a href="modify.php?action=Edit">EDIT</a>');
-			print('</p>');
-			print('</div>');
-			
-			print('<div class="float-left margin-5px border-2px background-color-gray13">');
-			print('<p class="font-family-arial margin-5px">');
-			print('<a href="modify.php?action=Add">ADD CHILD</a>');
-			print('</p>');
-			print('</div>');
-			
-			print('</div>');
-			
-					// Finish Admin Controls
-				
-				// -------------------------------------------------------------
-									
-			$clear_float_divider_start_args = [
-				'class'=>'clear-float',
-				'indentlevel'=>5,
-			];
-			
-			$divider->displaystart($clear_float_divider_start_args);
-			
-			$clear_float_divider_end_args = [
-				'indentlevel'=>5,
-			];
-			
-			$divider->displayend($clear_float_divider_end_args);
-			
-			print('</div>');
+			require('../modules/html/entry-controls.php');
+			$entry_controls = new module_entrycontrols;
+			$entry_controls->Display(['that'=>$this]);
 		}
 		
-				// Breadcrumb Trails
+				// Start Top Bar
 			
 			// -------------------------------------------------------------
 		
 		print('<div class="horizontal-center width-95percent margin-top-5px">');
-		print('<div class="float-left border-2px background-color-gray13">');
-		print('<p class="font-family-arial margin-5px">');
 		
-		if($this->master_record)
-		{
-			$record_list_count = count($this->record_list);
-			if($record_list_count)
-			{
-				print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '">');
-			}
-			print($this->master_record['Title']);
+				// Breadcrumbs Info
 			
-			if($record_list_count)
-			{
-				print('</a>');
-			}
+			// -------------------------------------------------------------
 			
-			$link_list = '';
+		require('../modules/html/breadcrumbs.php');
+		$breadcrumbs = new module_breadcrumbs(['that'=>$this]);
+		$breadcrumbs->Display();
+		
+				// Login Info
 			
-			for($i = 0; $i < $record_list_count; $i++)
-			{
-				$record = $this->record_list[$i];
-				if($record['id'] != $this->entry['id'])
-				{
-					print(' &gt;&gt; ');
-					
-					$link_list .= '/' . $record['Code'];
-					
-					print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . $link_list . '/view.php');
-					
-					if($i == 0)
-					{
-						print('?action=index');
-					}
-					
-					print('">');
-					
-					print($record['Title']);
-					
-					print('</a>');
-				}
-			}
+			// -------------------------------------------------------------
 			
-			print(' &gt;&gt; ');
-			print($this->entry['ListTitle']);
-		}
-		print('</p>');
-		print('</div>');
+		require('../modules/html/auth.php');
+		$auth = new module_auth(['that'=>$this]);
+		$auth->Display();
+		
+				// End Top Bar
+			
+			// -------------------------------------------------------------
+		
 		print('</div>');
 		
 				// Finish Breadcrumb Trails
@@ -1319,203 +1225,13 @@
 			
 			$divider->displayend($clear_float_divider_end_args);
 			
-					// Options Header
-				
-				// -------------------------------------------------------------
-				
-						// Options Header : Start
-					
-					// -------------------------------------------------------------
-				
-			print('<center>');
-			print('<div class="horizontal-center width-85percent">');
+				// Alternate Formats Info
 			
-						// Audio Player
-					
-					// -------------------------------------------------------------
+			// -------------------------------------------------------------
 			
-			print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-			print('<div class="margin-5px font-family-arial font-size-150percent">');
-			print('<button id="play-text-as-audio" class="font-family-arial font-size-150percent">&#9658; Listen</button>');
-			print('<div class="float-right">');
-			print('<div class="margin-2px font-size-75percent">');
-			print('<select id="voice-selection" class="float-right"></select><br>');
-			print('<nobr>');
-			print('On : ');
-			print('<input type="text" id="start-on" size="4" value="1">');
-			print(' of ');
-			print('<span id="total-words">0</span>');
-			print(' Words');
-			print(' (Requires Chrome)');
-			print('</nobr>');
-			print('</div>');
-			print('</div>');
-			print('</div>');
-			print('</div>');
-			
-					// Finish Textbody Header
-				
-				// -------------------------------------------------------------
-									
-			$clear_float_divider_start_args = [
-				'class'=>'clear-float',
-				'indentlevel'=>5,
-			];
-			
-			$divider->displaystart($clear_float_divider_start_args);
-			
-			$clear_float_divider_end_args = [
-				'indentlevel'=>5,
-			];
-			
-			$divider->displayend($clear_float_divider_end_args);
-			
-						// All Formats
-					
-					// -------------------------------------------------------------
-			
-			$formats = [
-				[
-					text=>'Mobile<br>Version',
-					type=>'mobile',
-					url=>'view.php?mobilefriendly=1',
-				],
-				[
-					text=>'PDF<br>File',
-					type=>'pdf',
-					url=>'view.pdf',
-				],
-				[
-					text=>'Printer<br>Friendly',
-					type=>'printer-friendly',
-					url=>'view.php?printerfriendly=1',
-				],
-				[
-					text=>'Plaintext<br>File',
-					type=>'plaintext',
-					url=>'view.txt',
-				],
-				[
-					text=>'Wrapped<br>Plaintext',
-					type=>'wrapped-plaintext',
-					url=>'view.txt?wrapped=1',
-				],
-				[
-					text=>'Inverted<br>Colors',
-					type=>'inverted-colors',
-					url=>'view.php?invertedcolors=1',
-				],
-				[
-					text=>'RTF<br>File',
-					type=>'rtf',
-					url=>'view.rtf',
-				],
-				[
-					text=>'Epub<br>File',
-					type=>'epub',
-					url=>'view.epub',
-				],
-				[
-					text=>'DAISY<br>Format',
-					type=>'daisy',
-					url=>'view.daisy',
-				],
-				[
-					text=>'SGML<br>Format',
-					type=>'sgml',
-					url=>'view.sgml',
-				],
-				[
-					text=>'JSON<br>Format',
-					type=>'json',
-					url=>'view.json',
-				],
-				[
-					text=>'XML<br>Format',
-					type=>'xml',
-					url=>'view.xml',
-				],
-				[
-					text=>'CSV<br>Format',
-					type=>'csv',
-					url=>'view.csv',
-				],
-				[
-					text=>'Latex<br>Format',
-					type=>'latex',
-					url=>'view.tex',
-				],
-				[
-					text=>'OPDS<br>Format',
-					type=>'opds',
-					url=>'view.opds',
-				],
-				[
-					text=>'RDF<br>Format',
-					type=>'rdf',
-					url=>'view.rdf',
-				],
-			];
-			
-			if($this->mobile_friendly)
-			{
-				$formats[0] = [
-					text=>'Standard<br><nobr>PC Format</nobr>',
-					image=>'',
-					url=>'view.php',
-				];
-			}
-			
-			$formats_count = count($formats);
-			
-			for($i = 0; $i < $formats_count; $i++)
-			{
-				$format = $formats[$i];
-				
-				print('<div class="margin-left-5px float-left ' . $format['type'] . '-format-icon" title="">');
-				
-				if(!$this->mobile_friendly)
-				{
-					print('<a href="');
-					print($format['url']);
-					print('">');
-					
-					print('<img width="25" src="');
-					print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
-					print('/image/formats/');
-					print($format['type']);
-					print('-icon.jpg');
-					print('">');
-					
-					print('</a>');
-				}
-				
-				print('</div>');
-			}
-				
-						// Options Header : Finish
-					
-					// -------------------------------------------------------------
-			
-			print('</div>');
-			print('</center>');
-			
-					// Finish Textbody Header
-				
-				// -------------------------------------------------------------
-									
-			$clear_float_divider_start_args = [
-				'class'=>'clear-float',
-				'indentlevel'=>5,
-			];
-			
-			$divider->displaystart($clear_float_divider_start_args);
-			
-			$clear_float_divider_end_args = [
-				'indentlevel'=>5,
-			];
-			
-			$divider->displayend($clear_float_divider_end_args);
+		require('../modules/html/alternateformats.php');
+		$auth = new module_alternateformats(['that'=>$this]);
+		$auth->Display();
 			
 					// Display Textbody
 				
@@ -2701,25 +2417,6 @@
 			if($this->authentication_object->user_session)
 			{
 				print('<center>');
-				print('<div class="border-2px background-color-gray13 margin-5px horizontal-center width-50percent font-family-tahoma">');
-				
-				$username = '';
-				
-				if($this->authentication_object->user_session['User.Username'])
-				{
-					$username = $this->authentication_object->user_session['User.Username'];
-				}
-				else
-				{
-					$username = $this->authentication_object->user_session['User.EmailAddress'];
-				}
-				
-				print('<p>Logged in as : <b>' . $username . '</b> (<a href="view.php?logout=true#comments">Logout</a>)</p>');
-				
-				print('<div class="g-signin2" data-onsuccess="onSignIn"></div>');
-				print('<input type="hidden" name="google_token_id" id="google_token_id" class="google_token_id">');
-				
-				print('</div>');
 				
 				if($this->username_record_conflict)
 				{

@@ -27,6 +27,8 @@
 
 		public function EnglishMisspellingsWords() {
 			return [
+				'qualified'=>['qualifiyed',],
+				'qualifying'=>['qualifiying',],
 			];
 		}
 	}

@@ -34,11 +34,11 @@
 		} elseif($this->script_format_lower == 'rtf') {
 			$this->html_for_rtf = $html_document;
 		} elseif($this->script_format_lower == 'opds' || $this->script_format_lower == 'rdf') {
-			$this->record_to_use['termsofservice'] = $html_document;
+			$this->record_to_use['codeofconduct'] = $html_document;
 		} elseif($this->script_format_lower == 'json') {
-			$this->record_to_use['termsofservice'] = $html_document;
+			$this->record_to_use['codeofconduct'] = $html_document;
 		} elseif($this->script_format_lower == 'xml' || $this->script_format_lower == 'csv') {
-			$this->record_to_use['termsofservice'] = $html_document;
+			$this->record_to_use['codeofconduct'] = $html_document;
 			$this->data_for_xml = $this->record_to_use;
 		} elseif ($this->script_format_lower == 'daisy') {
 			$this->html_for_daisy = $html_document;
@@ -119,51 +119,51 @@
 		switch($this->language_object->getLanguageCode()) {
 			default:
 			case 'en':
-				$terms_header_title_text = 'Terms and Conditions';
+				$code_header_title_text = 'Code of Conduct';
 				break;
 			
 			case 'de':
-				$terms_header_title_text = 'Geschäftsbedingungen';
+				$code_header_title_text = 'Verhaltensregeln';
 				break;
 				
 			case 'es':
-				$terms_header_title_text = 'Términos y Condiciones';
+				$code_header_title_text = 'Código de Conducta';
 				break;
 			
 			case 'fr':
-				$terms_header_title_text = 'Termes et conditions';
+				$code_header_title_text = 'Code de conduite';
 				break;
 				
 			case 'ja':
-				$terms_header_title_text = '規約と条件';
+				$code_header_title_text = '行動規範';
 				break;
 				
 			case 'it':
-				$terms_header_title_text = 'Termini e condizioni';
+				$code_header_title_text = 'Codice di condotta';
 				break;
 				
 			case 'nl':
-				$terms_header_title_text = 'Voorwaarden';
+				$code_header_title_text = 'Gedragscode';
 				break;
 				
 			case 'pl':
-				$terms_header_title_text = 'Regulamin';
+				$code_header_title_text = 'Kodeks postępowania';
 				break;
 			
 			case 'pt':
-				$terms_header_title_text = 'Termos e Condições';
+				$code_header_title_text = 'Código de conduta';
 				break;
 				
 			case 'ru':
-				$terms_header_title_text = 'Условия и положения';
+				$code_header_title_text = 'Правила поведения';
 				break;
 			
 			case 'tr':
-				$terms_header_title_text = 'Şartlar ve koşullar';
+				$code_header_title_text = 'Davranış kodu';
 				break;
 				
 			case 'zh':
-				$terms_header_title_text = '条款和条件';
+				$code_header_title_text = '行为守则';
 				break;
 		}
 		
@@ -266,51 +266,51 @@
 		switch($this->language_object->getLanguageCode()) {
 			default:
 			case 'en':
-				$terms_instructions_text = 'These are the terms and conditions for ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'This is the code of conduct for ' . $this->master_record['Code'] . '.';
 				break;
 				
 			case 'de':
-				$terms_instructions_text = 'Dies sind die Bedingungen für ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'Dies ist der Verhaltenskodex für ' . $this->master_record['Code'] . '.';
 				break;
 				
 			case 'es':
-				$terms_instructions_text = 'Estos son los términos y condiciones de ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'Este es el código de conducta para ' . $this->master_record['Code'] . '.';
 				break;
 			
 			case 'fr':
-				$terms_instructions_text = 'Ce sont les termes et conditions pour ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'Ceci est le code de conduite de ' . $this->master_record['Code'] . '.';
 				break;
 				
 			case 'ja':
-				$terms_instructions_text = 'これらは' . $this->master_record['Code'] . 'の利用規約です。';
+				$codeofconduct_instructions_text = 'これは' . $this->master_record['Code'] . 'の行動規範です。';
 				break;
 				
 			case 'it':
-				$terms_instructions_text = 'Questi sono i termini e le condizioni per ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'Questo è il codice di condotta per ' . $this->master_record['Code'] . '.';
 				break;
 				
 			case 'nl':
-				$terms_instructions_text = 'Dit zijn de algemene voorwaarden voor ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'Dit is de gedragscode voor ' . $this->master_record['Code'] . '.';
 				break;
 				
 			case 'pl':
-				$terms_instructions_text = 'Są to warunki ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'To jest kodeks postępowania dla ' . $this->master_record['Code'] . '.';
 				break;
 			
 			case 'pt':
-				$terms_instructions_text = 'Estes são os termos e condições para ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'Este é o código de conduta para o ' . $this->master_record['Code'] . '.';
 				break;
 				
 			case 'ru':
-				$terms_instructions_text = 'Это условия ' . $this->master_record['Code'] . '.';
+				$codeofconduct_instructions_text = 'Это кодекс поведения для ' . $this->master_record['Code'] . '.';
 				break;
 			
 			case 'tr':
-				$terms_instructions_text = 'Bunlar ' . $this->master_record['Code'] . ' için şartlar ve koşullar.';
+				$codeofconduct_instructions_text = $this->master_record['Code'] . ' için davranış kuralları budur.';
 				break;
 				
 			case 'zh':
-				$terms_instructions_text = '这些是' . $this->master_record['Code'] . '的条款和条件。';
+				$codeofconduct_instructions_text = '这是' . $this->master_record['Code'] . '的行为准则。';
 				break;
 		}
 		
@@ -332,33 +332,38 @@
 				],
 			],
 			'list'=>[[
-				$terms_instructions_text,
+				$codeofconduct_instructions_text,
 			]],
 		];
 		$generic_list->Display($version_list_display_args);
-	
-			// Breadcrumb Trails
 		
-		// -------------------------------------------------------------
-	
-	print('<div class="horizontal-center width-95percent margin-top-5px">');
-	print('<div class="float-left border-2px background-color-gray13">');
-	print('<p class="font-family-arial margin-5px">');
-	
-	if($this->master_record)
-	{
-		print('<a href="' . $this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]) . '">');
-		print($this->header_title_text);
-		print('</a>');
+				// Start Top Bar
+			
+			// -------------------------------------------------------------
 		
-		print(' &gt;&gt; ');
+		print('<div class="horizontal-center width-95percent margin-top-5px">');
 		
-		print($terms_header_title_text);
-	}
-	
-	print('</p>');
-	print('</div>');
-	print('</div>');
+				// Breadcrumbs Info
+			
+			// -------------------------------------------------------------
+		
+		require('../modules/html/breadcrumbs.php');
+		$breadcrumbs = new module_breadcrumbs(['that'=>$this, 'title'=>'Code of Conduct']);
+		$breadcrumbs->Display();
+		
+				// Login Info
+			
+			// -------------------------------------------------------------
+			
+		require('../modules/html/auth.php');
+		$auth = new module_auth(['that'=>$this]);
+		$auth->Display();
+		
+				// End Top Bar
+			
+			// -------------------------------------------------------------
+		
+		print('</div>');
 	
 			// Finish Breadcrumb Trails
 		
@@ -376,162 +381,14 @@
 	];
 	
 	$divider->displayend($clear_float_divider_end_args);
-	
+			
+				// Alternate Formats Info
+			
+			// -------------------------------------------------------------
 		
-						// All Formats
-					
-					// -------------------------------------------------------------
-			
-			
-			print('<div class="horizontal-center width-80percent margin-top-5px">');
-			
-			$full_user_name = urlencode($this->user['Username']);
-			
-			$formats = [
-				[
-					text=>'Mobile<br>Version',
-					image=>'mobile-icon.jpg',
-					url=>'terms.php?mobilefriendly=1',
-				],
-				[
-					text=>'PDF<br>File',
-					image=>'pdf-file-icon.jpg',
-					url=>'terms.pdf',
-				],
-				[
-					text=>'Printer<br>Friendly',
-					image=>'printer-friendly-icon.jpg',
-					url=>'terms.php?printerfriendly=1',
-				],
-				[
-					text=>'Plaintext<br>File',
-					image=>'plaintext-format-icon.jpg',
-					url=>'terms.txt',
-				],
-				[
-					text=>'Wrapped<br>Plaintext',
-					image=>'wrapped-plaintext-format-icon.jpg',
-					url=>'terms.txt?wrapped=1',
-				],
-				[
-					text=>'Inverted<br>Colors',
-					image=>'colors-inverted-icon.jpg',
-					url=>'terms.php?invertedcolors=1',
-				],
-				[
-					text=>'RTF<br>File',
-					image=>'rtf-file-icon.jpg',
-					url=>'terms.rtf',
-				],
-				[
-					text=>'Epub<br>File',
-					image=>'epub-file-icon.jpg',
-					url=>'terms.epub',
-				],
-				[
-					text=>'DAISY<br>Format',
-					image=>'daisy-format-icon.jpg',
-					url=>'terms.daisy',
-				],
-				[
-					text=>'SGML<br>Format',
-					image=>'sgml-format-icon.jpg',
-					url=>'terms.sgml',
-				],
-				[
-					text=>'JSON<br>Format',
-					image=>'json-format-icon.jpg',
-					url=>'terms.json',
-				],
-				[
-					text=>'XML<br>Format',
-					image=>'xml-format-icon.jpg',
-					url=>'terms.xml',
-				],
-				[
-					text=>'CSV<br>Format',
-					image=>'csv-format-icon.jpg',
-					url=>'terms.csv',
-				],
-				[
-					text=>'Latex<br>Format',
-					image=>'latex-format-icon.jpg',
-					url=>'terms.tex',
-				],
-				[
-					text=>'OPDS<br>Format',
-					image=>'opds-format-icon.jpg',
-					url=>'terms.opds',
-				],
-				[
-					text=>'RDF<br>Format',
-					image=>'rdf-format-icon.jpg',
-					url=>'terms.rdf',
-				],
-			];
-			
-			if($this->mobile_friendly)
-			{
-				$formats[0] = [
-					text=>'Standard<br><nobr>PC Format</nobr>',
-					image=>'',
-					url=>'terms.php',
-				];
-			}
-			
-			$formats_count = count($formats);
-			
-			for($i = 0; $i < $formats_count; $i++)
-			{
-				$format = $formats[$i];
-				
-				print('<div class="border-2px background-color-gray15 margin-5px float-left">');
-				print('<div class="margin-5px font-family-arial">');
-				
-				if(!$this->mobile_friendly)
-				{
-					print('<div class="margin-2px">');
-					print('<a href="');
-					print($format['url']);
-					print('">');
-					print('<img src="');
-					print($this->domain_object->GetPrimaryDomain([lowercase=>1, www=>1]));
-					print('/image/');
-					print($format['image']);
-					print('">');
-					print('</a>');
-					print('</div>');
-				}
-				
-				print('<p class="margin-0px font-family-arial font-size-75percent">');
-				print('<a href="');
-				print($format['url']);
-				print('">');
-				print($format['text']);
-				print('</a>');
-				print('</p>');
-				print('</div>');
-				print('</div>');
-			}
-			
-					// Finish Textbody Header
-				
-				// -------------------------------------------------------------
-									
-			$clear_float_divider_start_args = [
-				'class'=>'clear-float',
-				'indentlevel'=>5,
-			];
-			
-			$divider->displaystart($clear_float_divider_start_args);
-			
-			$clear_float_divider_end_args = [
-				'indentlevel'=>5,
-			];
-			
-			$divider->displayend($clear_float_divider_end_args);
-			
-			print("</div>");
+		require('../modules/html/alternateformats.php');
+		$auth = new module_alternateformats(['that'=>$this]);
+		$auth->Display();
 			
 				// Get Info Header Language
 			
@@ -540,63 +397,63 @@
 		switch($this->language_object->getLanguageCode()) {
 			default:
 			case 'en':
-				$terms_instructions_header = $this->master_record['Code'] . ' Terms and Conditions';
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Code of Conduct';
 				break;
 				
 			case 'de':
-				$terms_instructions_header = $this->master_record['Code'] . '-Nutzungsbedingungen';
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Verhaltenskodex';
 				break;
 				
 			case 'es':
-				$terms_instructions_header = 'Términos y condiciones de ' . $this->master_record['Code'];
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Código de conducta';
 				break;
 			
 			case 'fr':
-				$terms_instructions_header = 'Conditions générales ' . $this->master_record['Code'];
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Code de conduite';
 				break;
 				
 			case 'ja':
-				$terms_instructions_header = $this->master_record['Code'] . 'の利用規約';
+				$codeofconduct_instructions_header = $this->master_record['Code'] . '行動規範';
 				break;
 				
 			case 'it':
-				$terms_instructions_header = 'Termini e condizioni ' . $this->master_record['Code'];
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Codice di condotta';
 				break;
 				
 			case 'nl':
-				$terms_instructions_header = $this->master_record['Code'] . ' Algemene voorwaarden';
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Gedragscode';
 				break;
 				
 			case 'pl':
-				$terms_instructions_header = 'Warunki ' . $this->master_record['Code'];
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Kodeks postępowania';
 				break;
 			
 			case 'pt':
-				$terms_instructions_header = 'Termos e Condições ' . $this->master_record['Code'];
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Código de Conduta';
 				break;
 				
 			case 'ru':
-				$terms_instructions_header = 'Условия использования ' . $this->master_record['Code'];
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Кодекс поведения';
 				break;
 			
 			case 'tr':
-				$terms_instructions_header = $this->master_record['Code'] . ' Şartlar ve Koşullar';
+				$codeofconduct_instructions_header = $this->master_record['Code'] . ' Davranış Kuralları';
 				break;
 				
 			case 'zh':
-				$terms_instructions_header = $this->master_record['Code'] . '条款和条件';
+				$codeofconduct_instructions_header = $this->master_record['Code'] . '行为准则';
 				break;
 		}
 		
-				// Display Terms Policy File
+				// Display Code of Conduct Policy File
 			
 			// -------------------------------------------------------------
 		
 		$divider->displaystart($divider_instruction_area_start_args);
 		
 		$element_text_args = [
-			text=>'<center><h2 class="margin-5px font-family-tahoma">' . $terms_instructions_header . ' :</h2></center>',
-			indentlevel=>5,
+			'text'=>'<center><h2 class="margin-5px font-family-tahoma">' . $codeofconduct_instructions_header . ' :</h2></center>',
+			'indentlevel'=>5,
 		];
 		$text->Display($element_text_args);
 		
@@ -604,11 +461,10 @@
 		
 		$privacy_policy_text = $this->getCodeOfConduct();
 		$privacy_policy_text = str_replace('<p>', '<p class="margin-top-10px margin-bottom-0px text-indent-25px">', $privacy_policy_text);
-		$element_text_args = [
-			text=>$privacy_policy_text,
-			indentlevel=>5,
-		];
-		$text->Display($element_text_args);
+		
+		print('<div class="text-to-play-as-audio">');
+		print($privacy_policy_text);
+		print('</div>');
 		
 		$divider->displayend($divider_end_args);
 		
@@ -625,7 +481,7 @@
 			// -------------------------------------------------------------
 		
 		$bottom_navigation_args = [
-			'thispage'=>'Privacy',
+			'thispage'=>'CodeOfConduct',
 		];
 		$navigation->DisplayBottomNavigation($bottom_navigation_args);
 	}

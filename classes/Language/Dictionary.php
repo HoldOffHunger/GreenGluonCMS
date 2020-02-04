@@ -1,33 +1,32 @@
 <?php
 
-	class Dictionary
-	{
+	class Dictionary {
 		public $db_access;
 		
-		public function __construct($args)
-		{
-			$this->hostname = 'mysql.earthfluent.com';
-			$this->username = 'ouruprising';
-			$this->password = 'OE88dd8dd82d';
-			$this->database = 'alldictionaries';
+		public function __construct($args) {
+			$this->globals = $args['globals'];
+			
+			$globals = $this->globals->DictionaryDBInfo();
+			$this->hostname = $globals['hostname'];
+			$this->username = $globals['username'];
+			$this->password = $globals['password'];
+			$this->database = $globals['database'];
+			
+			return TRUE;
 		}
 		
-		function __destruct()
-		{
+		function __destruct() {
 			return $this->DBEnd();
 		}
 		
-		public function LookUpWords($args)
-		{
+		public function LookUpWords($args) {
 			$words_to_look_up = $args['words'];
 			
-			if(!$words_to_look_up)
-			{
+			if(!$words_to_look_up) {
 				return [];
 			}
 			
-			if(!$this->db_link)
-			{
+			if(!$this->db_link) {
 				$this->DBStart();
 			}
 			
@@ -79,12 +78,10 @@
 			return $definitions;
 		}
 		
-		public function LookUpWord($args)
-		{
+		public function LookUpWord($args) {
 			$word_to_look_up = $args['word'];
 			
-			if(!$this->db_link)
-			{
+			if(!$this->db_link) {
 				$this->DBStart();
 			}
 			
@@ -110,25 +107,22 @@
 			$sql .= ' Definition.Term = ? ';
 			
 			$fill_arrays_from_db_args = [
-				query=>$sql,
-				sqlbindstring=>'s',
-				recordvalues=>[$word_to_lookup_up],
+				'query'=>$sql,
+				'sqlbindstring'=>'s',
+				'recordvalues'=>[$word_to_lookup_up],
 			];
 			
 			return $this->FillArraysFromDB($fill_arrays_from_db_args);
 		}
 		
-		public function LookUpRandomWords($args)
-		{
-			if(!$this->db_link)
-			{
+		public function LookUpRandomWords($args) {
+			if(!$this->db_link) {
 				$this->DBStart();
 			}
 			
 			$random_word_count = $args['randomwordcount'];
 			
-			if(!$random_word_count)
-			{
+			if(!$random_word_count) {
 				$random_word_count = 50;
 			}
 			
@@ -156,18 +150,16 @@
 			$sql .= ' LIMIT ' . $random_word_count;
 			
 			$fill_arrays_from_db_args = [
-				query=>$sql,
-				sqlbindstring=>'',
-				recordvalues=>[],
+				'query'=>$sql,
+				'sqlbindstring'=>'',
+				'recordvalues'=>[],
 			];
 			
 			$db_results = $this->FillArraysFromDB($fill_arrays_from_db_args);
 			$definitions = [];
 			
-			foreach ($db_results as $definition)
-			{
-				if(!$definitions[strtolower($definition['Term'])])
-				{
+			foreach ($db_results as $definition) {
+				if(!$definitions[strtolower($definition['Term'])]) {
 					$definitions[strtolower($definition['Term'])] = [];
 				}
 				
@@ -177,19 +169,17 @@
 			return $definitions;
 		}
 		
-		public function GetDefinitionsCount($args)
-		{
-			if(!$this->db_link)
-			{
+		public function GetDefinitionsCount($args) {
+			if(!$this->db_link) {
 				$this->DBStart();
 			}
 			
 			$sql = 'SELECT COUNT(id) AS DefinitionCount FROM Definition;';
 			
 			$fill_arrays_from_db_args = [
-				query=>$sql,
-				sqlbindstring=>'',
-				recordvalues=>[],
+				'query'=>$sql,
+				'sqlbindstring'=>'',
+				'recordvalues'=>[],
 			];
 			
 			$definitions_count = $this->FillArraysFromDB($fill_arrays_from_db_args);
@@ -197,19 +187,17 @@
 			return $definitions_count[0]['DefinitionCount'];
 		}
 		
-		public function GetWordsCount($args)
-		{
-			if(!$this->db_link)
-			{
+		public function GetWordsCount($args) {
+			if(!$this->db_link) {
 				$this->DBStart();
 			}
 			
 			$sql = 'SELECT COUNT(DISTINCT Term) AS WordCount FROM Definition;';
 			
 			$fill_arrays_from_db_args = [
-				query=>$sql,
-				sqlbindstring=>'',
-				recordvalues=>[],
+				'query'=>$sql,
+				'sqlbindstring'=>'',
+				'recordvalues'=>[],
 			];
 			
 			$definitions_count = $this->FillArraysFromDB($fill_arrays_from_db_args);
@@ -217,19 +205,17 @@
 			return $definitions_count[0]['WordCount'];
 		}
 		
-		public function GetDictionariesCount($args)
-		{
-			if(!$this->db_link)
-			{
+		public function GetDictionariesCount($args) {
+			if(!$this->db_link) {
 				$this->DBStart();
 			}
 			
 			$sql = 'SELECT COUNT(id) AS DictionaryCount FROM Dictionary;';
 			
 			$fill_arrays_from_db_args = [
-				query=>$sql,
-				sqlbindstring=>'',
-				recordvalues=>[],
+				'query'=>$sql,
+				'sqlbindstring'=>'',
+				'recordvalues'=>[],
 			];
 			
 			$definitions_count = $this->FillArraysFromDB($fill_arrays_from_db_args);
@@ -240,14 +226,12 @@
 			// Start/Stop the DB
 			// -------------------------------------------------
 		
-		public function DBStart()
-		{
+		public function DBStart() {
 			error_reporting(E_ERROR);
 			
 			$this->db_link = new mysqli($this->hostname,$this->username,$this->password,$this->database);
 			
-			if($this->db_link->connect_errno)
-			{
+			if($this->db_link->connect_errno) {
 				$this->hostname = 'mysql.' . $this->database . '.com';
 				$this->db_link = new mysqli($this->hostname,$this->username,$this->password,$this->database);
 			}
@@ -257,24 +241,20 @@
 			$results = 1;
 			$errors = [];
 			
-			if($this->db_link->connect_errno)
-			{
+			if($this->db_link->connect_errno) {
 				$results = 0;
 				$errors[] = [
-					errornumber=>$this->db_link->connect_errno,
-					errormessage=>$this->db_link->connect_error,
+					'errornumber'=>$this->db_link->connect_errno,
+					'errormessage'=>$this->db_link->connect_error,
 				];
-			}
-			else
-			{
+			} else {
 				unset($this->hostname);
 				unset($this->username);
 				unset($this->password);
 				unset($this->database);
 			}
 			
-			if($this->db_link->connect_error)
-			{
+			if($this->db_link->connect_error) {
 				http_response_code(500);
 				die ("Database unavailable. =(");
 			}
@@ -282,38 +262,32 @@
 			$this->db_link->set_charset("utf8");
 			
 			return [
-				results=>$results,
-				errors=>$errors,
+				'results'=>$results,
+				'errors'=>$errors,
 			];
 		}
 		
-		public function DBEnd()
-		{
-			if(!$this->db_link->connect_error)
-			{
+		public function DBEnd() {
+			if(!$this->db_link->connect_error) {
 				return mysqli_close($this->db_link);
 			}
 			
 			return TRUE;
 		}
 		
-		public function FillArraysFromDB($args)
-		{
-			$query = $args[query];
-			$sqlbindstring = $args[sqlbindstring];
-			$recordvalues = $args[recordvalues];
+		public function FillArraysFromDB($args) {
+			$query = $args['query'];
+			$sqlbindstring = $args['sqlbindstring'];
+			$recordvalues = $args['recordvalues'];
 			
 			$prepare_line = __LINE__;	# Current line number
 			$statement = $this->db_link->prepare($query);
 			
-			if($statement)
-			{
-				if($sqlbindstring)
-				{
+			if($statement) {
+				if($sqlbindstring) {
 					$bind_arguments = [];
 					$bind_arguments[] = $sqlbindstring;
-					foreach ($recordvalues as $recordkey => $recordvalue)
-					{
+					foreach ($recordvalues as $recordkey => $recordvalue) {
 						$bind_arguments[] = & $recordvalues[$recordkey];
 					}
 					
@@ -338,12 +312,10 @@
 				$statement->execute();
 				$result = $statement->get_result();
 				
-				if($result)
-				{
-					while ($row = $result->fetch_assoc())
-					{
+				if($result) {
+					while ($row = $result->fetch_assoc()) {
 						$format_row_args = [
-							row=>$row,
+							'row'=>$row,
 						];
 						$objects[] = $this->FillArraysFromDB_FormatRow($format_row_args);
 					}
@@ -366,8 +338,7 @@
 			# http://php.net/manual/en/language.constants.predefined.php
 		}
 		
-		public function GetError($args)
-		{
+		public function GetError($args) {
 			$error_pieces = $args;
 			
 			$error = [];
@@ -376,8 +347,7 @@
 			$error['error'] = $this->db_link->error;
 			$error['errornumber'] = $this->db_link->errno;
 			
-			foreach ($error_pieces as $error_piece_key => $error_piece_value)
-			{
+			foreach ($error_pieces as $error_piece_key => $error_piece_value) {
 				$error[$error_piece_key] = $error_piece_value;
 			}
 			
@@ -395,25 +365,21 @@
 			return $error;
 		}
 		
-		public function FillArraysFromDB_FormatRow($args)
-		{
-			$row = $args[row];
+		public function FillArraysFromDB_FormatRow($args) {
+			$row = $args['row'];
 			
 			$sub_tables = [];
 			
-			foreach ($row as $field_name => $field_value)
-			{
+			foreach ($row as $field_name => $field_value) {
 				$first_row_field_name_char = substr($field_name, 0, 1);
 				
-				if($first_row_field_name_char == '.')
-				{
+				if($first_row_field_name_char == '.') {
 					$row_explosion = explode('.', $field_name);
 					
 					$joined_table_name = $row_explosion[1];
 					$joined_table_field = $row_explosion[2];
 					
-					if(!$sub_tables[$joined_table_name])
-					{
+					if(!$sub_tables[$joined_table_name]) {
 						$sub_tables[$joined_table_name] = [];
 					}
 					
@@ -422,8 +388,7 @@
 				}
 			}
 			
-			foreach ($sub_tables as $sub_table => $sub_table_fields)
-			{
+			foreach ($sub_tables as $sub_table => $sub_table_fields) {
 				$row[strtolower($sub_table)] = $sub_table_fields;
 			}
 			

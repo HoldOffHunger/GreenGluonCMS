@@ -109,8 +109,7 @@
 			// -----------------------------------------------
 		
 		public function Display() {
-			if(!$this->PrepareScriptForPDFConversion())
-			{
+			if(!$this->PrepareScriptForPDFConversion()) {
 				return FALSE;
 			}
 			
@@ -122,8 +121,7 @@
 			
 			$pdf_input = $this->SetHTMLForPDFConversion();
 			
-			if(!$pdf_input)
-			{
+			if(!$pdf_input) {
 				return FALSE;
 			}
 			
@@ -131,8 +129,7 @@
 			
 			$old_pdf_input = '';
 			
-			if(is_file($source_file_location))
-			{
+			if(is_file($source_file_location)) {
 				$old_pdf_input = file_get_contents($source_file_location);
 			}
 			if($_GET['forceregen'] || !is_file($pdf_file_location) || $old_pdf_input != $pdf_input) {

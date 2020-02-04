@@ -2229,50 +2229,288 @@
 		public function DetectBadText() {
 			$type = $this->Param('type');
 			
+			$algorithm = $this->Param('algorithm');
+			$this->algorithm = $algorithm;
+			$correction_start_id = (int)$this->Param('correction-id-start');
+			$correction_end_id = (int)$this->Param('correction-id-last');
+			
+			$this->correction_start_id = $correction_start_id;
+			$this->correction_end_id = $correction_end_id;
+			
 			require('../classes/Language/EnglishMisspellings.php');
 			$this->misspellings = new EnglishMisspellings();
+			$misspellings = $this->misspellings->GetWords_Misspelled();
+			$this->misspellingscount = count($misspellings);
 			
-			$this->misspellingscount = count($this->misspellings->misspellings);
+			require('../classes/Language/IntensiveEnglishMisspellings.php');
+			$this->intensivemisspellings = new IntensiveEnglishMisspellings();
+			$intensive_misspellings = $this->intensivemisspellings->GetWords_Misspelled();
+			$this->intensivemisspellingscount = count($intensive_misspellings);
+			
+				// VALIDATE, if start/end is higher than valid
+				
 			$this->maxmin = $this->getMinMaxForField(['table'=>'Entry', 'field'=>'id']);
 			
 			if($type) {
-				print("BT: TYPE!" . $type . '<BR><BR>');
+				$this->type = $type;
 				
-				$correction_start_id = $this->Param('correction-id-start');
-				$correction_end_id = $this->Param('correction-id-last');
-				$entry_start_id = $this->Param('entry-id-start');
-				$entry_end_id = $this->Param('entry-id-last');
+				$correction_start_id = (int)$this->Param('correction-id-start');
+				$correction_end_id = (int)$this->Param('correction-id-last');
+				$entry_start_id = (int)$this->Param('entry-id-start');
+				$entry_end_id = (int)$this->Param('entry-id-last');
+				
+				$this->entry_start = $entry_start_id;
+				$this->entry_end = $entry_end_id;
 				
 				$type_pieces = split('_', $type);
 				
 				$record_type = $type_pieces[0];
 				$record_field = $type_pieces[1];
-				print("BT: RECORD!" . $record_type);
 				
-	//			$misspellings = $this->misspellings->misspellings;
+				$this->recordtype = $record_type;
+				$this->recordfield = $record_field;
 				
-				print("BT: SPELLINGS!");
-				PRINT("death!");
-				print_r($this->misspellings);
-				#die("fuckit");
-				print('<BR><BR>');
+				ini_set('memory_limit','400M');	# hold onto yer butts
+				ini_set('max_execution_time', 120);
 				
-				print_r($misspellings);
+				$misspellings = array_splice($misspellings, $correction_start_id, $correction_end_id - $correction_start_id);
+				
+				
 				if($record_type == 'TextBody') {
-					$sql = 'SELECT Entry.id, Entry.Title, TextBody.id as TextBody_id, TextBody.Source as TextBody_Source, ';
-					$sql .= 'MATCH (TextBody.Text) ';
-					$sql .= 'AGAINST (\'vegetarian\' IN NATURAL LANGUAGE MODE) AS score';
-					$sql .= 'FROM TextBody ';
-					$sql .= 'JOIN Entry ON Entry.id = TextBody.Entryid ';
-					$sql .= 'HAVING score > 0 ';
-					$sql .= 'ORDER BY score DESC ';
-					print("BT: TEXTBODY - DETECT BAD TYPE! <BR><BR>");
-					print('SQL:' . $sql . '<BR><BR>');
+					$search_args = [
+						'entrystartid'=>$entry_start_id,
+						'entryendid'=>$entry_end_id,
+					];
+					if($algorithm == 'standard') {
+						$search_args['misspellings'] = $misspellings;
+						$this->standardTextBodySearch($search_args);
+					} elseif($algorithm == 'intensive') {
+						$search_args['misspellings'] = $intensive_misspellings;
+						$this->intensiveTextBodySearch($search_args);
+					}
+				} elseif($record_type == 'Entry') {
+					$valid_entry_fields = [
+						'Title'=>TRUE,
+						'Subtitle'=>TRUE,
+						'ListTitle'=>TRUE,
+						'ListTitleSortKey'=>TRUE,
+						'Code'=>TRUE,
+					];
+					if($valid_entry_fields[$record_field]) {
+						$new_misspellings = [];
+						
+						foreach($misspellings as $misspelling) {
+							$misspelling = str_replace('*', '\\\\*', $misspelling);
+							$new_misspellings[] = '[[:<:]]' . $misspelling . '[[:>:]]';
+						}
+						
+						$misspellings = $new_misspellings;
+						
+						
+						$misspelling_string = implode('|', $misspellings);
+						$sql = 'SELECT * FROM Entry WHERE ' . $record_field . ' REGEXP "' . $misspelling_string . '"';
+						
+						if($where) {
+							$sql .= ' AND ' . $where;
+						}
+						
+						$entries = $this->db_access_object->RunQuery([
+							'sql'=>$sql,
+						]);
+						
+						$this->search_results = $entries;
+						$this->search_header = [['id', 'xyz']];
+					}
+				}
+				
+				$this->search_results_count = count($this->search_results);
+			}
+			
+			return TRUE;
+		}
+		
+		public function standardTextBodySearch($args) {
+			$misspellings = $args['misspellings'];
+			$entry_start_id = $args['entrystartid'];
+			$entry_end_id = $args['entryendid'];
+			
+			$where = 'Entry.id >= ' . $entry_start_id . ' AND Entry.id <= ' . $entry_end_id . ' ';
+			
+			$new_misspellings = [];
+			
+			foreach($misspellings as $misspelling) {
+				if(preg_match('/\s/', $misspelling)) {
+					$misspelling = '"' . $misspelling . '"';
+				}
+				$misspelling = str_replace('*', '\*', $misspelling);
+				//print($misspelling);
+				$new_misspellings[] = $misspelling;
+			}
+			
+			$misspellings = $new_misspellings;
+		
+			$this->SetORMSearch();
+			
+			$search_results = $this->orm_search->Search([
+				'searchterms'=>$misspellings,
+				'where'=>$where,
+			]);
+			
+			$textbody_id_list = [];
+			$entry_id_list = [];
+			
+			foreach($search_results as $search_index => $search_result) {
+				$textbody_id_list[] = $search_result['TextBody_id'];
+				$entry_id_list[] = $search_result['TextBody_Entryid'];
+			}
+			
+			$textbody_id_string = join(',', $textbody_id_list);
+			
+			$sql = 'SELECT * FROM TextBody WHERE ID IN(' . $textbody_id_string . ')';
+			
+			$texts = $this->db_access_object->RunQuery([
+				'sql'=>$sql,
+			]);
+			
+			$entry_id_string = join(',', $entry_id_list);
+			
+			$sql = 'SELECT * FROM Assignment WHERE Childid IN(' . $entry_id_string . ')';
+			
+			$assignments = $this->db_access_object->RunQuery([
+				'sql'=>$sql,
+			]);
+			
+			$assignment_lookup = [];
+			
+			foreach($assignments as $assignment) {
+				$assignment_lookup[$assignment['Childid']] = $assignment;
+			}
+			
+			$text_lookup = [];
+			
+			foreach($texts as $text) {
+				$text_lookup[$text['id']] = $text;
+			}
+			
+			foreach($search_results as $search_index => $search_result) {
+				$text = $text_lookup[$search_results[$search_index]['TextBody_id']];
+				$assignment = $assignment_lookup[$search_results[$search_index]['TextBody_Entryid']];
+				
+				$matched_words = [];
+				
+				foreach($misspellings as $misspelling) {
+					$testable_misspelling = str_replace('"', '', $misspelling);
+					$testable_misspelling = str_replace(' ', '\s', $testable_misspelling);
+					if(preg_match('/\b' . $testable_misspelling . '\b/i', $text['Text'])) {
+						$matched_words[] = $misspelling;
+					}
+				}
+		
+				$matched_count = count($matched_words);
+				
+				if($matched_count > 0) {
+					unset($search_results[$search_index]['TextBody_id']);
+					unset($search_results[$search_index]['score']);
 					
-					print_r($this->misspellings);
+					$search_results[$search_index][] = join(', ', $matched_words);
+					$search_results[$search_index][] = '<a href="/?id=' . $assignment['id'] . '">View</a>';
+					$search_results[$search_index][] = '<a href="/?id=' . $assignment['id'] . '&action=Edit">Edit</a>';
 				} else {
+					unset($search_results[$search_index]);
 				}
 			}
+			
+			$this->search_results = $search_results;
+			$this->search_header = [['Entryid', 'Words', 'View', 'Edit']];
+			
+			return TRUE;
+		}
+		
+		public function intensiveTextBodySearch($args) {
+			$misspellings = $args['misspellings'];
+			$entry_start_id = $args['entrystartid'];
+			$entry_end_id = $args['entryendid'];
+			
+			$where = 'Entryid >= ' . $entry_start_id . ' AND Entryid <= ' . $entry_end_id . ' ';
+			
+			$sql = 'SELECT Text, Entryid FROM TextBody WHERE ' . $where;
+			
+			$texts = $this->db_access_object->RunQuery([
+				'sql'=>$sql,
+			]);
+		
+			$entry_id_list = [];
+			
+			foreach($texts as $text) {
+				$entry_id_list[] = $text['Entryid'];
+			}
+			
+			$entry_id_string = join(',', $entry_id_list);
+			
+			$sql = 'SELECT * FROM Assignment WHERE Childid IN(' . $entry_id_string . ')';
+			#print("BT: SQL!" . $sql . "|<BR><BR>");
+			$assignments = $this->db_access_object->RunQuery([
+				'sql'=>$sql,
+			]);
+			
+			$assignment_lookup = [];
+			
+			foreach($assignments as $assignment) {
+				$assignment_lookup[$assignment['Childid']] = $assignment;
+			}
+			
+			$lookup_results = [];
+			
+			$skip = [
+				'i.e'=>TRUE,
+			];
+			
+			foreach($texts as $text) {
+				foreach($misspellings as $misspelling) {
+					$testable_misspelling = str_replace('"', '', $misspelling);
+					$testable_misspelling = str_replace(' ', '\s', $testable_misspelling);
+					$testable_misspelling = str_replace('.', '\.', $testable_misspelling);
+					$testable_misspelling = str_replace('?', '\?', $testable_misspelling);
+					$testable_misspelling = str_replace('!', '\!', $testable_misspelling);
+					
+					$results = preg_match('/' . $testable_misspelling . '/', $text['Text'], $matched);
+					
+					if($results) {
+						$good = TRUE;
+						foreach($matched as $match) {
+							if($skip[$match]) {
+								$good = FALSE;
+							}
+						}
+						
+						if($good) {
+							if(!$search_results[$text['Entryid']]) {
+								$lookup_results[$text['Entryid']] = [];
+							}
+							
+							foreach($matched as $match) {
+								$lookup_results[$text['Entryid']][] = $match;
+							}
+						}
+					}
+				}
+			}
+			
+			$search_results = [];
+			
+			foreach($lookup_results as $entry_id => $lookup_result) {
+				$assignment = $assignment_lookup[$entry_id];
+				$misspelling_string = join(', ', $lookup_result);
+				$search_results[] = [
+					$entry_id,
+					$misspelling_string,
+					'<a href="/?id=' . $assignment['id'] . '">View</a>',
+					'<a href="/?id=' . $assignment['id'] . '&action=Edit">Edit</a>',
+				];
+			}
+			
+			$this->search_results = $search_results;
+			$this->search_header = [['Entryid', 'Words', 'View', 'Edit']];
 			
 			return TRUE;
 		}
@@ -2294,12 +2532,12 @@
 		public function SetORMSearch() {
 			require('../classes/Database/ORMSearch.php');
 			
-			return $this->orm_search = new ORMSearch([dbaccessobject=>$this->db_access_object]);
+			return $this->orm_search = new ORMSearch(['dbaccessobject'=>$this->db_access_object]);
 		}
 		
 		public function PerformSearch($args) {
 			return $this->search_results = $this->orm_search->Search([
-				searchterms=>$args['search_terms'],
+				'searchterms'=>$args['search_terms'],
 			]);
 		}
 		
